@@ -1,0 +1,14 @@
+
+----------------- --------------------------
+* Converting timestamp offset from Midnight (market data/order entry)
+
+1. Get epoch timestamp at midnight
+    #date -d "2013-11-21 00:00:00" +%s
+
+2. Add Time to epoch & convert
+    #date -d @$((1384959600 + 45443))
+    Thu Nov 21 12:37:23 JST 2013
+	
+----------------- --------------------------
+----------------- --------------------------
+----------------- --------------------------
