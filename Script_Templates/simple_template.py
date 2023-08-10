@@ -1,11 +1,10 @@
 #!/usr/bin/env python
 
-#import os, sys, getopt
-import os
-import sys
-import getopt
-import errno
-import traceback
+import os, sys, getopt
+import errno, traceback
+import csv
+from decimal import Decimal
+
 
 def printHelp():
     print """Usage: %s -f <filename>
@@ -13,29 +12,24 @@ def printHelp():
     OPTIONS:
          -f  input file
          -h  Display this help message.
-    """ % os.path.basename(__file__)  # sys.argv[0]
-
-import csv
-from decimal import Decimal
+    """ % os.path.basename(__file__)
 
 
 def process_file(data_file):
-    ifile  = open(data_file, "rb")
-    reader = csv.reader(ifile)
-
-    rownum = 0
-    for row in reader:
-        # Save header row.
-        if rownum == 0:
-            header = row
-        else:
-            colnum = 0
-            bp = row[7].replace(',', '')
-            ul = row[8].replace(',', '')
-            ll = row[9].replace(',', '')
-            print '%s,%g,%g,%g' % (row[0], Decimal(bp) *10, Decimal(ul) *10, Decimal(ll) *10)
-        rownum = 1
-    ifile.close()
+    with open(data_file, "r") as ifile:
+		reader = csv.reader(ifile)
+		rownum = 0
+		for row in reader:
+			# Save header row.
+			if rownum == 0:
+				header = row
+			else:
+				colnum = 0
+				bp = row[7].replace(',', '')
+				ul = row[8].replace(',', '')
+				ll = row[9].replace(',', '')
+				print '%s,%g,%g,%g' % (row[0], Decimal(bp) *10, Decimal(ul) *10, Decimal(ll) *10)
+			rownum = 1
 
 def main():
     try:
