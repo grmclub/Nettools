@@ -161,7 +161,7 @@ def process_file(data_file):
 			if len(line) > 1:
 				buf = bytearray.fromhex(line.strip())
 				ext = soup_handler.decode(buf)
-				print("%s,%s % (ts,ext))
+				print("%s,%s" % (ts,ext))
 
 
 def main():
