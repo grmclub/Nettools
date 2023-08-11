@@ -19,7 +19,7 @@ def printHelp():
     OPTIONS:
          -f  input file
          -h  Display this help message
-		 
+
 	#Extract data with
 	tshark -r $file -R "tcp.port == $port" \
 	-T fields \
@@ -44,7 +44,7 @@ def printHelp():
 
     """ % os.path.basename(__file__)  # sys.argv[0]
 	sys.exit(1)
-	
+
 def percentile_calc(N,percent):
 	if not N:
 		return None
@@ -63,8 +63,6 @@ def calc_latency(session,sess_list):
 	print("%s,%d,%s,%s,%s,%s,%s,%s" %(session,len(sess_list),p50,p80,p90,p95,p99,sess_list[pmax]))
 
 
-
-
 def process_file(data_file):
 	id_dict = {}
 	with open(data_file, "r") as ifile:
@@ -76,7 +74,7 @@ def process_file(data_file):
 			ord_status = row[8]
 			dt_time = row[0]
 			tnx_time = float(row[0])
-			
+
 			#print session,msgtype,ClOrdId,ord_status,tnx_time
 			if msgtype =="D":
 				session = row[9]
@@ -88,9 +86,7 @@ def process_file(data_file):
 				t2 = (id_dict[ClOrdId]["t2"])
 				delay = abs(t2 -t1)
 				id_dict[ClOrdId]["time_diff"] = "%0.9f" % delay
-		
-		
-		
+
 	sorted_dict = OrderedDict(sorted(id_dict.items(), key=lambda t:t[1]["time_diff]))
 	sorted_list = []
 	sess = ""
@@ -101,13 +97,6 @@ def process_file(data_file):
 		sess = ses.split('.')
 		if sess[0] != '':
 			calc_latency(sess[0],sorted_list)
-		
-		
-		
-		
-		
-
-	
 
 
 
