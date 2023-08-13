@@ -32,7 +32,7 @@ data_list = []
 #class asx_ouch
 
 # --add ts
-# --add logic for decoding multiple soup packets in tcp pkt
+# --add logic for decoding multiple soup packets in a tcp pkt
 # --add decoders for other markets
 
 
