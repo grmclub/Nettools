@@ -8,7 +8,7 @@ from datetime import *
 import struct
 import binascii
 
- 
+
 def printHelp():
     print """Usage: %s -f <filename>
 
@@ -33,7 +33,7 @@ data_list = []
 
 # --add ts
 # --add logic for decoding multiple soup packets in tcp pkt
-# --add decoders for other markets 
+# --add decoders for other markets
 
 
 class jnx_ouch:
@@ -46,10 +46,10 @@ class jnx_ouch:
         self.buf_len = len(buf)
         #print("Buf_len=%d" % (self.buf_len))
         #print(data_len=%d,size=%d" % (len(buf),self.size))
-        
+
     def print_headers(self):
         print(self.size,self.soup_pkt_type,self.ouch_msg_type)
-        
+
     def decode(self):
         ext = ""
         if self.buf_len >=4:
@@ -75,19 +75,19 @@ class jnx_ouch:
                 ext = self.output_msg(ouch_buf, '>QIc')
             elif self.ouch_msg_type == 'S':
                 ext = self.output_msg(ouch_buf, '>Qc')
-        return ext  
-                
+        return ext
+
     def output_msg(self,buf,unpack_str):
         global data_list
         del data_list
         data_list = struct.unpack(unpack_str, buf)
         return("%d,%s,%s,%s"% (self.header[0],self.header[1],self.header[2], ",".join(str(x) for x in data_list)))
-    
-    
+
+
 class soupbintcp:
     def __init__(self,app_handler):
         self.app_handler = app_handler
-        
+
     def decode(self,buf):
         buf_len = len(buf)
         ext = ""
@@ -101,21 +101,21 @@ class soupbintcp:
             if soup_pkt_type == '+':
                 ext = self.output_hdr(size,soup_pkt_type)
             elif soup_pkt_type == 'H':
-                ext = self.output_hdr(size,soup_pkt_type)               
+                ext = self.output_hdr(size,soup_pkt_type)
             elif soup_pkt_type == 'R':
                 ext = self.output_hdr(size,soup_pkt_type)
             elif soup_pkt_type == 'Z':
-                ext = self.output_hdr(size,soup_pkt_type)               
+                ext = self.output_hdr(size,soup_pkt_type)
             elif soup_pkt_type == 'L':
                 ext = self.output_hdr(size,soup_pkt_type)
                 #self.output_soup(size,soup_pkt_type,soup_buf[0:45],'6s10s10s20s')  ##XXX -Fix
             elif soup_pkt_type == 'A':
                 ext = self.output_hdr(size,soup_pkt_type)
-                #self.output_soup(size,soup_pkt_type,soup_buf,'10s20s')  ##XXX -Fix             
+                #self.output_soup(size,soup_pkt_type,soup_buf,'10s20s')  ##XXX -Fix
             elif soup_pkt_type == 'J':
                 ext = self.output_soup(size,soup_pkt_type,soup_buf,'c')
             elif soup_pkt_type == 'O':
-                ext = self.output_hdr(size,soup_pkt_type)               
+                ext = self.output_hdr(size,soup_pkt_type)
             elif soup_pkt_type == 'S':
                 handler = jnx_ouch(buf)
                 ext = handler.decode()
@@ -123,27 +123,27 @@ class soupbintcp:
                 handler = jnx_ouch(buf)
                 ext = handler.decode()
         return ext
-            
+
 
     def output_hdr(self,size,pkt_type):
         return ("%d,%s" % (size,pkt_type))
-        
+
     def output_soup(self,size,pkt_type,buf,unpack_str):
         data_list = struct.unpack(unpack_str,buf)
-        return("%d,%s,%s"% (size,pkt_type, ",".join(str(x) for x in data_list)))        
-            
+        return("%d,%s,%s"% (size,pkt_type, ",".join(str(x) for x in data_list)))
+
 
 def extract_from_pcap_file(pcap_file,out_file):
     cmd = """tshark -r %s \
     -T fields \
     -Eseparator=, \
-    -Eoccurrance=1 \
+    -Eoccurrence=l \
     -e frame.time_epoch \
     -e data > %s """ % (pcap_file,out_file)
     result,e,r = execCmd(cmd)
 
 
-        
+
 def process_file(data_file):
     app_handler = "jnx_ouch"
     soup_handler = soupbintcp(app_handler)
@@ -157,7 +157,7 @@ def process_file(data_file):
                 line = row[1].strip()
             else:
                 line = row[0].strip()
-                
+
             if len(line) > 1:
                 buf = bytearray.fromhex(line.strip())
                 ext = soup_handler.decode(buf)

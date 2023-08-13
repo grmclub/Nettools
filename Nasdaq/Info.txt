@@ -1,14 +1,52 @@
 
 ----------------- --------------------------
-* Converting timestamp offset from Midnight (market data/order entry)
+##ITCH time stamp
 
 1. Get epoch timestamp at midnight
-    #date -d "2013-11-21 00:00:00" +%s
+    #date -d "2013-11-21 00:00:00" +%s 
+    1384959600
 
-2. Add Time to epoch & convert
-    #date -d @$((1384959600 + 45443))
-    Thu Nov 21 12:37:23 JST 2013
-	
------------------ --------------------------
+2. Get nanosec timestamp & add to epoch
+
+     , {"Type":"T","Second":45443}
+    , {"Type":"Y","Timestamp":1231000,"Orderbook":1301,"Group":"DAY ","PriceRestrictionStatus":"0"}
+
+    python -c "import datetime; print [1384959600.0 + float(45443) +int(1231000)/1000000000.]"
+    [1385005043.001231]
+
+3. Get human readable nanosec timestamp
+
+    date -d @1385005043.001231 +%T.%N
+    12:37:23.001231000
+--------------------
+* Alternative methods of calculation
+
+#perl -e " print (1384959600 + 45443.001231)"
+#python -c "print '%0.6f' % (1384959600.0 + float(45443) +int(1231000)/1000000000.)"
+1385005043.001231
+
+
+** Shell calc
+   date -d @$[$(date -d 'today 00:00:00' +%s) + 29124]
+--------------------
+------------------------------------------------------------------------
+* Ouch Timestamp
+
+- Are sent with outgoing messages only
+
+"Timestamp":45743629683000
+"Timestamp": 30000000002000
+
+30000.000002000
+
+date -d @$[$(date -d 'today 00:00:00' +%s) + 30000]
+
+1467328800.000002000
+
+-------------------------------------  -------------------------------------
+
+
+
+
 ----------------- --------------------------
 ----------------- --------------------------
