@@ -1,10 +1,7 @@
 #!/usr/bin/env python
 
-#import os, sys, getopt
-import os
-import sys
-import getopt
-import errno
+import os, sys, getopt
+import errno,traceback
 import subprocess
 import re
 from collections import OrderedDict
@@ -22,7 +19,7 @@ def printHelp():
     tshark -r $file -R "tcp.port == $port" \
     -T fields \
     -Eseparator=, \
-    -Eoccurrance=1 \
+    -Eoccurrence=l \
     -e frame.time_epoch \
     -e ip.src\
     -e tcp.srcport \
