@@ -1,0 +1,114 @@
+
+-------------------------------------------------------------
+* Core Filters
+
+--TCP Connections
+
+1.    tshark -r $file -R "tcp.flags.syn == 1" -T fields -e frame.time_epoch -e ip.src -e ip.dst -e tcp.srcport -e tcp.dstport
+
+frame.time_epoch
+frame.time
+
+#tshark -r $file \
+-Tfields  \
+-E header=y  -E separator='|' \
+-e frame.time_epoch \
+-e frame.len \
+-e ip.src  \
+-e ip.dst \
+-e tcp.srcport \
+-e tcp.dstport \
+-e frame.protocols \
+-e _ws.col.Info
+
+2. TCP Setup
+    - setup syn
+      tcp.flags.syn==1 && tcp.flags.ack==0
+
+    - setup syn/ack
+      tcp.flags.syn == 1
+
+    - shows handshakes + extra acks
+    tcp.flags.syn == 1 || tcp.flags == 0x0012 || tcp.flags == 0x0010
+
+    -only handshakes
+    (tcp.flags.syn==1 ) || (tcp.flags == 0x0010 && tcp.seq==1 && tcp.ack==1)
+
+
+2. TCP Teardown
+    - fin
+      tcp.flags.fin==1 || tcp.flags.reset==1
+
+
+3. TCP analysis
+   tcp.analysis.flags
+   !tcp
+   
+--Basic Filters
+tcpslice /var/db/sniffer/dump{0..6}*.tcpdump | tcpdump -r - "host 10.65.2.116  or (vlan and host 10.65.2.116) " -w ww.pcap
+tcpslice /var/db/sniffer/dump{5..8}*.tcpdump | tcpdump -r - "portrange 11003 or (vlan and portrange 11003)" -w xx.pcap
+
+IP=
+tcpslice *.tcpdump | tcpdump -r - "host $IP  or (vlan and host $IP) " -w ip.pcap
+
+RANGE=
+tcpslice *.tcpdump | tcpdump -r - "portrange $RANGE or (vlan and portrange $RANGE)" -w range.pcap   
+-------------------------------------------------------------
+*Get potocols in the packet
+tshark -r test.cap -q -z io,phs
+
+* Split Files by 1024MB -> 1GB
+tcpdump -r "dump-napa1-2013-10-05-09.35.08.tcpdump" -C 1024 -w capX
+-------------------------------------------------------------
+* ERF to pcap
+https://www.netresec.com/?page=Blog&month=2012-11&post=Convert-Endace-ERF-capture-files-to-PCAP
+https://www.thegeekstuff.com/2009/02/editcap-guide-11-examples-to-handle-network-packet-dumps-effectively/
+
+#editcap -F libpcap -T ether erf-ethernet-example.erf erf-ethernet-example.pcap 
+
+*Extract packets between a specific timeperiod using option -A and -B
+# editcap -v -A "2009-02-11 11:26:30" -B "2009-02-11 11:27:00"  input_dump output_dump
+
+
+ERF (Endace Record Format) is a proprietary binary format for captured network packets. An ERF File is simply one or more records concatenated, with no file header. This makes it conceptually simpler than pcap files, which it is not directly compatible with.
+
+The Wireshark package (including mergecap, editcap, capinfos, tshark, wireshark etc) has the ability to read ERF Files and dissect the records. This functionality is split between wiretap (wtap/erf.c) and a dissector (epan/dissectors/packet-erf.c).
+
+Because of this, editcap/mergecap/tshark/wireshark can read in an ERF File and output any format they support writing into, defaulting to pcap. The DLT you get will depend on the tool settings.
+
+-------------------------------------------------------------
+https://github.com/wuseman/tshark-cheatsheet
+https://stackoverflow.com/questions/13810156/tshark-export-fix-messages
+https://hackertarget.com/tshark-tutorial-and-filter-examples/
+
+https://shantoroy.com/sre/sed-linux-command-for-log-extraction-and-analysis/
+https://itecnote.com/tecnote/tshark-export-packet-info-from-pcap-to-cvs/
+
+https://isc.sans.edu/diary/Packet+Tricks+with+xxd/10306
+tshark -T fields -e data | xxd -r -p
+
+
+-------------------------------------------------------------
+* Show all protocols
+    tshark -r testX.pcap -d lbtrm -ta
+    tshark -G protocols
+    tshark -G fields
+
+    -G [fields|protocols|values|decodes|defaultprefs|currentprefs]
+
+-------------------------------------------------------------
+
+
+
+-------------------------------------------------------------
+
+-------------------------------------------------------------
+
+
+-------------------------------------------------------------
+
+
+
+
+
+

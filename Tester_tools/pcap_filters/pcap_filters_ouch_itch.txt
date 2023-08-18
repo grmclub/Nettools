@@ -1,0 +1,42 @@
+ tshark -r $file  -Tfields  -E header=y  -E separator='|' -e frame.time_epoch -e frame.len -e ip.src  -e ip.dst -e tcp.srcport -e tcp.dstport -e frame.protocols -e _ws.col.Info
+-------------------------------------------------------------
+# Extract login msg
+
+tshark -r $file -Y "soupbintcp" -d tcp.port==$port,soupbintcp \
+-Tfields  -E header=y  -E separator='|'  \
+-e frame.time \
+-e soupbintcp.packet_length \
+-e soupbintcp.packet_type \
+-e soupbintcp.username \
+-e soupbintcp.password \
+-e soupbintcp.session
+
+-------------------------------------------------------------
+tshark  -r $file  -d tcp.port==$port,soupbintcp -td soupbintcp
+
+
+##show entire packet
+tshark \
+    -r $file \
+    -d tcp.port==$port,soupbintcp \
+    -d soupbintcp.port==$port,ouch \
+    -td ouch -ta -V
+
+
+-------------------------------------------------------------
+
+file=fix.pcap
+port=11001
+tshark \
+    -r $file \
+    -d tcp.port==$port,fix \
+    -td fix
+
+-------------------------------------------------------------
+
+-------------------------------------------------------------
+
+
+-------------------------------------------------------------
+
+

@@ -1,0 +1,107 @@
+---------------------------------------------------------------------------------
+* FIX
+
+    1. Fix logon Filter
+       fix.SenderCompID == TCD1234 && fix.MsgType == "A"
+
+    2. Check outgoing heartbeats from GW
+
+        ip.src == 10.65.0.123 && fix.MsgType == "0"
+        ip.src == 10.65.0.123 && ip.dst == XX && fix.MsgType == "0"
+
+    2.1 Filter heartbeats\logon by subnet
+        fix.MsgType == "A"
+        fix.MsgType == "0"
+
+        ip.src == 10.65.0.120\24 && fix.MsgType == "0"
+
+    3. TCP analysis
+       tcp.analysis.flags
+       !tcp
+
+    4. Filter all logins & logouts
+       tcpslice zz*.pcap | tshark -r - -Y 'fix.MsgType == "A" || fix.MsgType == "5" '
+
+       #Filter heartbeat intervals
+       tshark -r xx.pcap -Tfields  -E header=y  -E separator='|' -e fix.MsgType -e fix.HeartBtInt | sort | uniq -c
+======================================
+#non heartbeat messages
+fix && !fix.MsgType == "0"
+
+
+##biz Messages
+fix.MsgType == "D" || fix.MsgType == "F" || fix.MsgType == "G" || fix.MsgType == "8" || fix.MsgType == "9"
+
+##get Rejects
+fix.MsgType == "3" || fix.MsgType == "9" || fix.ExecType == "8"
+======================================
+
+---------------------------------------------------------------------------------
+function gen_dump(){
+
+    tshark -r "$1" \
+    -Tfields  \
+    -E header=y  -E separator='|' \
+    -e frame.time \
+    -e ip.src  \
+    -e ip.dst \
+    -e tcp.srcport \
+    -e tcp.dstport \
+    -e frame.protocols \
+    -e col.Info
+}
+
+
+---------------------------------------------------------------------------------
+    tshark -r $file \
+    -Tfields  \
+    -E header=y  -E separator='|' \
+    -e frame.time \
+    -e fix.MsgType\
+    -e fix.MsgSeqNum \
+    -e fix.RefSeqNum \
+    -e fix.SenderCompID\
+    -e fix.TargetCompID\
+    -e fix.SendingTime\
+    -e fix.TransactTime \
+    -e fix.ClOrdID\
+    -e fix.Symbol \
+    -e fix.Price \
+    -e fix.OrderQty \
+    -e fix.ExecType
+---------------------------------------------------------------------------------
+
+tshark -r fix.pcap -Y "fix" -Tfields  -E separator=',' -e frame.time_epoch -e fix.MsgType
+
+https://stackoverflow.com/questions/13810156/tshark-export-fix-messages
+tshark -r fix.pcap -Tfields -Eseparator=, -Eoccurrence=l -e frame.time_epoch -e fix.MsgType -e fix.SenderCompID -e fix.SenderSubID -e fix.TargetCompID -e fix.Symbol -e fix.Side -e fix.Price -e fix.OrderQty -e fix.ClOrdID -e fix.OrderID -e fix.OrdStatus
+
+tshark -nr fix.pcap -Y'fix' -w- | tcpdump -r- -l -w- | tcpflow -r- -C -B
+tshark -nr fix.pcap -Y'fix' -w- | tcpdump -r- -l -w- | tcpflow -r- -C -B  | tr \\001  '|'
+
+tcpflow ensures that the TCP stream is followed, so no FIX messages are missed (in the case where a single TCP packet contains more than 1 FIX message). -C writes to the console and -B ensures binary output. This approach is not unlike following a TCP stream in Wireshark.
+
+The FIX delimiters are preserved which means that I can do some handy grepping on the output, e.g.
+
+... | tcpflow -r- -C -B | grep -P "\x0135=8\x01"
+
+
+---------------------------------------------------------------------------------
+tshark -nr fix.pcap -T pdml
+tshark -nr fix.pcap -T json
+https://ask.wireshark.org/question/12850/command-line-tshark-json-and-packet-details-all-expanded/
+
+
+
+---------------------------------------------------------------------------------
+
+
+---------------------------------------------------------------------------------
+
+
+---------------------------------------------------------------------------------
+
+
+---------------------------------------------------------------------------------
+
+
