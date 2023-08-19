@@ -1,0 +1,26 @@
+
+-------------------------------------------------------------
+* read multiple variables in oneline
+
+fields="$1"
+symbol="$2"
+
+#601898.SG.side a.1.601898.SG.side b.1
+symbol=$(echo $symbol | tr " " "_")
+IFS='.' read -r id1 ex1 src1 ty1 id2 ex2 src2 ty2 <<<"$symbol"
+
+#echo "$id1- $ex1- $src1- $ty1- $id2- $ex2- $src2- $ty2"
+
+
+-------------------------------------------------------------
+alias dx="du -sx *| sort -nr| head|cut -f2| xargs -n1 du -h"
+ssh -q -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null <host> /bin/df -h /var/tmp | /usr/bin/tail -1 | awk '{print $(NF-1)}' | cut -d'%' -f1
+
+-------------------------------------------------------------
+
+-------------------------------------------------------------
+
+
+-------------------------------------------------------------
+
+-------------------------------------------------------------
