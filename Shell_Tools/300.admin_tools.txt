@@ -19,6 +19,35 @@ Some other useful commands while top is running include:
 #mpstat –P ALL
 Use the following command to direct sar to monitor CPU usage at set intervals:
 
+#Top memory consuming processes
+ps aux --sort -rss |pr -TW 256|head -15
+
+--------------------------------------------------------------------------------------
+*sar
+-u =cpu
+-r = mory
+-b = io
+-B = paging stats
+-d = block device stats
+-n = network stats
+-u = kernel version
+-v = system table status process, inode
+
+#cpu -2 sec intervals
+sar 2 5
+sar -f /var/log/sa/sa02 -u -s 07:00:00 -e 08:00:00 > /tmp/xx
+
+sar -p ALL 1 1
+
+#Memory
+--today 
+sar -r -s 09:00:00 -e 11:30:00
+
+sar -f /var/log/sa/sa02 -r -s 14:00:00 -e 15:50:00
+
+#Network
+sar -n ALL
+
 sar –u 5
 
 *System Resources
@@ -30,7 +59,6 @@ sar -f /var/log/sa/sa02 -u -s 07:00:00 -e 08:00:00
 #memory
 sar -f /var/log/sa/sa02 -b -r -s 07:00:00 -e 08:00:00
 
-ps aux --sort -rss |pr -TW 256|head -15
 
 --------------------------------------------------------------------------------------
 ##Clear Shared Memory
@@ -40,7 +68,8 @@ ipcs -s | egrep "0x[0-9a-f]+ [0-9]+" | cut -f1 -d' '| awk ' { print "ipcrm -S "$
 -----------------
 
 --------------------------------------------------------------------------------------
-
+* Passwordless login with putty
+putty.exe -ssh txxq@xx100 -pw secret
 
 --------------------------------------------------------------------------------------
 
