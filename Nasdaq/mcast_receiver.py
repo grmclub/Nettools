@@ -7,7 +7,7 @@ import socket
 import struct
 import sys
 
-# Add potentially missing socket option definition.
+# Add potentially missing socket options
 if not hasattr(socket, 'IP_ADD_SOURCE_MEMBERSHIP'):
 	setattr(socket, 'IP_ADD_SOURCE_MEMBERSHIP', 39)
 
