@@ -11,7 +11,7 @@ use Time::HiRes qw(sleep);
 use strict;
 use warnings;
 
-my $g_host     = 'ddxx01x';
+my $g_host     = 'dxx01x';
 my $g_port_out = 5002;
 my $g_port_in  = 5012;
 my $g_socket_out;
