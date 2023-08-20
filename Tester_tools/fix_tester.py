@@ -86,14 +86,14 @@ def printUsage():
     -p drop password
     -h help
 
-ex1 FIX : ./fix_tester.py -S DD1234B -T DDXJX -H ddgw03e -P 5002 -I 5
-ex2 Drop: ./fix_tester.py -S DROP1 -T DDXJX -H dddrop01e -P 5004 -I 5 -D -u foo -p bar
+ex1 FIX : ./fix_tester.py -S DD1234B -T DNDPXX -H dhost01 -P 5002 -I 5
+ex2 Drop: ./fix_tester.py -S DROP1 -T DNDPXX -H ddrop02 -P 5004 -I 5 -D -u foo -p bar
 """
 
 def main():
-    o_sender = "DD1234B"
-    o_target = "DDXJX"
-    o_host   = "ddgw03e"
+    o_sender = "TEST1234"
+    o_target = "DNDPXX"
+    o_host   = "host01"
     o_port   = 5002
     o_hb_interval = 5
     o_drop_flag = False
@@ -184,7 +184,7 @@ def main():
         while 1:
             s.send(hb_send(getmsgseqnum(), o_sender, o_target))
             get_reply = s.recv(1024)
-            print msg_format( get_reply)
+            print msg_format(get_reply)
             time.sleep(o_hb_interval)
 
     except KeyboardInterrupt:
