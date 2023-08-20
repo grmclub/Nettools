@@ -8,7 +8,6 @@ from datetime import *
 import struct
 import binascii
 
-
 def printHelp():
     print """Usage: %s -f <filename>
 
@@ -17,7 +16,6 @@ def printHelp():
          -p  pcap file
          -h  Display this help message.
     """ % os.path.basename(__file__)  # sys.argv[0]
-
 
 def execCmd(cmd):
     print (cmd)
@@ -83,7 +81,6 @@ class jnx_ouch:
         data_list = struct.unpack(unpack_str, buf)
         return("%d,%s,%s,%s"% (self.header[0],self.header[1],self.header[2], ",".join(str(x) for x in data_list)))
 
-
 class soupbintcp:
     def __init__(self,app_handler):
         self.app_handler = app_handler
@@ -124,14 +121,12 @@ class soupbintcp:
                 ext = handler.decode()
         return ext
 
-
     def output_hdr(self,size,pkt_type):
         return ("%d,%s" % (size,pkt_type))
 
     def output_soup(self,size,pkt_type,buf,unpack_str):
         data_list = struct.unpack(unpack_str,buf)
         return("%d,%s,%s"% (size,pkt_type, ",".join(str(x) for x in data_list)))
-
 
 def extract_from_pcap_file(pcap_file,out_file):
     cmd = """tshark -r %s \
@@ -141,8 +136,6 @@ def extract_from_pcap_file(pcap_file,out_file):
     -e frame.time_epoch \
     -e data > %s """ % (pcap_file,out_file)
     result,e,r = execCmd(cmd)
-
-
 
 def process_file(data_file):
     app_handler = "jnx_ouch"
@@ -162,7 +155,6 @@ def process_file(data_file):
                 buf = bytearray.fromhex(line.strip())
                 ext = soup_handler.decode(buf)
                 print("%s,%s" % (ts,ext))
-
 
 def main():
     try:
