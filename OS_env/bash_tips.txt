@@ -1,0 +1,18 @@
+#override default shell
+exec /bin/bash --rcfile $H/tools/bashrc.local
+
+#Handy when config is broken  
+In putty to connect, go to the 'connection > ssh' configuration and add "/bin/bash --noprofile --norc" to the 'remote command' box
+
+# -t option to ssh is to force tty allocation
+ssh -t user@host "bash --noprofile"
+
+#Cron format reference
+
+minute (0-59),
+|      hour (0-23),
+|      |       day of the month (1-31),
+|      |       |       month of the year (1-12),
+|      |       |       |       day of the week (0-6 with 0=Sunday).
+|      |       |       |       |       command
+0      2       *       *       0,4     /bin/steve_jobs
