@@ -71,8 +71,8 @@ def main():
             #pcap = rdpcap(capture_file)
             pcap = PcapReader(capture_file)
             for fixMessage in ExtractFIX(pcap):
-                print( fixMessage)
-            print( "")
+                print(fixMessage)
+            print("")
         else:
             raise "Either file is missing or is not readable"
 
