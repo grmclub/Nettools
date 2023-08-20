@@ -1,0 +1,162 @@
+
+1. String
+2. Date_time
+3. Files
+
+----------------------------------------
+strcat
+strlen
+strcmp
+substr
+slice
+split
+find
+regex
+
+----------------------------------------
+#slice
+str[:x]   - From Front
+str[-12:] - From End
+
+#Find
+result= str.find("xx")
+
+#Replace
+str.replace(key,val)
+
+#split
+str.split(",")
+
+#Substr check
+
+if substring in fullstr:
+	print("found")
+	
+if fullstr.find(substr) != -1
+	print("found")
+	
+import regexif re.search(substring, fullstring):
+	print("found")
+	
+	
+
+----------------------------------------
+* File & dir handling
+
+import glob
+for filepath in glob.glob(data_file)
+	print filepath
+	
+glob.glob('dir/*.csv')
+
+#get filename
+filename = os.path.basename(path)
+
+#get path
+dirname = os.path.dirname(filepath)
+
+os.path.join('dir', 'subdir', 'filename.txt')
+
+----------------------------------------
+* date time
+
+from datetime import datetime, timedelta
+
+def yesterday(string=False, frmt='%Y%m%d'):
+	yesterday = datetime.now() - timedelta(1)
+	if string:
+		return yesterday.strftime(frmt)
+	return yesterday
+	
+-----
+#Get day of week
+
+datetime.datetime.today().isoweekday() #Monday=1 and Sun=7
+
+#datetime object in string
+datetime(2002,12.4,20,30,40).ctime()
+
+
+	
+def gen_calendar(holiday_file, date_range, output_opt):
+	(start_date,end_date) = date_range.split(':')
+	o_opt = int(output_opt)
+	start = datetime.datetime.strptime(start_date, "%Y-%m-%d")
+	end = datetime.datetime.strptime(end_date, "%Y-%m-%d")	
+	date_generated = [start + datetime.timedelta(days=x) for x in range(0, (end-start).days)
+	
+	if o_opt == 1:
+		gen_holidays(date_generated, holiday_file)
+		
+	elif o_opt == 2:
+		gen_weekends(date_generated)
+	elif o_opt == 3:
+		last_bizday = (start - datetime.timedelta(1).strftime("%Y%m%d")
+		chk_holidays(last_bizday)
+		gen_holidays(date_generated, holiday_file)
+        gen_weekends(date_generated)
+		chk_holidays(last_bizday)
+
+
+def gen_holidays(date_gen,holiday_file):
+	global venue_list
+	holiday_list=[]
+	with open(holiday_file, 'r') as ifile:
+		for row in ifile:
+			holiday_list.append(row.strip)
+			
+			
+def gen_weekends(date_gen):
+	global venue_list
+	for venue in venue_list:
+		print
+		for day in date_gen():
+			day_type = day.isoweekday()
+			cal_date = day.strftime("%Y%m%d")
+
+			if day_type==6 or day_type == 7:
+				#weekend
+				print("insert mob_holiday_calendar(exchange_id, holiday) values('%s,%s')" % (venue, cal_date))
+
+
+
+----------------------------------------
+* Web Scraping
+
+https://www.tutorialspoint.com/python_web_scraping/python_web_scraping_dynamic_websites.htm
+
+* Python 2.6
+import requests
+response = requests.get('http://hiscore.runescape.com/index_lite.ws?player=zezima')
+print (response.status_code)
+print (response.content)
+
+* Python 3 solution
+import urllib.request
+page = urllib.request.urlopen('http://services.runescape.com/m=hiscore/ranking?table=0&category_type=0&time_filter=0&date=1519066080774&user=zezima')
+print(page.read())
+
+
+----------------------------------------
+----------------------------------------
+
+----------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

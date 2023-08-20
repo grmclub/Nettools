@@ -19,13 +19,20 @@ Convert tabs to spaces	:set expandtab :%retab!
 find . -name "*.php" -type f | xargs sed -i 's/[ \t]*$//'
 find . -name "*.php" -type f | xargs awk '/[ \t]+$/ {print FILENAME;print NR; print;}'
 
-##Clear Shared Memory
-ipcs -m | egrep "0x[0-9a-f]+ [0-9]+" | cut -f1 -d' '| awk ' { print "ipcrm -M "$1 }'
-ipcs -s | egrep "0x[0-9a-f]+ [0-9]+" | cut -f1 -d' '| awk ' { print "ipcrm -S "$1 }'|sh
-
------------------
 
 --------------------------------------------------------------------------------------
+
+https://www.gnu.org/software/sed/manual/html_node/Addresses.html
+---------------------------------------------------
+##Add text to Beginning of file
+echo 'task goes here' | cat - todo.txt > temp && mv temp todo.txt
+
+or
+sed -i '1s/^/task goes here\n/' todo.txt
+
+
+##add lines to end of file
+echo 'I=eth0' >> net.eth0.config.sh
 
 --------------------------------------------------------------------------------------
 
