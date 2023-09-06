@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import os, sys, getopt
 import errno,traceback
@@ -8,7 +8,7 @@ import csv
 
 
 def printHelp():
-    print """Usage: %s -f <filename>
+    print ("""Usage: %s -f <filename>
 
     OPTIONS:
          -f  input file
@@ -18,7 +18,7 @@ def printHelp():
     Extract tags : 52,60.11
     #./calc_fix_delay.py -f <extracted file> |sort-t',' -k6 -nr |cut -d',' -f1,6
 
-    """ % os.path.basename(__file__)
+    """ % os.path.basename(__file__))
 
 
 # WIP : Calc process _delay & log_delay in one function
@@ -44,7 +44,7 @@ def process_tags(data_file):
                 tt = datetime.datetime.strptime(transact_t, "%Y%m%d-%H:%M:%S.%f").strftime("%s.%f")
                 delay = abs(float(tt) - float(st))
                 if transact_t !=0:
-                    print("%s,%s,%s,%f" % (sending_t,ransact_t,clordid,delay))
+                    print("%s,%s,%s,%f" % (sending_t,transact_t,clordid,delay))
 
 def process_logtime(data_file):
     with open(data_file, "r") as ifile:
@@ -80,7 +80,7 @@ def main():
     try:
         opts, args = getopt.getopt(sys.argv[1:], "f:lh")
     except getopt.GetoptError as e:
-        print e
+        print(e)
         sys.exit()
 
     try:
@@ -100,7 +100,7 @@ def main():
         else:
             process_tags(DATA_FILE)
 
-    except Exception, err:
+    except Exception as err:
         traceback.print_exc(file=sys.stderr)
         sys.stderr.flush()
         print("Error: %s\n" %str(err))
