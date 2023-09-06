@@ -32,19 +32,19 @@ def process_tags(data_file):
 
         for row in reader:
             # exclude header row.
-            if row[0] == 52:
+            if row[0] == "52":
                 continue
             else:
                 sending_t  = row[0]
                 transact_t = row[1]
                 clordid    = row[2]
 
-            if sending_t != '' and transact_t != '':
-                st = datetime.datetime.strptime(sending_t, "%Y%m%d-%H:%M:%S.%f").strftime("%s.%f")
-                tt = datetime.datetime.strptime(transact_t, "%Y%m%d-%H:%M:%S.%f").strftime("%s.%f")
-                delay = abs(float(tt) - float(st))
-                if transact_t !=0:
-                    print("%s,%s,%s,%f" % (sending_t,transact_t,clordid,delay))
+                if sending_t != '' and transact_t != '':
+                    st = datetime.datetime.strptime(sending_t, "%Y%m%d-%H:%M:%S.%f").strftime("%s.%f")
+                    tt = datetime.datetime.strptime(transact_t, "%Y%m%d-%H:%M:%S.%f").strftime("%s.%f")
+                    delay = abs(float(tt) - float(st))
+                    if transact_t !=0:
+                        print("%s,%s,%s,%f" % (sending_t,transact_t,clordid,delay))
 
 def process_logtime(data_file):
     with open(data_file, "r") as ifile:
