@@ -74,7 +74,7 @@ def process_logtime(data_file):
             delay = abs(float(lt_calc) - float(tt))
             if transact_t !=0:
                 #print("%s,%s,%s,%f" % (sending_t,ransact_t,clordid,delay))
-                print("%s,%s,%s,%f" % (lt,ransact_t,clordid,delay))
+                print("%s,%s,%s,%f" % (lt,transact_t,clordid,delay))
 
 def main():
     try:
