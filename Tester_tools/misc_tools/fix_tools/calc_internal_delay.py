@@ -15,8 +15,8 @@ def printHelp():
          -l compare log_ts and transact_ts
          -h  Display this help message.
 
-    Extract tags : 52,60.11
-    #./calc_fix_delay.py -f <extracted file> |sort-t',' -k6 -nr |cut -d',' -f1,6
+    Extract tags : 52,60,11
+    #./calc_fix_delay.py -f <extracted file> |sort -t',' -nrk4 | head -15
 
     """ % os.path.basename(__file__))
 
