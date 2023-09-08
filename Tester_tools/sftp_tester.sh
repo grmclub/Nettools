@@ -4,6 +4,8 @@ SERVER=""
 FTP_DIR=""
 DIR_LIST=""
 LOGFILE=""
+READ_FILE=""
+OUTFILE=""
 
 sftp -o Port=22 -o ${IDENTITYFILE} ${FTP_USER}@${SERVER} << EOF > ${DIR_LIST}
 	cd $FTP_DIR
