@@ -1,0 +1,38 @@
+#!/usr/bin/expect
+        spawn scp  file.txt user@server01:/home/xx/
+        set pass "secret_password"
+        expect {
+        password: {send "$pass\r"; exp_continue}
+                  }
+
+# Alternatives:
+#curl --insecure --user username:password -T /path/to/sourcefile sftp://desthost/path/
+#
+#sshpass -p "password" scp -r user@example.com:/some/remote/path /some/local/path
+#sshpass -f "/path/to/passwordfile" scp -r user@example.com:/some/remote/path /some/local/path
+#Install :
+#
+#  ubuntu/debian
+#      apt install sshpass
+#  centos/fedora
+#      yum install sshpass
+#  mac w/ macports
+#      port install sshpass
+#
+#---------------------------------
+# http://www.linuxproblem.org/art_9.html
+# ssh-keygen -t rsa -C "your_email@youremail.com"
+# The above will generate 2 files, ~/.ssh/id_rsa (private key) and ~/.ssh/id_rsa.pub (public key)
+# copy pub key to remote server
+# ssh-copy-id -i ~/.ssh/id_rsa.pub <remote_server>
+#or
+# copy the content of ~/.ssh/id_rsa.pub and lastly add it to the remote machines ~/.ssh/authorized_keys
+#
+# make sure remote machine have the permissions 0700 for ~./ssh folder and 0600 for ~/.ssh/authorized_keys
+#
+# Once you set up ssh-keygen as explained above, you can do
+# scp -i ~/.ssh/id_rsa /local/path/to/file remote@ip.com:/path/in/remote/server/
+#
+# To make it shorter, you can modify your .bash_profile file and put
+# alias remote_scp='scp -i ~/.ssh/id_rsa /local/path/to/file remote@ip.com:/path/in/remote/server/
+#---------------------------------
