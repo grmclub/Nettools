@@ -1,0 +1,36 @@
+
+
+
+-------------------------------------------------------------
+* Match and extract fom delimeted string
+
+grep "my_string" file |awk -F ";" '{print $5}'
+or
+awk -F ";" '/my_string/ {print $5}' file
+For 2nd column:
+awk -F ";" '$2 ~ /my_string/ {print $5}' file
+For exact matching:
+awk -F ";" '$2 == "my_string" {print $5}' file
+-------------------------------------------------------------
+*Delete until pattern
+
+sed '1,/mail@server\.com/d'  # removing the matched line
+sed '/mail@server\.com/,$!d' # keeping the matched line
+
+Another awk approachs, including the matched line.
+awk '/pattern/, 0' infile
+
+Excluding the matched line.
+awk '/pattern/&& getline, 0' infile
+
+
+
+-------------------------------------------------------------
+-------------------------------------------------------------
+
+-------------------------------------------------------------
+
+-------------------------------------------------------------
+-------------------------------------------------------------
+
+-------------------------------------------------------------
