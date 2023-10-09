@@ -2,12 +2,40 @@
 -------------------------------------------------------------
 * Core Filters
 
+==================================
+--convert & extract from erf
+editcap -F libpcap -T ether -A "$(date -I) 08:00:00" -B  "$(date -I) 08:00:00" Capture_$(date +%Y%m%d).erf ext_$(date -I).pcap
+
+#Filter by IP/portrange
+
+file=xx.pcap
+IP=
+tcpdump -r $file "host $IP  or (vlan and host $IP) " -w ip.pcap
+
+RANGE=
+tcpdump -r $file "portrange $RANGE or (vlan and portrange $RANGE)" -w range.pcap   
+
+tcpslice /var/db/sniffer/dump{5..8}*.pcap | tcpdump -r - "portrange 11003 or (vlan and portrange 11003)" -w xx.pcap
+
+--ascii/ hex dump
+tcpdump -r out.pcap -A |grep -a XX
+-A dumps ASCII
+-X dumps output in Hex
+
+--Check tcp establish & teardown
+tcp.flags.syn==1||(tcp.flags.syn==1 && tcp.flags.ack==1)||tcp.flags.fin==1||tcp.flags.reset==1
+
+==================================
+
 --TCP Connections
 
-1.    tshark -r $file -R "tcp.flags.syn == 1" -T fields -e frame.time_epoch -e ip.src -e ip.dst -e tcp.srcport -e tcp.dstport
+1.tshark -r $file -R "tcp.flags.syn == 1" -T fields -e frame.time_epoch -e ip.src -e ip.dst -e tcp.srcport -e tcp.dstport
 
 frame.time_epoch
 frame.time
+eth.src
+eth.dst
+
 
 #tshark -r $file \
 -Tfields  \
@@ -58,7 +86,7 @@ tcpslice *.tcpdump | tcpdump -r - "portrange $RANGE or (vlan and portrange $RANG
 tshark -r test.cap -q -z io,phs
 
 * Split Files by 1024MB -> 1GB
-tcpdump -r "dump-napa1-2013-10-05-09.35.08.tcpdump" -C 1024 -w capX
+tcpdump -r "large_dump.pcap" -C 1024 -w capX
 -------------------------------------------------------------
 * ERF to pcap
 https://www.netresec.com/?page=Blog&month=2012-11&post=Convert-Endace-ERF-capture-files-to-PCAP

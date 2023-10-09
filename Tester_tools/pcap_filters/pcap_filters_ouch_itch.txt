@@ -1,3 +1,5 @@
+
+
  tshark -r $file  -Tfields  -E header=y  -E separator='|' -e frame.time_epoch -e frame.len -e ip.src  -e ip.dst -e tcp.srcport -e tcp.dstport -e frame.protocols -e _ws.col.Info
 -------------------------------------------------------------
 # Extract login msg
