@@ -202,7 +202,6 @@ int main(int argc, char **argv) {
         return 1;
 
     ServerPackets server_incoming;
-
     LengthType heartbeat;
     heartbeat.packetType_ = 'R';
     heartbeat.packetLength_ = htons(1);
@@ -226,7 +225,7 @@ int main(int argc, char **argv) {
     while ((rv = poll(&poll_data, 1, HEARTBEAT_INTERVAL)) != -1) {
         // quickly work out if we need to send a heartbeat packet
         time_difference = clock() - cpu_time;
-        if (!rv || time_difference < 0 || ((time_difference * 1000) / CLOCKS_PER_SEC > HEARTBEAT_INTE
+        if (!rv || time_difference < 0 || ((time_difference * 1000) / CLOCKS_PER_SEC > HEARTBEAT_INTERVAL
             write(sock_fd, &heartbeat, sizeof(heartbeat));
             cpu_time = clock();
         }
