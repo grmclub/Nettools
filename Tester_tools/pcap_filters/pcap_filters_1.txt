@@ -24,6 +24,11 @@ tcpslice /var/db/sniffer/dump{5..8}*.pcap | tcpdump -r - "portrange 11003 or (vl
 tcpdump -r out.pcap -A |grep -a XX
 -A dumps ASCII
 -X dumps output in Hex
+-S : Print absolute sequence numbers. 
+-t : Give human-readable timestamp output.
+-tttt : Give maximally human-readable timestamp output
+
+
 
 --Check tcp establish & teardown
 tcp.flags.syn==1||(tcp.flags.syn==1 && tcp.flags.ack==1)||tcp.flags.fin==1||tcp.flags.reset==1
