@@ -1,0 +1,477 @@
+
+1. order book for feed handler
+2. ob for order entry
+3. order book for matching Eng
+
+----------------------------------------------------------------
+https://github.com/jordanbaucke/Limit-Order-Book/tree/master/Others
+http://www.wilmott.com/messageview.cfm?catid=10&threadid=76376
+http://quant.stackexchange.com/questions/1379/implementing-data-structures-in-a-limit-order-book
+
+http://www.rgmadvisors.com/problems/orderbook/
+
+http://www.quantcup.org/home/howtohft_howtobuildafastlimitorderbook
+http://www.quantcup.org/home/spec
+http://howtohft.blogspot.com/2011/02/how-to-build-fast-limit-order-book.html
+
+
+
+----------------------------------------------------------------
+Track-1
+=======
+There are four types of messages that traders can submit to an order book:
+add, cancel, cancel/replace, and market order.
+
+Bid_Size        Price      Ask_Size
+                $11.11    300
+                $11.08    200
+150             $11.05
+100             $11.01
+
+1. The spread ($0.03) is the difference between the best bid and best ask.
+
+2. Every limit order is assigned a unique ID so that cancel and cancel/replace orders can identify the corresponding limit order.
+
+3. A trade occurs when a market order “hits” a limit order on the other side of the book.
+
+----------------------------------------------------------------
+
+There are three main operations that a limit order book (LOB) has to
+implement: add, cancel, and execute. &nbsp;The goal is to implement these
+operations in O(1) time while making it possible for the trading model
+to efficiently ask questions like "what are the best bid and offer?",
+"how much volume is there between prices A and B?" or "what is order X's
+ current position in the book?"
+
+--------------------
+To give some idea of the data volumes, the Nasdaq TotalView ITCH feed,
+ which is every event in every instrument traded on the Nasdaq, can have
+ data rates of 20+ gigabytes/day with spikes of 3 megabytes/second or
+more. &nbsp;The individual messages average about 20 bytes each so this means
+ handling 100,000-200,000 messages per second during high volume
+periods.<br>
+
+-----------------------------------------------------------------
+Test-1
+======
+typedef std::map<double,int > omap;
+typedef std::pair<double,int> opair;
+
+enum Side
+{
+    Side_BID,
+    Side_ASK
+};
+
+inline const char* toString(Side side){ return side == Side_BID ? "Bid" : "Ask"; }
+
+enum SecurityStatus
+{
+    Status_ACTIVE,
+    Status_SUSPENDED
+};
+
+class OrderBook {
+public:
+    OrderBook() : m_boardid(""), m_status(Status_ACTIVE) { }
+    OrderBook(std::string board, SecurityStatus status) :  m_boardid(board),
+                                                           m_status(status) { }
+    void insert_order(Side o_side, double prc, int qty);
+    void delete_order(Side o_side, double prc, int qty);
+    void execute(int buy_ono, double prc, int qty);
+    bool set_status(SecurityStatus status);
+    void print_book(const OrderBook &);
+    void print_msg_details(const char* str, Side o_side, double prc, int qty);
+
+    int m_order_no;
+    std::string m_boardid;
+    SecurityStatus m_status;
+    omap m_bid_map;
+    omap m_ask_map;
+};
+
+//Usage------
+    orderbooks[1306] = OrderBook("DAY", Status_ACTIVE);
+    OrderBook ob = orderbooks[1306];
+
+//----
+    //Insert Delete
+    ob.insert_order(Side_BID,100.00,1000);
+    ob.insert_order(Side_ASK,100.60,1000);
+    ob.print_book(ob);
+    ob.delete_order(Side_BID,100,1000);
+    ob.print_book(ob);
+
+    //Update Functionality
+    ob.delete_order(Side_ASK,100.90,2000);
+    ob.insert_order(Side_ASK,100.50,3000);
+
+----------------------------------------------------------------
+Test-2 -OMX Map
+======
+#define LEN_BOARD 4
+
+class OrderBook {
+public:
+	OrderBook(char const * boardId,
+              int securityId,
+              unsigned int seconds,
+              unsigned int nanos) : board_(boardId, LEN_BOARD),
+                                    orderbook_(securityId),
+                                    stoppingTime_(seconds),
+                                    stoppingNanos_(nanos),
+                                    lastSeenSeconds_(0),
+                                    lastSeenNanos_(0) {} ;
+	void printBook();
+	void orderAction(struct ADD_TAG * add, bool isQuote=false);
+	void orderAction(struct REPLACE_TAG * replace);
+	void orderAction(struct CANCEL_TAG * cancel);
+	void orderaction(struct QUOTE_TAG * quote);
+	void orderAction(struct EXECUTE_TAG * execute);
+	bool checkStoppingCondition(struct TIME_TAG * seconds);
+private:
+	std::string board_;
+	unsigned int orderbook_;
+	unsigned int stoppingTime_;
+	unsigned int stoppingNanos_;
+	unsigned int lastSeenSeconds_;
+	unsigned int lastSeenNanos_;
+	struct ORDER_TAG {
+		long int orderNo_;
+		char verb_;
+		unsigned int price_;
+		unsigned int quantity_;
+		bool isQuote_;
+	};
+	typedef std::list<ORDER_TAG *> PriorityList_t;
+	typedef std::map<std::uint64_t, PriorityList_t::iterator > OrderHash_t;
+	typedef std::map<std::int32_t, PriorityList_t> PriceLevels_t;
+
+	OrderHash_t orderHash_;
+	PriceLevels_t priceLevels_;
+};
+
+
+
+----------------------------------------------------------------
+Test-3 - orderbook Sim
+======
+
+enum Side
+{
+    Side_BID,
+    Side_ASK
+};
+
+inline const char* toString(Side side)
+{
+    return side == Side_BID ? "Bid" : "Ask";
+}
+
+enum SecurityStatus
+{
+    SecurityStatus_ACTIVE,
+    SecurityStatus_SUSPENDED
+};
+
+inline const char* toString(SecurityStatus status)
+{
+    return status == SecurityStatus_ACTIVE ? "Active" : "Suspended";
+}
+
+typedef double Price;
+typedef double Qty;
+
+template <typename OrderBookT>
+class Limit;
+
+template <typename OrderBookT>
+class Order
+{
+    friend class Limit<OrderBookT>;
+
+public:
+    typedef OrderBookT OrderBookType;
+    typedef Limit<OrderBookType> LimitType;
+
+    Order(int, int, Qty, Side, OrderBookType*, LimitType*);
+
+    int date() const { return m_date; }
+    int number() const { return m_number; }
+    Qty qty() const { return m_qty; }
+    Side side() const { return m_side; }
+    OrderBookType* book() const { return m_book; }
+    LimitType* limit() const { return m_limit; }
+
+    void setQty(Qty qty) { m_qty = qty; }
+    void setLimit(LimitType* limit) { m_limit = limit; }
+
+private:
+    int m_date;
+    int m_number;
+    Qty m_qty;
+    Side m_side;
+    OrderBookType* m_book;
+    LimitType* m_limit;
+    Order* m_next;
+    Order* m_prev;
+};
+
+template <typename OrderBookT>
+class Limit
+{
+public:
+    typedef OrderBookT OrderBookType;
+    typedef Order<OrderBookType> OrderType;
+
+    class Iterator
+    {
+    public:
+        typedef OrderType value_type;
+        typedef const value_type* pointer;
+        typedef const value_type& reference;
+
+        Iterator() : m_ptr(NULL) {}
+        explicit Iterator(pointer ptr) : m_ptr(ptr) {}
+
+        reference operator*() const { return *m_ptr; }
+        pointer operator->() const { return m_ptr; }
+
+        Iterator& operator++() { m_ptr = m_ptr->m_next; return *this; }
+        Iterator operator++(int) { Iterator tmp = *this; ++*this; return tmp; }
+
+        bool operator==(const Iterator& right) const { return m_ptr == right.m_ptr; }
+        bool operator!=(const Iterator& right) const { return m_ptr != right.m_ptr; }
+
+    private:
+        pointer m_ptr;
+    };
+
+    explicit Limit(Price);
+
+    Price price() const { return m_price; }
+    Qty qty() const { return m_qty; }
+    unsigned number() const { return m_number; }
+
+    void addQty(Qty qty) { m_qty += qty; }
+    void subtractQty(Qty qty) { m_qty -= qty; }
+
+    void addOrder(OrderType*);
+    bool removeOrder(OrderType*);
+
+    Iterator begin() const { return Iterator(m_head); }
+    Iterator end() const { return Iterator(); }
+
+private:
+    Price m_price;
+    Qty m_qty;
+    unsigned m_number;
+    OrderType* m_head;
+    OrderType* m_tail;
+
+    void onAdd(OrderType*);
+    void onRemove(OrderType*);
+};
+
+
+----------------------------------------------------------------
+* Order types
+
+http://www.schwab.com/public/schwab/resource_center/expert_insight/investing_strategies/stocks/order_types_what_they_mean_and_how_theyre_handled.html
+
+
+	typedef std::map<Price, Limit, std::greater<Price>> BuyLimitMap;
+	typedef std::map<Price, Limit, std::less<Price>> SellLimitMap;
+	typedef List<Trade, (unsigned int) Trade::LinkType::ORDERBOOK> TradeList;
+
+
+
+--------------------------------------------------------------
+* XOT Orderbook
+
+1. Combined Trade Map
+
+    typedef std::map<int,Trade> trade_map; //Security, Trade
+    typedef std::map<int,trade_map> combinedTrade_map; //MktCode, trade_map
+
+    class mdd_store {
+
+    public:
+        bool init(const std::string&);
+        bool updateTrade(int mktCode, int SecCode,Trade& trd);
+        bool getLastTrade(int mktCode, int SecCode,Trade& trd);
+        void print_store();
+
+    private:
+        combinedTrade_map comTrdMap;
+
+    };
+
+2. Order Book
+
+    1. struct Order
+        -bk_ptr list::iterator
+        -bk_ptr limit
+        -bk_ptr orderbook
+
+    2. class Limit
+        -price
+        -std::list<Order*>
+
+    3. Orderbook
+        -std::map<price, Limit> m_up_limits
+        -std::map<price, Limit> m_dn_limits
+
+   4. OrderBooks
+      std::map<Security, Orderbook> Order_Books
+
+  5. Combined Orderbook
+      std::map<Mkt, Orderbook> Combined_Books
+
+
+  6. orderHash
+        std::map<ordId, Order*>
+
+        -Amend Order  | => Quick Lookup
+        -Cxl Order    |
+
+
+3. Trig-Eng Transactions
+
+    -Add Order      : (4 * nlog(n)) + O(1)
+    -Replace Order  : O(1) => limit no change
+                      nlog(n) + 1 + log(n)
+
+    -Cxl Order      : O(1)
+    -Trig Order     : O(1)
+
+    -OrdTriggerSweep : 1+1+(1 level)
+    -MddTriggerSweep : 1+1+(n levels)
+
+Design Choices
+==============
+
+**System Performance Bottleneck
+    -- Speed of Sweeping orders on MDD Tick
+    -- Memory usage
+
+1. Combined Order book
+   - extra lookup at each pass
+   - sweep is faster for each mkt
+
+2. Combined Orders
+    - sweep reads n orders at each level and skips for !mktCode
+    - When Each limit has a large no of orders
+        - Mostly TSE Orders delayed by small no of other PEX orders (No Impact expected as other PEX has small no of orders only)
+        - Other PEX orders will be delayed by a large no of TSE orders
+
+3. Remove Cxl & Triggered orders from Limits
+    - Quick sweep
+    - Only order hash has the order
+    - Order hash lookup maybe slowed down.
+
+=> Storing all Cxl & Triggered Orders for returning error code
+    - causes memory to be blocked
+    - large no. of orders will slow down the order hash lookup
+
+4. Test Limits
+    1. Functionality
+    2. Stress behaviour of data structure
+    3. Failover charecteristics
+
+    => Find max limit before performance degrades
+        1. orders/limit
+        2. orders/hash
+
+    => Find rate of
+        1. Add/Replace/Del
+        2. Successive Ord, Mdd triggers
+
+
+5. Use deque instead of link list for better memory lookup performance
+
+6. Find Stats from present system (select at least 3-5 days average)
+
+    1. Max expected orders to be sent
+    2. Total N,R,C,T stats average
+    3. Per Market N,R,C,T stats average
+
+    4. Mdd Trades Total per day average
+    5. Mdd Trades per market per day average
+
+7. Calculate present data structure limits
+    -Order Insertion/Amend/Cxl
+    -StopTriggers
+
+----------------------
+* Note points
+
+1. memory allocation deallocation / memory leak
+2. buffer overflow
+3. unnecessary copies & temporary creation
+4. Inadvertant algorithm design faults
+
+---------------
+* Scalability
+
+  1. Increase Memory + CPU
+  2. Per OMS / COT isolation
+  3. Balancing high load connections across instances
+  4. Per connection COT isolation
+
+
+--------------------------------------------------------------
+
+typedef std::map<double,int > omap;
+typedef std::pair<double,int> opair;
+
+enum Side
+{
+    Side_BID,
+    Side_ASK
+};
+
+inline const char* toString(Side side){ return side == Side_BID ? "Bid" : "Ask"; }
+
+enum SecurityStatus
+{
+    Status_ACTIVE,
+    Status_SUSPENDED
+};
+
+class OrderBook {
+public:
+    OrderBook() : m_boardid(""), m_status(Status_ACTIVE) { }
+    OrderBook(std::string board, SecurityStatus status) :  m_boardid(board),
+                                                           m_order_no(0),
+                                                           m_status(status) { }
+    void insert_order(Side, long, double, int);
+    void delete_order(Side, long, double, int );
+    void execute(long, long, double, int);
+    bool set_status(SecurityStatus status);
+    void print_book(const OrderBook &);
+    void print_msg_details(const char* str, Side o_side, double prc, int qty);
+
+    long m_order_no;
+    std::string m_boardid;
+    SecurityStatus m_status;
+    omap m_bid_map;
+    omap m_ask_map;
+};
+
+
+
+--------------------------------------------------------------
+
+
+
+--------------------------------------------------------------
+
+
+
+
+
+
+
+
+
