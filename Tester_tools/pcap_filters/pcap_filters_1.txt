@@ -1,3 +1,6 @@
+tcpdump tutorial:
+https://danielmiessler.com/p/tcpdump/
+
 
 -------------------------------------------------------------
 * Core Filters
