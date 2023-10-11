@@ -4,7 +4,7 @@ check_pattern()
 	pattern="$2"
 	file="$3"
 	level="$4"
-	/bin/egrep "$pattern" "$file"| /usr/bin/wc -l|/bin/awk -v lv="$level" -vtxt="$txt" '{if($1 ==lv) {status="GREEN"}else {status="RED"} END{ printf("%s,%s,%s,%s\n", txt,$1,lv,status)}'
+	/bin/egrep "$pattern" "$file"| /usr/bin/wc -l|/bin/awk -v LV="$level" -vtxt="$txt" '{if($1 ==LV) {status="GREEN"}else {status="RED"} END{ printf("%s,%s,%s,%s\n", txt,$1,LV,status)}'
 }
 
 
@@ -15,7 +15,7 @@ check_pattern2()
 	exclude_pt="$3"
 	file="$4"
 	level="$5"
-	/bin/egrep "$pattern" "$file"|grep -vE "exclude_ptn"| /usr/bin/wc -l|/bin/awk -v lv="$level" -v txt="$txt" '{if($1 ==lv) {status="GREEN"}else {status="RED"} END{ printf("%s,%s,%s,%s\n", txt,$1,lv,status)}'
+	/bin/egrep "$pattern" "$file"|grep -vE "exclude_ptn"| /usr/bin/wc -l|/bin/awk -v LV="$level" -v txt="$txt" '{if($1 ==LV) {status="GREEN"}else {status="RED"} END{ printf("%s,%s,%s,%s\n", txt,$1,LV,status)}'
 }
 
 check_compare()
