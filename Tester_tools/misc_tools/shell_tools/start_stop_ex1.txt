@@ -1,0 +1,74 @@
+#!/bin/sh
+
+APPNAME='TESTAPP'
+ROOTDIR='/home/TEST/APP'
+LOGFILE='/dev/null'
+pid=`/bin/ps -e | /bin/grep $APPNAME | /bin/sed -e 's/^  *//' -e 's/ .*//'`
+
+
+#cd $ROOTDIR/bin
+case $1 in
+'start')
+	if [ -f $ROOTDIR/log/start.log ];then
+		rm $ROOTDIR/log/start.log
+	fi 
+	if [ "${pid}" = "" ]
+	then
+		echo "Start $APPNAME ..."
+		$ROOTDIR/bin/$APPNAME $ROOTDIR/conf/$APPNAME.ini -I 1> $LOGFILE 2>&1
+	else
+		echo "$APPNAME Already started!"
+	fi
+	if [ $? -eq 0 ]
+	then
+		date '+%Y/%m/%d %H:%M:%S' > $ROOTDIR/log/start.log
+	fi
+	;;
+'stop')
+	if [ "${pid}" != "" ]
+	then
+		echo "Stop $APPNAME..."
+		/bin/kill -9 ${pid}
+	else
+		echo "$APPNAME Already stoped!"
+	fi
+	;;
+*)
+	echo "usage: Control {start|stop}"
+	;;
+esac
+
+#-------------------------------------------------
+#!/bin/sh
+
+ROOTDIR="/home/TEST/APP"
+BINDIR=$ROOTDIR/bin
+CONFDIR=$ROOTDIR/conf
+TMPDIR=$ROOTDIR/tmp
+LOGFILE='/dev/null'
+
+pid=`/bin/ps x | /bin/grep '$APPNAME' | /bin/grep '$APPNAME.ini' | /bin/grep -v grep | /bin/sed -e 's/^  *//' -e 's/ .*//'`
+
+case $1 in
+'start')
+	if [ "${pid}" = "" ]
+	then
+		echo "Start $APPNAME ..."
+		$BINDIR/$APPNAME $CONFDIR/$APPNAME.ini 1> $LOGFILE 2>&1 &
+        else
+		echo "$APPNAME Already started!"
+        fi
+        ;;
+'stop')
+	if [ "${pid}" != "" ]
+	then
+		echo "Stop $APPNAME ..."
+		/bin/kill -15 ${pid}
+	else
+		echo "$APPNAME not running!"
+	fi
+	;;
+*)
+	echo "usage: Control {start|stop}"
+	;;
+esac
