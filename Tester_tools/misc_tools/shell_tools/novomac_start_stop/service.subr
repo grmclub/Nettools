@@ -1,0 +1,44 @@
+progname=$(basename $0)
+
+checkcommand()
+{
+    local arg=$1
+    if [ -z $arg ]; then
+        return 1
+    fi
+    shift
+    for cmd in "$@"; do
+        if [ $cmd = $arg ]; then
+            return 0
+        fi
+    done
+    return 1
+}
+
+trysource()
+{
+    local rcfile=$1
+    if [ -f $rcfile ]; then
+        . $rcfile
+    fi
+}
+
+islocked()
+{
+    local lockfile=$1
+    ! flock -n $lockfile -c "rm -f $lockfile; true"
+}
+
+lowercase()
+{
+    local arg=$1
+    echo -n $arg | tr [:upper:] [:lower:]
+}
+
+pwait()
+{
+    local pid=$1
+    while [ -d /proc/$pid ]; do
+        sleep 1
+    done
+}

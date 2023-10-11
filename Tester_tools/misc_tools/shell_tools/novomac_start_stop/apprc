@@ -1,0 +1,16 @@
+##Base settings
+: ${daemon="novomacd.py"}
+: ${daemon_config="settings.cfg.sample"}
+: ${daemon_pidfile="novomac.pid"}
+: ${daemon_flags="-d"}
+#: ${daemon_flags=""}
+
+##Path settings
+#daemon_pidfile="/var/run/novomac/${daemon_pidfile}"
+#daemon_config="/etc/crud/novomac/${daemon_config}"
+#daemon="/opt/crud/novomac/${daemon}"
+
+##Local settings
+daemon_pidfile="./${daemon_pidfile}"
+daemon_config="../cfg/${daemon_config}"
+daemon="./${daemon}"

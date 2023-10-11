@@ -1,0 +1,65 @@
+#!/bin/sh
+
+set -eu
+source %%SHPATH%%/service.subr
+
+if [ -f %%RCPATH%%/apprc ];then
+    source %%RCPATH%%/apprc
+else
+    echo "Error: Unable to locate apprc file."
+    exit 1
+fi
+
+usage()
+{
+    echo "Usage: $progname (start|stop|status)"
+}
+
+command_start()
+{
+    echo "Starting $progname..."
+    #echo ${daemon} -c ${daemon_config} -p ${daemon_pidfile} ${daemon_flags}
+    exec ${daemon} -c ${daemon_config} -p ${daemon_pidfile} ${daemon_flags}
+}
+
+command_stop()
+{
+
+    if islocked ${daemon_pidfile}; then
+
+        ##Echo Stopping
+        echo "Stopping $progname..."
+
+        local pid=$(cat ${daemon_pidfile})
+        kill -9 $pid
+        echo -n "Waiting for pid $pid..."
+        pwait $pid
+        echo
+        rm -rf ${daemon_pidfile}
+
+    else
+        echo "$progname is not running."
+
+    fi
+}
+
+command_status()
+{
+    if islocked ${daemon_pidfile}; then
+        echo "$progname is running with pid $(cat ${daemon_pidfile})."
+    else
+        echo "$progname is not running."
+    fi
+}
+
+
+arg=${1-""}
+cmdlist="start stop status"
+
+if ! checkcommand "$arg" ${cmdlist}; then
+    usage
+    exit 1
+fi
+
+command_$arg "$@"
+
