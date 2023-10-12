@@ -1,12 +1,12 @@
 #!/bin/bash
 
 HW_INFO="cat /sys/devices/virtual/dmi/id/product_name"
-CPU_INFO="lscpu|egrep 'Arch|Core|Socket'|paste -d';' - - - -|tr -s ' '"
+CPU_INFO="lscpu|egrep 'Arch|Core|Socket|Model'|paste -d';' - - - -|tr -s ' '"
 MEM_INFO="free -h|grep Mem|awk '{print \$1,\$2}'"
 NET_INFO="lspci|grep Ethernet"
-OS_INFO="cat /proc/version"; #lsb_release -a #cat /etc/os-release #cat /etc/issue
+OS_INFO="lsb_release -a|grep Desc"; #cat /proc/version #cat /etc/os-release #cat /etc/issue
 GCC_INFO="gcc --version|grep -i gcc"
-JAVA_INFO=""
+JAVA_INFO="env|grep -i java_home"
 INPUT_FILE=""
 
 sweep_hosts()
@@ -14,8 +14,8 @@ sweep_hosts()
     input_file="$1"
     while IFS="," read -r HOST
     do
-      echo $HOST
-      ssh $HOST "$HW_INFO;$CPU_INFO;$MEM_INFO;$NET_INFO;$OS_INFO;$GCC_INFO" < /dev/null
+      echo "Host:$HOST"
+      ssh $HOST "$HW_INFO;$CPU_INFO;$MEM_INFO;$OS_INFO;$NET_INFO;$GCC_INFO" < /dev/null
       echo "==========="
     done < $input_file
 }
