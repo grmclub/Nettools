@@ -4,6 +4,7 @@ HW_INFO="cat /sys/devices/virtual/dmi/id/product_name"
 CPU_INFO="lscpu|egrep 'Arch|Core|Socket|Model'|paste -d';' - - - -|tr -s ' '"
 MEM_INFO="free -h|grep Mem|awk '{print \$1,\$2}'"
 NET_INFO="lspci|grep Ethernet"
+DISK_INFO="lsblk -d -o NAME,SERIAL,SIZE"
 OS_INFO="lsb_release -a|grep Desc"; #cat /proc/version #cat /etc/os-release #cat /etc/issue
 GCC_INFO="gcc --version|grep -i gcc"
 JAVA_INFO="env|grep -i java_home"
