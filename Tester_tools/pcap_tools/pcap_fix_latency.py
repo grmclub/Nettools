@@ -76,11 +76,11 @@ def process_file(data_file):
                 id_dict[ClOrdId] = {"t1":tnx_time, "t2":"", "time_diff":"", "token": session + '.' + ClOrdId, "dt_time":dt_time}
             if msgtype == '8' and ord_status == '0':
                 if id_dict.get(ClOrdId):
-                id_dict[ClOrdId]["t2"] = tnx_time
-                t1 = (id_dict[ClOrdId]["t1"])
-                t2 = (id_dict[ClOrdId]["t2"])
-                delay = abs(t2 -t1)
-                id_dict[ClOrdId]["time_diff"] = "%0.9f" % delay
+                    id_dict[ClOrdId]["t2"] = tnx_time
+                    t1 = (id_dict[ClOrdId]["t1"])
+                    t2 = (id_dict[ClOrdId]["t2"])
+                    delay = abs(t2 -t1)
+                    id_dict[ClOrdId]["time_diff"] = "%0.9f" % delay
 
     sorted_dict = OrderedDict(sorted(id_dict.items(), key=lambda t:t[1]["time_diff]))
     sorted_list = []
