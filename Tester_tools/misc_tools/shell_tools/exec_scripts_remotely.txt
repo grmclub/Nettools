@@ -1,0 +1,32 @@
+-------------------------------------------------------------
+bash+running+scripts+remotely
+
+ssh user@machineb 'bash -s < /path/machinea/script.sh'
+
+Basically the command you provided above redirects the machine A script to ssh, which transmits the script through the network and runs it in machine B. Even less hassle to run scripts/commands locally on machine B.
+
+local-machine# ssh tools@192.168.56.103 'bash -s' < get_host_info.sh
+If Machine A is a Unix-based system, you can use:
+
+ssh user@MachineB 'bash -s' < local_script.sh
+
+This is an old question, and Jason's answer works fine, but I would like to add this:
+
+ssh user@host <<'ENDSSH'
+#commands to run on remote host
+ENDSSH
+
+----------------------
+parameterize your scripts on the remote side:
+
+ssh user@host ARG1=$ARG1 ARG2=$ARG2 'bash -s' <<'ENDSSH'
+  # commands to run on remote host
+  echo $ARG1 $ARG2
+ENDSSH
+
+cat /path/script.sh | ssh user@host 'bash -s'
+cat local_script.sh | ssh user@remotehost 'bash -'
+----------------------
+
+
+-------------------------------------------------------------
