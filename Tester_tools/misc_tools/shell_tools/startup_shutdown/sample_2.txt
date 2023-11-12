@@ -30,7 +30,7 @@ case $1 in
 		echo "Stop $APPNAME..."
 		/bin/kill -9 ${pid}
 	else
-		echo "$APPNAME Already stoped!"
+		echo "$APPNAME Already stopped!"
 	fi
 	;;
 *)

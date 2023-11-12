@@ -1,0 +1,98 @@
+#!/bin/bash
+
+# Replace <my_app>
+APP_PATH="/path/to/app/my_app.py"
+PID_FILE="/var/run/my_app.pid"
+
+start() {
+    if [ -f $PID_FILE ]; then
+        echo "The service is already running."
+    else
+        nohup python3 $APP_PATH &> /dev/null &
+        echo $! > $PID_FILE
+        echo "Service started."
+    fi
+}
+
+stop() {
+    if [ -f $PID_FILE ]; then
+        kill $(cat $PID_FILE)
+        rm $PID_FILE
+        echo "Service stopped."
+    else
+        echo "The service is not running."
+    fi
+}
+
+restart() {
+    stop
+    start
+}
+
+case "$1" in
+    start)
+        start
+        ;;
+    stop)
+        stop
+        ;;
+    restart)
+        restart
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|restart}"
+esac
+
+
+-----------------------------------------
+* Create Systemd service unit file
+
+##my_app.service
+# Description: A brief description of your service.
+# After: Specifies that the service should start after the network is available.
+# Type: Indicates the process type. Set it to simple for straightforward long-running processes.
+# User: The user under which the service will run. Use an appropriate user with the necessary permissions.
+# WorkingDirectory: The directory where your Python app is located. Make sure to provide the correct path.
+# ExecStart, ExecStop, and ExecReload: The paths to your service script and the corresponding actions (start, stop, and restart).
+# Restart: Specifies when the service should be restarted. In this case, we set it to always to restart the service automatically if it crashes.
+# WantedBy: Specifies which target should include this service. multi-user.target ensures that the service is started during the boot process.
+#
+# Enable and Start the Service
+# sudo cp my_app.service /etc/systemd/system/
+# sudo systemctl enable my_app.service
+# sudo systemctl start my_app.service
+#
+#ref:
+#https://www.digitalocean.com/community/tutorials/how-to-use-systemctl-to-manage-systemd-services-and-units
+#https://levelup.gitconnected.com/from-python-to-daemon-how-to-turn-your-python-app-into-a-linux-service-controlled-by-systemd-d87b59adfe7a
+#
+#
+
+
+[Unit]
+Description=My App
+After=network.target
+
+[Service]
+Type=simple
+User=username
+WorkingDirectory=/path/to/app/directory
+ExecStart=/path/to/app/my_app.sh start
+ExecStop=/path/to/app/my_app.sh stop
+ExecReload=/path/to/app/my_app.sh restart
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+
+
+-----------------------------------------
+
+
+
+
+
+
+-----------------------------------------
+
+
