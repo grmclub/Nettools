@@ -25,13 +25,14 @@ ps aux --sort -rss |pr -TW 256|head -15
 --------------------------------------------------------------------------------------
 *sar
 -u =cpu
--r = mory
+-r = memory
 -b = io
 -B = paging stats
 -d = block device stats
 -n = network stats
 -u = kernel version
 -v = system table status process, inode
+-w = context switches
 
 #cpu -2 sec intervals
 sar 2 5
@@ -42,6 +43,7 @@ sar -p ALL 1 1
 #Memory
 --today 
 sar -r -s 09:00:00 -e 11:30:00
+sar -r -s 09:00:00 -e 11:30:00 --human
 
 sar -f /var/log/sa/sa02 -r -s 14:00:00 -e 15:50:00
 
@@ -59,20 +61,29 @@ sar -f /var/log/sa/sa02 -u -s 07:00:00 -e 08:00:00
 #memory
 sar -f /var/log/sa/sa02 -b -r -s 07:00:00 -e 08:00:00
 
-
+--ALL
+sar -f /var/log/sa/sa02 -ALL  -s 07:00:00 -e 08:00:00
 --------------------------------------------------------------------------------------
-##Clear Shared Memory
-ipcs -m | egrep "0x[0-9a-f]+ [0-9]+" | cut -f1 -d' '| awk ' { print "ipcrm -M "$1 }'
-ipcs -s | egrep "0x[0-9a-f]+ [0-9]+" | cut -f1 -d' '| awk ' { print "ipcrm -S "$1 }'|sh
+--sar plotting
 
------------------
+--sar plotter
+https://github.com/juliojsb/sarviewer/tree/master
 
---------------------------------------------------------------------------------------
-* Passwordless login with putty
-putty.exe -ssh txxq@xx100 -pw secret
+--24 hr time
+alias　sar=*LANG=c sar*
+sar -u 1 20 > cpuload
 
---------------------------------------------------------------------------------------
+--xx.gplot
+set xdata time
+set timefmt '%H:%M:%S'
+set title 'System Usage'
+set xlabel 'TIME'
+set ylabel 'CPU Usage'
+set terminal png size 1024,768
 
+plot "cpuload" using 1:3 title "User Mode" with lines
+replot "cpuload" using 1:5 title "Kernel Mode" with lines
+replot "cpuload" using 1:8 title "CPU Free" with lines
 
 --------------------------------------------------------------------------------------
 
