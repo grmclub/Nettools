@@ -23,8 +23,11 @@ Use the following command to direct sar to monitor CPU usage at set intervals:
 ps aux --sort -rss |pr -TW 256|head -15
 
 --------------------------------------------------------------------------------------
---sar kb
+--perf kb
 https://www.thegeekstuff.com/2011/03/sar-examples/
+https://www.thegeekstuff.com/2011/03/linux-performance-monitoring-intro/
+https://www.thegeekstuff.com/2010/01/15-practical-unix-linux-top-command-examples/
+
 
 *sar
 -u =cpu
@@ -92,7 +95,9 @@ replot "cpuload" using 1:5 title "Kernel Mode" with lines
 replot "cpuload" using 1:8 title "CPU Free" with lines
 
 --------------------------------------------------------------------------------------
-
+Linux Performance Tools, Brendan Gregg, part 1 of 2
+https://www.youtube.com/watch?v=FJW8nGV4jxY
+https://www.youtube.com/watch?v=zrr2nUln9Kk
 
 --------------------------------------------------------------------------------------
 
