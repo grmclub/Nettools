@@ -23,6 +23,9 @@ Use the following command to direct sar to monitor CPU usage at set intervals:
 ps aux --sort -rss |pr -TW 256|head -15
 
 --------------------------------------------------------------------------------------
+--sar kb
+https://www.thegeekstuff.com/2011/03/sar-examples/
+
 *sar
 -u =cpu
 -r = memory
@@ -38,7 +41,10 @@ ps aux --sort -rss |pr -TW 256|head -15
 sar 2 5
 sar -f /var/log/sa/sa02 -u -s 07:00:00 -e 08:00:00 > /tmp/xx
 
-sar -p ALL 1 1
+
+#CPU Usage of Individual CPU or Core (sar -P)
+sar -P ALL 1 1
+sar -P ALL -f /var/log/sa/sa10 Displays CPU usage broken down by all cores 
 
 #Memory
 --today 
