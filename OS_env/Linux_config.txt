@@ -18,6 +18,10 @@ alias egr="egrep -i 'error|exception|fail'"
 
 
 -------------------------------------
+--HPC Settings
+
+Collection of sysctl networking notes
+https://gist.github.com/magnetikonline/2760f98f6bf654d5ad79
 
 -------------------------------------
 
