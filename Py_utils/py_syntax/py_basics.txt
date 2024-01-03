@@ -1,4 +1,7 @@
 
+https://www.turing.com/kb/22-hottest-python-tricksfor-efficient-coding
+
+------------------------------------------------------------------
 1. String
 2. Date_time
 3. Files
