@@ -10,9 +10,41 @@ ipcs -s | egrep "0x[0-9a-f]+ [0-9]+" | cut -f1 -d' '| awk ' { print "ipcrm -S "$
 putty.exe -ssh txxq@xx100 -pw secret
 
 --------------------------------------------------------------------------------------
+*  count the number of processes running in Linux
 
+The Linux syntax is as follows:
+# ps -e | wc -l
+ps -e --no-headers | grep [n]ginx | wc -l
+
+
+To see and count every process on the system using BSD syntax:
+# ps axu | wc -l
+
+-U user 	Select by real user ID (RUID) or name
+-u user 	Select by effective user ID (EUID) or name
+example for www-data user:
+$ ps -U www-data -u www-data u | wc -l
+--------------------------------------------------------------------------------------
+timeout 8s ping 192.168.2.254
+set grace period
+
+Pass the -k or --kill-after=DURATION options to the timeout command. For example, send a KILL signal if COMMAND is still running this long after the initial signal was sent:
+timeout -k=5 2m command1 arg1
+timeout -k=5 -s SIGKILL 2m /path/to/my-app arg1 arg2
+--------------------------------------------------------------------------------------
+correct file extension from .txtz .txt i.e. fix the extension of your .txtz files:
+rename -v .txtz .txt *.txtz
+--------------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------------
 
 --------------------------------------------------------------------------------------
 
 
 --------------------------------------------------------------------------------------
+
+
+
+
+
