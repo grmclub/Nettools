@@ -1,0 +1,102 @@
+
+https://curl.se/book.html
+https://curl.se/libcurl/c/example.html
+
+
+
+
+-------------------------------------------------------------
+##Upload files with CURL:
+curl -F "data=@file.name' https://url/name
+
+To post data with fields:
+curl --data "f=foo&d=bar" https://url/name
+
+To upload multiple files, run:
+Pass the -v switch to see more info including progress:
+curl -F 'foo=@/path/to/img1.jpg' -F 'bar=@/path/to/img2.jpg' https://server1.cyberciti.biz/form/
+
+-------------------------------------------------------------
+##cURL ignore SSL certificate warnings command
+
+In this example disable certificate verification for curl command:
+curl --insecure -I https://202.54.1.2/
+
+OR
+curl -k -O https://202.54.1.2/file.tar.gz
+curl -k --header 'Host: www.example.com' -I https://207.5.1.10/file.html
+
+
+-------------------------------------------------------------
+##curl command with proxy syntax
+#-------------------
+## Set the proxy address of your uni/company/vpn network ## 
+export http_proxy=http://your-ip-address:port/
+ 
+## http_proxy with username and password 
+export http_proxy=http://user:password@your-proxy-ip-address:port/
+ 
+## HTTPS version ##
+export https_proxy=https://your-ip-address:port/
+export https_proxy=https://user:password@your-proxy-ip-address:port/
+#-------------------
+## proxy server, 202.54.1.1, port: 3128, user: foo, password: bar ##
+export http_proxy=http://foo:bar@202.54.1.1:3128/
+export https_proxy=$http_proxy
+## Use the curl command ##
+curl -I https://www.cyberciti.biz
+curl -v -I https://www.cyberciti.biz
+
+-------------------------------------------------------------
+$ export http_proxy="vivek:myPasswordHere@10.12.249.194:3128/"
+$ curl -v -O http://dl.cyberciti.biz/pdfdownloads/b8bf71be9da19d3feeee27a0a6960cb3/569b7f08/cms/631.pdf
+
+OR use the -x option:
+curl -x 'http://vivek:myPasswordHere@10.12.249.194:3128' -v -O https://dl.cyberciti.biz/pdfdownloads/b8bf71be9da19d3feeee27a0a6960cb3/569b7f08/cms/631.pdf
+-------------------------------------------------------------
+##How to use the specified proxy server with curl on Unix
+
+$ curl -x http://prox_server_vpn:3128/ -I https://www.cyberciti.biz/faq/howto-nginx-customizing-404-403-error-page/
+
+##How to use socks protocol?
+
+The syntax is same:
+
+curl -x socks5://[user:password@]proxyhost[:port]/ url
+curl --socks5 192.168.1.254:3099 https://www.cyberciti.biz/
+
+
+##setup curl to permanently use a proxy connection?
+Update/edit your ~/.curlrc file using a text editor such as vim:
+$ vi ~/.curlrc
+
+Append the following:
+
+proxy = server1.cyberciti.biz:3128
+proxy-user = "foo:bar"
+
+Save and close the file. Another option is create a bash shell alias in your ~/.bashrc file:
+
+## alias for curl command 
+## set proxy-server and port, the syntax is
+## alias curl="curl -x {your_proxy_host}:{proxy_port}"
+alias curl="curl -x server1.cyberciti.biz:3128"
+
+-------------------------------------------------------------
+
+-------------------------------------------------------------
+
+-------------------------------------------------------------
+
+-------------------------------------------------------------
+
+-------------------------------------------------------------
+
+-------------------------------------------------------------
+
+
+
+
+
+
+

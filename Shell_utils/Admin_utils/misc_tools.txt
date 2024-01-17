@@ -35,14 +35,77 @@ timeout -k=5 -s SIGKILL 2m /path/to/my-app arg1 arg2
 correct file extension from .txtz .txt i.e. fix the extension of your .txtz files:
 rename -v .txtz .txt *.txtz
 --------------------------------------------------------------------------------------
+#File type
+file -b --mime-type log.txt 
 
+#check file size in unix
+wc -c /path/to/file
+stat -c %s "/etc/passwd"
+
+OR
+stat --format=%s "/etc/passwd"
+#on BSD/MacOS stat command:
+stat -f %z "/etc/passwd"
+
+#Checking file size using the du command
+
+du --apparent-size --block-size=1  "/etc/passwd"
+fileName="/etc/hosts"
+mfs=$(du --apparent-size --block-size=1  "$fileName" | awk '{ print $1}')
+echo "$fileName size = ${mfs}"
+
+#Getting file size using the find command
+find "/etc/passwd" -printf "%s"
+find "/etc/passwd" -printf "%s\n"
+fileName="/etc/hosts"
+mysize=$(find "$fileName" -printf "%s")
+printf "File %s size = %d\n" $fileName $mysize
+echo "${fileName} size is ${mysize} bytes."
+
+--------------------------------------------------------------------------------------
+How to check how long a process has been running?
+ps -p {PID-HERE} -o etime
+ps -p {PID-HERE} -o etimes
+ps -p 6176 -o pid,cmd,etime,uid,gid 
+
+
+--------------------------------------------------------------------------------------
+##Delete source after successful transfer using rsync
+rsync --dry-run -remove-source-files -options /path/to/src/ /path/to/dest
+rsync --dry-run --remove-source-files -options /path/to/src/ computerB:/path/to/dest
+rsync --dry-run --remove-source-files -av /path/to/src/*.avi computerB:/path/to/dest
+
+--------------------------------------------------------------------------------------
+##delete all hidden directories:
+find .  -maxdepth 1 -type d -iname ".[^.]*" -print0 | xargs -I {} -0 rm -rvf "{}"
+
+--------------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------------
 
 --------------------------------------------------------------------------------------
 
 --------------------------------------------------------------------------------------
 
 
---------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
 
 
 
