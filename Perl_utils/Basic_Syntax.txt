@@ -1,0 +1,211 @@
+
+-condiionals
+-loops
+-strings
+-array
+-hash
+-file_io
+-date_time
+
+https://perldoc.perl.org/functions
+-------------------------------------------------------------
+$a = 100;
+
+if( $a  ==  20 ) {
+   printf "a has a value which is 20\n";
+} elsif( $a ==  30 ) {
+   printf "a has a value which is 30\n";
+} else {
+   printf "a has a value which is $a\n";
+}
+-------------------------------------------------------------
+# for loop execution
+for( $a = 10; $a < 20; $a = $a + 1 ) {
+   print "value of a: $a\n";
+}
+
+@list = (2, 20, 30, 40, 50);
+
+# foreach loop execution
+foreach $a (@list) {
+   print "value of a: $a\n";
+}
+-------------------------------------------------------------
+%data = ('John Paul' => 45, 'Lisa' => 30, 'Kumar' => 40);
+
+print "$data{'John Paul'}\n";
+print "$data{'Lisa'}\n";
+print "$data{'Kumar'}\n";
+
+#!/usr/bin/perl 
+
+%data = ('John Paul' => 45, 'Lisa' => 30, 'Kumar' => 40);
+
+@names = keys %data;
+
+print "$names[0]\n";
+print "$names[1]\n";
+print "$names[2]\n";
+
+*Checking for Existence
+#!/usr/bin/perl
+
+%data = ('John Paul' => 45, 'Lisa' => 30, 'Kumar' => 40);
+
+if( exists($data{'Lisa'} ) ) {
+   print "Lisa is $data{'Lisa'} years old\n";
+} else {
+   print "I don't know age of Lisa\n";
+}
+
+*Getting Hash Size
+#!/usr/bin/perl
+
+%data = ('John Paul' => 45, 'Lisa' => 30, 'Kumar' => 40);
+
+@keys = keys %data;
+$size = @keys;
+print "1 - Hash size:  is $size\n";
+
+@values = values %data;
+$size = @values;
+print "2 - Hash size:  is $size\n";
+
+Sort the hash in alphabetical order of its keys
+
+When someone wants to sort a hash, one possibility is that he wants to sort the planets in alphabetical order. That's quite easy.
+
+foreach my $name (sort keys %planets) {
+    printf "%-8s %s\n", $name, $planets{$name};
+}
+
+-------------------------------------------------------------
+#!/usr/bin/perl
+
+open(DATA, "<file.txt") or die "Couldn't open file file.txt, $!";
+
+while(<DATA>) {
+   print "$_";
+}
+
+For example, to import all the lines from a file into an array −
+
+#!/usr/bin/perl
+
+open(DATA,"<import.txt") or die "Can't open data";
+@lines = <DATA>;
+close(DATA);
+
+
+Copying Files
+
+Here is the example, which opens an existing file file1.txt and read it line by line and generate another copy file file2.txt.
+
+#!/usr/bin/perl
+
+# Open file to read
+open(DATA1, "<file1.txt");
+
+# Open new file to write
+open(DATA2, ">file2.txt");
+
+# Copy data from one file to another.
+while(<DATA1>) {
+   print DATA2 $_;
+}
+close( DATA1 );
+close( DATA2 );
+
+Deleting an Existing File
+
+Here is an example, which shows how to delete a file file1.txt using the unlink function.
+
+#!/usr/bin/perl
+
+unlink ("/usr/test/file1.txt");
+
+
+-------------------------------------------------------------
+https://www.perltutorial.org/
+https://www.perltutorial.org/perl-sort/
+https://perlmaven.com/how-to-sort-a-hash-in-perl
+https://perlmaven.com/sending-html-email-using-email-stuffer
+
+
+
+-------------------------------------------------------------
+ examples/read_simple_csv.pl
+
+#!/usr/bin/perl
+use strict;
+use warnings;
+
+my $file = $ARGV[0] or die "Need to get CSV file on the command line\n";
+
+my $sum = 0;
+open(my $data, '<', $file) or die "Could not open '$file' $!\n";
+
+while (my $line = <$data>) {
+  chomp $line;
+
+  my @fields = split "," , $line;
+  $sum += $fields[2];
+}
+print "$sum\n";
+
+ examples/read_quoted_csv.pl
+
+#!/usr/bin/perl
+use strict;
+use warnings;
+
+use Text::CSV;
+my $csv = Text::CSV->new({ sep_char => ',' });
+
+my $file = $ARGV[0] or die "Need to get CSV file on the command line\n";
+
+my $sum = 0;
+open(my $data, '<', $file) or die "Could not open '$file' $!\n";
+while (my $line = <$data>) {
+  chomp $line;
+
+  if ($csv->parse($line)) {
+
+      my @fields = $csv->fields();
+      $sum += $fields[2];
+
+  } else {
+      warn "Line could not be parsed: $line\n";
+  }
+}
+print "$sum\n";
+
+
+
+
+-------------------------------------------------------------
+
+-------------------------------------------------------------
+
+-------------------------------------------------------------
+
+-------------------------------------------------------------
+
+-------------------------------------------------------------
+
+-------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

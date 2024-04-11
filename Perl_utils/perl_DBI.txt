@@ -1,0 +1,74 @@
+
+
+    #!/usr/bin/perl  
+    use strict;  
+    use warnings;  
+    use DBI;  
+    my $driver = "mysql";  
+    my $database = "perll";  
+    my $dsn      = "dbi:$driver:database=$database";  
+    my $user     = "root";  
+    my $password = "";  
+    my $dbh = DBI->connect($dsn, $user, $password, {  
+       PrintError       => 0,  
+       RaiseError       => 1,  
+       AutoCommit       => 1,  
+       FetchHashKeyName => 'NAME_lc',  
+    });  
+    $dbh->disconnect;  
+-------------------------------------------------------------
+    # Fetching records from database  
+    my $sth = $dbh->prepare("SELECT * FROM users");  
+    $sth->execute() or die $DBI::errstr;  
+    while (my @row = $sth->fetchrow_array()) {  
+       my ($name, $course, $fee) = @row;  
+       print "Name = $name, Course = $course, Fee = $fee\n";  
+    }  
+    $sth->finish();  
+-------------------------------------------------------------
+** Excel 
+
+ #!/usr/bin/perl  
+    use strict;  
+    use warnings;  
+    use Excel::Writer::XLSX;  
+    my $workbook  = Excel::Writer::XLSX->new( 'myExcel.xlsx' );  
+    my $worksheet = $workbook->add_worksheet();  
+    $worksheet->write( "A1", 2 );  
+    $worksheet->write( "A2", "=A1*2" );  
+    $worksheet->write( "A3", "=A1*3" );  
+    $worksheet->write( "A4", "=A1*4" );  
+    $worksheet->write( "A5", "=A1*5" );  
+    $worksheet->write( "A6", "=A1*6" );  
+    $worksheet->write( "A7", "=A1*7" );  
+    $worksheet->write( "A8", "=A1*8" );  
+    $worksheet->write( "A9", "=A1*9" );  
+    $worksheet->write( "A10", "=A1*10" );  
+    $workbook->close;  
+-------------------------------------------------------------
+**DBD::CSV
+
+#!/usr/bin/perl
+
+  use strict;
+  use warnings;
+  use DBI;
+
+  # Connect to the database, (the directory containing our csv file(s))
+  my $dbh = DBI->connect ("dbi:CSV:", undef, undef, {
+      f_dir   => ".",
+      f_ext   => ".csv/r",
+      f_enc   => "utf-8",
+      });
+
+  # Output the name and contact field from each row
+  my $sth = $dbh->prepare ("select * from prospects where name like 'G%'");
+  $sth->execute;
+  while (my $row = $sth->fetchrow_hashref) {
+      print "  name = $row->{name} \tcontact = $row->{contact}\n";
+      }
+-------------------------------------------------------------
+	
+	
+	
+	

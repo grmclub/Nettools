@@ -1,0 +1,68 @@
+https://perlmaven.com/reading-and-writing-binary-files
+https://perlmaven.com/open-files-in-the-old-way
+
+
+-------------------------------------------------------------
+use 5.010;
+use strict;
+use warnings;
+ 
+my ($infile, $outfile) = @ARGV;
+die "Usage: $0 INFILE OUTFILE\n" if not $outfile;
+ 
+open my $in, '<', $infile or die;
+binmode $in;
+ 
+my $cont = '';
+ 
+while (1) {
+    my $success = read $in, $cont, 100, length($cont);
+    die $! if not defined $success;
+    last if not $success;
+}
+close $in;
+ 
+open my $out, '>', $outfile or die;
+print $out $cont;
+close $out;
+ 
+say length($cont);
+say -s $infile;
+say -s $outfile;
+-------------------------------------------------------------
+    use strict;
+    use warnings;
+     
+    my $filename = 'data.txt';
+    open(my $fh, '<:encoding(UTF-8)', $filename)
+      or die "Could not open file '$filename' $!";
+     
+    while (my $row = <$fh>) {
+      chomp $row;
+      print "$row\n";
+    }
+-------------------------------------------------------------
+** csv files
+
+ #!/usr/bin/perl
+
+  use strict;
+  use warnings;
+  use Text::CSV;
+
+  my $file = "prospects.csv";
+  open my $fh, "<", $file or die "$file: $!";
+
+  my $csv = Text::CSV->new ({
+      binary    => 1, # Allow special character. Always set this
+      auto_diag => 1, # Report irregularities immediately
+      });
+  while (my $row = $csv->getline ($fh)) {
+      print "@$row\n";
+      }
+  close $fh;
+-------------------------------------------------------------
+
+-------------------------------------------------------------
+
+-------------------------------------------------------------

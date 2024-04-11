@@ -1,0 +1,170 @@
+
+https://perlmaven.com/perl-split
+https://perldoc.perl.org/functions
+https://www.javatpoint.com/perl-string
+
+-------------------------------------------------------------
+http://perlmeme.org/howtos/perlfunc/split_function.html
+
+* Using the Perl split() function
+
+Example 1. Splitting on a character
+
+  my $data = 'Becky Alcorn,25,female,Melbourne';
+
+  my @values = split(',', $data);
+
+  foreach my $val (@values) {
+    print "$val\n";
+  }
+
+===============
+  
+ Example 2. Splitting on a string
+
+
+  #!/usr/bin/perl
+
+  use strict;
+  use warnings;
+
+  my $data = 'Bob the Builder~~~10:30am~~~1,6~~~ABC';
+
+  my @values = split('~~~', $data);
+
+  foreach my $val (@values) {
+    print "$val\n";
+  }
+
+  exit 0;
+
+===============
+
+Example 3. Splitting on a pattern
+
+  #!/usr/bin/perl
+
+  use strict;
+  use warnings;
+
+  my $data = 'Home1Work2Cafe3Work4Home';
+
+  # \d+ matches one or more integer numbers
+  my @values = split(/\d+/, $data);
+
+  foreach my $val (@values) {
+    print "$val\n";
+  }
+
+  exit 0;
+===============
+
+
+Example 4. Splitting on an undefined value
+
+ If you split on an undefined value, the string will be split on every character: 
+
+  #!/usr/bin/perl
+
+  use strict;
+  use warnings;
+
+  my $data = 'Becky Alcorn';
+
+  my @values = split(undef,$data);
+
+  foreach my $val (@values) {
+    print "$val\n";
+  }
+
+===============
+split on Multiple Characters
+
+We can split a character at more than one delimiter. In the following example, we have split the string at (=) and (,).
+
+    my $str = 'Vishal=18Sept,Anu=11May,Juhi=5Jul';    
+    my @words = split /[=,]/, $str;    
+    print "@words\n";    
+  
+  
+-------------------------------------------------------------
+* join Function
+
+my @vowels = ('A', 'E', 'I');  
+my $str = join ':', @vowels;  
+print "$str\n";                      
+my $data = join "-", $str, "vowels";  
+print "$data\n";                       
+$str = join '', @vowels, 'OU';  
+print "$str\n";             
+
+--output
+A:E:I
+A:E:I -vowels
+AEIOU
+
+-------------------------------------------------------------
+**substr() Example
+
+    use strict;  
+    use warnings;  
+    # Original string  
+    my $originalstring = "Our site javaTpoint provides all type of tutorials";  
+    print "$originalstring\n";  
+    # Offset of 4  
+    my $offset = substr($originalstring, 4);  
+    print "$offset\n";  
+    # Offset of 4, length 15  
+    my $offsetlength = substr($originalstring, 4, 15);  
+    print "$offsetlength\n";  
+    # Replacing length with the new string  
+    my $replacing = substr($originalstring, 4, 15, "one and only site");  
+    print "$originalstring\n";  
+
+**Replacing a string with another string, s///g
+
+A string can be replaced with another string in two ways.
+In first one, we have replaced Tigers with Lions which occurs single time in the string with s///.
+In second one, we have replaced roses with flowers globally with s///g.
+
+    my $var1 = "Tigers are big and frightening.";  
+    $var1 =~ s/Tigers/Lions/;  
+    print "$var1\n";  
+    my $var2 = "Red roses are very popular. Yellow roses are less seen.";  
+    $var2 =~ s/roses/flowers/g;  
+    print "$var2\n";  
+
+Output:
+
+Lions are big and frightening.
+Red flowers are very popular. Yellow flowers are less seen.
+
+** Finding a match in the string, =~
+
+Perl provides a match operator (=~) to find a substring from a string.
+
+    my $var = "Tigers are big and frightening.";  
+    if($var =~ /frightening/)  
+    {  
+        print "Matched\n";  
+    }else{  
+        print "Match not Found\n";  
+    }  
+    if($var =~ /biggest/)  
+    {  
+        print "Matched\n";  
+    }else{  
+        print "Match not Found\n";  
+    }  
+
+Output:
+
+Matched
+Match not Found
+
+
+-------------------------------------------------------------
+
+-------------------------------------------------------------
+
+-------------------------------------------------------------
