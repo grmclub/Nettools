@@ -2,6 +2,9 @@
 https://perlmaven.com/perl-split
 https://perldoc.perl.org/functions
 https://www.javatpoint.com/perl-string
+https://docstore.mik.ua/orelly/perl4/cook/index.htm
+
+
 
 -------------------------------------------------------------
 http://perlmeme.org/howtos/perlfunc/split_function.html
