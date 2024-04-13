@@ -1,0 +1,255 @@
+-------------------------------------------------------------
+with open('somefile.txt','r') as ofile
+	for line in ofile.readlines():
+		print line
+
+##without context manager
+f = open('somefile.txt','r')
+for line in f.read().split('\n'):
+    print line
+f.close()
+
+The xreadlines() function should be used for big files:
+f = open('HUGE.log','r'):
+for line in f.xreadlines():
+   print line
+f.close()
+-----------------
+If you want the \n included:
+with open(fname) as f:
+    content = f.readlines()
+
+If you do not want \n included:
+with open(fname) as f:
+    content = f.read().splitlines()
+
+-------------------------------------------------------------
+* Three Ways to Write Text to a File in Python
+
+1. Writing One Line at a Time to a File in Python Using write()
+# open a file to append
+>>>outF = open("myOutFile.txt", "a")
+
+>>>outF = open("myOutFile.txt", "w")
+>>>for line in textList:
+...    outF.write(line)
+...    outF.write("\n")
+>>>outF.close()
+
+2. Writing One Line at a Time to a File in Python Using “print”
+
+>>>outF = open("myOutFile.txt", "w")
+>>>for line in textList:
+...  print >>outF, line
+>>>outF.close()
+
+3. Writing All The Lines at a Time to a File in Python
+
+>>>outF = open("myOutFile.txt", "w")
+>>>textList = map(lambda x: x+"\n", textList)
+>>>outF.writelines(textList)
+>>>outF.close()
+-------------------------------------------------------------
+* Create empty file using python
+
+In case you want touch's behaviour (i.e. update the mtime in case the file exists):
+import os
+def touch(path):
+    with open(path, 'a'):
+        os.utime(path, None)
+
+You could extend this to also create any directories in the path that do not exist:
+basedir = os.path.dirname(path)
+if not os.path.exists(basedir):
+    os.makedirs(basedir)
+
+-------- ----------
+Of course there IS a way to create files without opening. It's as easy as calling os.mknod("newfile.txt").
+
+-------------------------------------------------------------
+* Files & Directory related methods
+# Renaming and Deleting Files
+
+os.rename(current_file_name, new_file_name)
+os.remove(file_name)
+
+* Directories in Python
+
+os.mkdir("newdir")
+os.chdir("newdir")
+os.getcwd()
+os.rmdir('dirname')
+-------------------------------------------------------------
+* Wrap read and write with logging
+
+    def createFinFile(self, filename, finFile):
+
+        try:
+            num_lines = 0
+            with  open(self.m_localdir + filename, 'r') as fout:
+                num_lines = sum(1 for line in fout)
+            with open(self.m_localdir + finFile, 'w') as fout:
+                fout.write(str(num_lines) + "\n")
+
+        except Exception, err:
+            appLog.error("ftp_client.createFinFile: %s\n" %str(err))
+
+-------------------------------------------------------------
+* Read with Iterator
+
+with open("data.txt") as myfile:
+    data="".join(line.rstrip() for line in myfile)
+
+join() will join a list of strings, and rstrip() with no arguments will trim whitespace, including newlines, from the end of strings.
+
+-------------------------------------------------------------
+* Simple slurp
+
+with open('data.txt', 'r') as myfile:
+    data=myfile.read().replace('\n', '')
+
+This will slurp the content into a single string in Python 2.61 and above: 
+with open('x.txt') as x: f = x.read()
+
+And this will create a list of lines:
+with open('x.txt') as x: f = x.readlines()
+-------------------------------------------------------------
+* Skip first line
+
+with open('mycsv.csv', 'r') as csvfile:
+
+    csvreader = csv.reader(csvfile)
+
+    # This skips the first row of the CSV file.
+    # csvreader.next() also works in Python 2.
+    next(csvreader)
+
+    for row in csvreader:
+        # do stuff with rows...
+
+* Replace delimeter in csv file
+
+If you're just replacing commas with colons, you don't need to use a csv parser at all.
+with open("file.csv", 'r') as f:
+    with open("temp.csv", 'w') as t:
+        for lines in f:
+            new_line = line.replace(",",":")
+            t.write(new_line)
+-------------------------------------------------------------
+* Catch IO exceptions
+
+def read_data_file(self):
+    try:
+        with open(self.data_file) as f:
+           return json.load(f)
+    except IOError, e:
+        if e.errno == errno.ENOENT:
+            print "Error: the given file doesn't exist."
+            sys.exit(1)
+
+
+Errno 2 == errno.ENOENT.
+-------------------------------------------------------------
+1. Write Data
+
+>>> myfile = file("testit.txt", 'w')
+>>> print >> myfile, "Hello World!"
+>>> print >> myfile, "The total value = $%6.2f" % (40.0*45.50)
+>>> myfile.close()
+
+
+2. Read Data
+>>> myfile = open("testit.txt")
+>>> for line in myfile.readlines():
+...     print line
+
+
+3. Working with binary data
+>>> myfile = open("testit.txt", "wb")
+>>> for c in range(50, 70):
+...     myfile.write(chr(c))
+...
+>>> myfile.close()
+>>> myfile = open("testit.txt")
+>>> myfile.read()
+'23456789:;<=>?@ABCDE'
+>>> myfile.close()
+
+----------------------------------------------------------------------------------------
+2. File Slurping
+
+-------------------
+f = open("file")
+lines = f.readlines()
+file = ''.join(lines)
+f.close()
+-------------------
+use Slurp;
+my $text = slurp("filename");
+
+-------------------
+The Python example is actually wrong. It doesn't close the file. The shortest code you can get in Python is at least two lines:
+
+
+with open("filename") as stream:
+    fileContents = stream.read()
+
+
+# open the file
+my_file = open("dna.txt")
+# read the contents
+my_dna = my_file.read()
+# calculate the length
+dna_length = len(my_dna)
+# print the output
+print("sequence is " + my_dna +  " and length is " + str(dna_length))
+
+----------------------------------------------------------------------------------------
+
+Example:
+#!/usr/bin/python
+
+# Open a file
+fo = open("foo.txt", "wb")
+fo.write( "Python is a great language.\nYeah its great!!\n");
+
+# Close opend file
+fo.close()
+
+
+#!/usr/bin/python
+
+# Open a file
+fo = open("foo.txt", "r+")
+str = fo.read(10);
+print "Read String is : ", str
+# Close opend file
+fo.close()
+
+Let's take a file foo.txt, which we have created above.
+#!/usr/bin/python
+
+# Open a file
+fo = open("foo.txt", "r+")
+str = fo.read(10);
+print "Read String is : ", str
+
+# Check current position
+position = fo.tell();
+print "Current file position : ", position
+
+# Reposition pointer at the beginning once again
+position = fo.seek(0, 0);
+str = fo.read(10);
+print "Again read String is : ", str
+# Close opend file
+fo.close()
+
+
+----------------------------------------------------------------------------------------
+-------------------------------------------------------------
+-------------------------------------------------------------
+-------------------------------------------------------------
+-------------------------------------------------------------
+-------------------------------------------------------------
+

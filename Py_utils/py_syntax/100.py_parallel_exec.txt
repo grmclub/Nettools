@@ -1,0 +1,192 @@
+
+Python threaded workers using ThreadPoolExecutor()
+https://gist.github.com/magnetikonline/a26ae80e2e23fcfda5b03ccb470f79e6
+-------------------------------------------------------------
+http://www.leancrew.com/all-this/2011/12/more-shell-less-egg/
+
+
+from subprocess import check_call
+from multiprocessing.dummy import Pool
+
+def call_script(args):
+    name, age = args  # unpack arguments
+    check_call(["./new.sh", name, age])
+
+def main():
+    with open('details.txt') as inputfile:
+        args = [line.split()[:2] for line in inputfile]
+    pool = Pool(10)
+    # pool = Pool()  would use the number of available processors instead
+    pool.map(call_script, args)
+    pool.close()
+    pool.join()
+
+if __name__ == '__main__':
+    main()
+	
+	
+https://stackoverflow.com/questions/23005329/python-multiprocessing?rq=3
+https://docs.python.org/2/library/subprocess.html
+
+from multiprocessing import Process
+import subprocess
+
+def run_shell(command):
+    p = subprocess.Popen(command)
+    p.communicate()
+
+# Array of processes 
+opencv_array = [
+    'opencv_haartraining -data data -vec mil.vec ...',
+    'opencv_haartraining -data data -vec mil.vec ...',   
+]
+
+def multiprocessing_on():
+    tasks = []
+    for command in opencv_array:
+        task = Process(target=run_shell, args=(command,))
+        task.start()
+        tasks.append(task)
+
+    # Wait for all done
+    for task in tasks: 
+        task.join()
+
+multiprocessing_on()
+
+
+-------------------------------------------------------------
+As per this blog pool.map will return the output with the order preserved. Here is code which prints the list of tuples in (url, html_content) format without changing the order
+
+urls = ["http://google.com","http://example.com","http://yahoo.com","http://linkedin.com","http://orkut.com","http://quora.com","http://facebook.com","http://myspace.com","http://gmail.com","http://nltk.org","http://cyber.com"]
+
+def btl_test(url):
+    import urllib2
+    return url, urllib2.urlopen(url).read()
+
+from contextlib import closing # http://stackoverflow.com/a/25968716/968442
+from multiprocessing.pool import Pool
+
+with closing(Pool(len(urls))) as pool:
+    result = pool.map(btl_test, urls)
+
+print result
+
+-------------------------------------------------------------
+
+
+This works
+
+from urlparse import urlparse
+from multiprocessing.pool import Pool 
+import re
+import urllib2 
+
+def btl_test(url):                                                                                                                                                                                                          
+    page = urllib2.urlopen(url).read()
+    if (re.findall(r'<title>(.*?)<\/title>',page)):
+        page1 =  (re.findall(r'<title>(.*?)<\/title>',page)[0])
+        print page1
+
+url = ["http://google.com","http://example.com","http://yahoo.com","http://linkedin.com","http://facebook.com","http://orkut.com","http://oosing.com","http://pinterets.com","http://orkut.com","http://quora.com","http://facebook.com","http://myspace.com","http://gmail.com","http://nltk.org","http://cyber.com"]
+
+
+#for i in url:
+#   print btl_test(i)
+nprocs = 2 # nprocs is the number of processes to run
+ParsePool = Pool(nprocs)
+ParsePool.map(btl_test,url)
+#ParsedURLS = ParsePool.map(btl_test,url)
+#print ParsedURLS
+
+-------------------------------------------------------------
+import sys
+import os 
+import multiprocessing
+
+tools = ['tool1', 'tool2', 'tool3', 'tool4', 'tool5']
+arg1 = sys.argv[1]
+
+p = multiprocessing.Pool(len(tools))
+p.map(os.system, (t + ' ' + arg1 for t in tools))
+-------------------------------------------------------------
+* Parallelize with timeout
+
+from threading import Timer
+from subprocess import Popen,PIPE
+import shlex
+import datetime
+import sys
+
+jobs = ['sleep 100','sleep 200']
+
+timers = []
+processes = []
+print datetime.datetime.now()
+for job in jobs:
+    p = Popen(shlex.split(job),stdout = PIPE)
+    t = Timer(10,lambda p=p: p.terminate())
+    t.start()
+    timers.append(t)
+    processes.append(p)
+
+for t in timers:
+    t.join()
+
+stdout,stderr = processes[0].communicate()    
+stdout,stderr = processes[1].communicate()
+print datetime.da
+tetime.now()
+
+Yeah, you can p.communicate() after you join the threads...I've updated with a solution that I think should work.
+-------------------------------------------------------------
+import multiprocessing
+import subprocess
+import shlex
+import time
+
+commands = ("echo -n HI-FIRST ", "echo -n HI-SECOND ")
+def parallel():
+    p = subprocess.Popen(shlex.split(cmd), stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.STDOUT)
+    stdoutdata, stderrdata = p.communicate()
+    print stdoutdata + "\t" + time.ctime()
+for cmd in commands:
+    p = multiprocessing.Process(target=parallel)
+    p.start()
+	
+$ python stack.py 
+HI-FIRST    Fri Jan 11 08:47:18 2013
+HI-SECOND   Fri Jan 11 08:47:18 2013	
+-------------------------------------------------------------
+https://github.com/urbansan/futures_subproc
+https://developers.redhat.com/articles/2023/07/27/how-use-python-multiprocessing-module#final_thoughts
+
+
+pool
+process
+
+
+
+
+-------------------------------------------------------------
+-------------------------------------------------------------
+-------------------------------------------------------------
+-------------------------------------------------------------
+-------------------------------------------------------------
+-------------------------------------------------------------
+-------------------------------------------------------------
+-------------------------------------------------------------
+-------------------------------------------------------------
+-------------------------------------------------------------
+-------------------------------------------------------------
+-------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+

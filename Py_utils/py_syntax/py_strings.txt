@@ -1,0 +1,193 @@
+
+-------------------------------------------------------------
+
+1. len
+2. cmp
+3. cat
+4. substr
+5. split
+6. join
+
+http://zetcode.com/lang/python/strings/
+http://zetcode.com/lang/python/
+
+-------------------- --------------- ------------------------
+* String Special Operators:
+
+Assume string variable a holds 'Hello' and variable b holds 'Python', then:
+
+Operator	Description	                                                       Example
++	Concatenation - Adds values on either side of the operator	               a + b will give HelloPython
+
+*	Repetition - Creates new strings, concatenating multiple                   a*2 will give -HelloHello
+    copies of the same string
+
+[]  Slice - Gives the character from the given index                           a[1] will give e
+
+[:]	Range Slice - Gives the characters from the given range                    a[1:4] will give ell
+
+in	Membership - Returns true if a character exists in the given string        H in a will give 1
+
+not in 	Membership - Returns true if a character does not exist in the         M not in a will give 1
+        given string
+
+%	Format - Performs String formatting
+
+---------------------------
+* Split
+
+    x= ['blue', 'red', 'green']
+    a,b,c = x.split(",")
+
+* Slicing
+    x[start:end] 	# items start through end-1
+    x[start:]    	# items start through the rest of the list
+    x[:end]      	# items from the beginning through end-1
+    x[:]         	# a copy of the whole list
+
+-------------------- --------------- ------------------------
+* Quick Ref
+
+* Delete last character in string Python
+subject =  subject[:-1]
+
+* Test string equality
+
+	$s1 eq $s2 (Perl) in Python print s1 == s2  # True
+
+len(string)
+Returns the length of the string
+
+replace(old, new [, max])
+Replaces all occurrences of old in string with new or at most max occurrences if max given
+
+join(seq)
+Merges (concatenates) the string representations of elements in sequence seq into a string, with separator string
+
+split(str="", num=string.count(str))
+Splits string according to delimiter str (space if not provided) and returns list of substrings; split into at most num substrings if given
+
+upper()
+Converts lowercase letters in string to uppercase
+
+-------------------- --------------- ------------------------
+-------------------- --------------- ------------------------
+isalnum()
+Returns true if string has at least 1 character and all characters are alphanumeric and false otherwise
+
+isalpha()
+Returns true if string has at least 1 character and all characters are alphabetic and false otherwise
+
+isdigit()
+Returns true if string contains only digits and false otherwise
+
+islower()
+Returns true if string has at least 1 cased character and all cased characters are in lowercase and false otherwise
+
+isnumeric()
+Returns true if a unicode string contains only numeric characters and false otherwise
+
+isspace()
+Returns true if string contains only whitespace characters and false otherwise
+
+-------------------- --------------- ------------------------
+* String Comparison Operations
+
+The standard comparisons (<, <=, >, >=, ==, !=) apply to strings. These comparisons use the standard character-by-character comparison rules for ASCII or Unicode.
+
+There are two additional comparisons: in  and not in . These check to see if a single character string occurs in a longer string. The in  operator returns a True when the character is found, False if the character is not found. The not in  operator returns True if the character is not found.
+>>>
+"a" in 'xyxxyabcxyzzy'
+
+
+
+-------------------- --------------- ------------------------
+chr( i  ) → character
+
+Return a string of one character with ordinal i; 0 ≤ i  < 256.
+len( object  ) → integer
+
+Return the number of items of a sequence or mapping.
+ord( c  ) → integer
+
+Return the integer ordinal of a one character string
+repr( object  ) → string
+
+Return the canonical string representation of the object. For most object types, eval(repr(object)) == object.
+str( object  ) → string
+
+Return a nice string representation of the object. If the argument is a string, the return value is the same object.
+
+-------------------- --------------- ------------------------
+* Getting Sub-strings: Slicing Python Strings!
+
+>>> s = 'Hello, everybody!'
+>>> s[0]
+'H'
+>>> s[:3]
+'Hel'
+>>> s[2:5]
+'llo'
+
+* Finding substrings
+	find(), rfind(), index() and rindex()
+
+The difference between the find() and index() methods is that when the substring is not found, the former returns -1. The latter raises a ValueError exception. 
+find(str, beg=0, end=len(string))
+rfind(str, beg=0, end=len(string))
+index(str, beg=0, end=len(string))
+rindex(str, beg=0, end=len(string))
+
+
+
+----- ------
+* Reverse Sub-string Slicing in Python
+
+>>> s[::-1]
+'!ydobyreve ,olleH'
+>>> s[4::-1]
+'olleH'
+
+* Replacing Python Strings
+
+import string
+
+our_str = 'Hello World'
+new_str = string.replace(our_str, 'World', 'Jackson')
+
+
+
+-------------------- --------------- ------------------------
+
+
+
+
+-------------------- --------------- ------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-------------------------------------------------------------
+
+-------------------------------------------------------------
+
+-------------------------------------------------------------
+
+-------------------------------------------------------------
+
+-------------------------------------------------------------
