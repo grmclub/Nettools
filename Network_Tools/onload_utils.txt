@@ -1,0 +1,71 @@
+
+
+--------------------------------------------------------------------------------------
+--onload docs
+https://docs.amd.com/r/en-US/ug1586-onload-user/Useful-Commands
+https://www.xilinx.com/content/dam/xilinx/publications/solarflare/drivers-software/linux/SF-103837-CD-28_Solarflare_Server_Adapter_User_Guide.pdf
+https://github.com/majek/openonload/blob/master/src/lib/transport/ip/tcp_rx.c
+
+
+--------------------------------------------------------------------------------------
+--issues
+
+75100 - Onloaded application may hang in TCP connect() when stack lock is unobtainable
+https://support.xilinx.com/s/article/75100?language=en_US
+
+75126 - Onload retransmissions, connection timeouts, keepalives and time-based state transitions occurring too soon
+https://support.xilinx.com/s/article/75126?language=en_US
+
+
+
+--------------------------------------------------------------------------------------
+--use cases
+Performance gain using OpenOnload Solarflare c
+https://stackoverflow.com/questions/54454668/performance-gain-using-openonload-solarflare-c
+
+The OpenOnload User-level Network Stack
+https://www.youtube.com/watch?v=1Y8hoznuuuM
+https://stackoverflow.com/questions/77843158/difference-between-xilinx-solarflare-scaleout-onlod-solarflare-onload-and-sola
+https://knowledge.informatica.com/s/article/142215?language=en_US
+
+
+
+--------------------------------------------------------------------------------------
+--linux
+http://vger.kernel.org/%7Edavem/skb_data.html
+https://stackoverflow.com/questions/15702601/kernel-bypass-for-udp-and-tcp-on-linux-what-does-it-involve
+https://stackoverflow.com/questions/18343365/zero-copy-networking-vs-kernel-bypass
+https://events.static.linuxfound.org/images/stories/pdf/eeus2012_lameter.pdf
+
+> Why? Because otherwise, the overhead of processing each packet in the kernel and passing it down to user space and back up to the kernel and out to the NIC limits the throughput you can achieve. We're talking 10gbps and above here.
+
+_Throughpout_ is not problematic at all for the Linux network stack, even at 100gbps. What is problematic is >10gbps line rate. In other words, unless you're receiving 10gbps unshaped UDP datagrams with no payloads at line rate, the problem is non existant. Considering internet is 99% fat TCP packets, this sentence is completely absurd.
+
+> With other kernel bypass technologies like DPDK you needed to install a second NIC to run your program or basically implement (or license) an entire TCP/IP network stack to make sure that everything works correctly under the hood
+
+That is just wrong on so many levels.
+
+First, DPDK allows reinjecting packets in the Linux network stack. That is called queue splitting,is done by the NIC, and can be trivially achieved using e.g. the bifurcated driver.
+
+Second, there are plenty of available performant network stacks out there, especially considering high end NICs implement 80% of the performance sensitive parts of the stack on chip.
+
+Last, kernel bypassing is made on _trusted private networks_, you would have to be crazy or damn well know what you're doing to bypass on publicly addressable networks, otherwise you will have a bad reality check. There are decades of security checks and counter measures baked in the Linux network stack that a game would be irresponsible to ask his players to skip.
+
+I'm not even mentioning the ridiculous latency gains to be achieved here. Wire tapping the packet "NIC in" to userspace buffer should be in the ballpark of 3us. If you think you can do better and this latency is too much for your application, you're either day dreaming or you're not working in the video game industry. 
+
+------------
+No harm taken, kernel bypass technologies have moved fast in the last decade.
+
+As a side note though, I would encourage you to revisit DPDK. I've worked in the low latency space for a long time, and used pretty much every solution out there, open source or proprietary, and DPDK is one of my favorite.
+
+This is because DPDK is not _just_ poll mode drivers, it's a a full featured SDK for low latency packet processing. You get top notch thread safe memory pools to store packets, thread safe queues, hand written intrinsics optimized hashing and CRC algos, a cooperative scheduler in case you isolate your CPUs, etc, etc. 
+
+--------------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------------
