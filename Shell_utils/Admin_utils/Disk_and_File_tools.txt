@@ -10,10 +10,6 @@ $ find  -type f  -exec  du -Sh {} +  |  sort -rh  |  head -n 50
 ##delete all hidden directories:
 find .  -maxdepth 1 -type d -iname ".[^.]*" -print0 | xargs -I {} -0 rm -rvf "{}"
 
-
-
-
-
 --------------------------------------------------------------------------------------
 ##Disk file size
 $ du -chs * | tail -1
