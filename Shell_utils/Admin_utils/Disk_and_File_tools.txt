@@ -1,10 +1,15 @@
 
 --------------------------------------------------------------------------------------
+# find all files, then get their human readable size, then sort by largest first
+find . -type f -exec du -h {}+ | sort -hr| head
+find . -type f -size +100M
+
 ##identifies the 50 biggest files in its recursive directory tree. It lists those biggest files sorted by size:
 $ find  -type f  -exec  du -Sh {} +  |  sort -rh  |  head -n 50
 
 ##delete all hidden directories:
 find .  -maxdepth 1 -type d -iname ".[^.]*" -print0 | xargs -I {} -0 rm -rvf "{}"
+
 
 
 
@@ -22,6 +27,13 @@ du -hsx --exclude=/{proc,sys,dev,run} /*
 ##exclude multiple folders
 du -ch --exclude={path/to/folder1,path/to_folder2/,...,}
 
+alias ducks='du -cks * | sort -rn | head'
+
+# sort by human-readable format
+alias dx="du -hx *|sort -hr|head"
+
+##display the biggest directories
+du -a | sort -n -r | head
 
 --------------------------------------------------------------------------------------
 
