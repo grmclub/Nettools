@@ -83,6 +83,39 @@ Save and close the file. Another option is create a bash shell alias in your ~/.
 alias curl="curl -x server1.cyberciti.biz:3128"
 
 -------------------------------------------------------------
+##wget
+https://opensource.com/article/21/10/linux-wget-command
+https://opensource.com/downloads/linux-wget-cheat-sheet
+
+##send the data to standard output or file
+$ wget http://example.com --output-document - | head -n4
+$ wget http://example.com --output-document foo.html
+
+##Continue a partial download
+$ wget --continue https://example.com/linux-distro.iso
+
+##Download a sequence of files
+$ wget http://example.com/file_{1..4}.webp
+
+##Mirror a whole site
+
+You can download an entire site, including its directory structure, using the --mirror option. This option is the same as running --recursive --level inf --timestamping --no-remove-listing, which means it's infinitely recursive, so you're getting everything on the domain you specify. Depending on how old the website is, that could mean you're getting a lot more content than you realize.
+
+If you're using wget to archive a site, then the options --no-cookies --page-requisites --convert-links are also useful to ensure that every page is fresh, complete, and that the site copy is more or less self-contained.
+
+##Check headers
+$ wget --debug example.com
+
+masquerade as a specific mobile device:
+
+$ wget --debug \
+--header="User-Agent: Mozilla/5.0 (iPhone; CPU iPhone OS 13_5_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.1.1 Mobile/15E148 Safari/604.1" \
+http://example.com
+
+
+
+
+
 
 -------------------------------------------------------------
 
