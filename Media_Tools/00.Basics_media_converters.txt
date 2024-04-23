@@ -1,0 +1,88 @@
+
+https://opensource.com/article/21/11/linux-commands-convert-files
+https://opensource.com/tags/video-editing
+https://opensource.com/tags/audio-and-music
+
+--------------------------------------------------------------------------------------
+* ImageMagick line commands help you reduce image file sizes through three techniques:
+
+- Changing the file format
+- Changing the degree of compression
+- Making the image smaller
+
+$ convert image.jpg  -resize 800x600  new_image.jpg
+$ convert image.bmp  new_image.jpg   #  7.4MB down to 1.1MB
+$ convert image.tiff new_image.jpg   #  7.4MB down to 1.1MB
+$ convert image.png  new_image.webp  #  4.8MB down to 515KB
+$ convert image.png  new_mage.webp   #  1.5MB down to 560KB
+$ convert image.jpg  new_image.webp  #  769KB down to 512KB
+$ convert image.gif  new_image.jpg   #  13.2MB down to 10.9MB
+$ convert image.gif  new_image.webp  #  13.2MB down to 4.1MB
+
+
+##Combine conversions with scripting
+#!/bin/bash
+for file_name in *.png ; do  
+  convert "$file_name"  "$file_name".webp
+done
+
+--------------------------------------------------------------------------------------
+* Converting audio files
+
+    Lossless and uncompressed
+        WAV
+        PCM
+        AIFF
+    Lossless and compressed
+        FLAC
+        ALAC
+    Lossy
+        WEBM
+        OPUS
+        OGG (Vorbis)
+        AAC (some implementations of this are not open formats)
+        MP3
+        M4A
+        WMA (not an open format)
+
+Using ffmpeg is usually pretty straightforward. Here's the standard syntax. The -i flag identifies the input file, and the -vn flag tells ffmpeg not to invoke any video-related code that might alter the audio output:
+
+$ ffmpeg  -i  audiofile_input.ext -vn audiofile_output.new
+
+$ ffmpeg -i audio.wav -vn audio.ogg  # 38.3MB to 3.3MB
+$ ffmpeg -i audio.wav -vn audio.mp3  # 38.3MB to 3.5MB
+$ ffmpeg -i audio.wav -vn audio.m4a  # 38.3MB to 3.6MB
+$ ffmpeg -i audio.wav -vn audio.webm # 38.3MB to 2.9MB
+
+All the commands reduced the size of the lossless input files by a factor of 10
+
+--------------------------------------------------------------------------------------
+https://opensource.com/article/17/6/ffmpeg-convert-media-file-formats
+
+
+
+------------------------
+* Converting video files
+A video format is the combination of a container file format and a codec. A codec is software that encodes and decodes a data stream as it moves to and from the container file.
+
+These are some of today's most widely used open source video formats:
+
+    The MP4 format, containing H.264 video and AAC audio, is used in BluRay and Internet streaming.
+    The WEBM format, containing VP9 video and Opus audio, is remarkably flexible and is used for both archival-quality files as well as smaller files for streaming.
+    The Matroska (MKV) container format can contain nearly any combination of video, audio, and even stereoscopic (3D) imagery. It's the basis for WEBM.
+
+The main factors that determine video file size and quality are:
+
+    Resolution (dimension of the frame)
+    Bitrate
+    Encoding
+
+The ffmpeg command can change all three parameters. Here's a simple conversion example:
+
+$ ffmpeg -i input_video.mov output.webm
+
+--------------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------------
