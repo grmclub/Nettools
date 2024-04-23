@@ -1,0 +1,35 @@
+
+--------------------------------------------------------------------------------------
+##identifies the 50 biggest files in its recursive directory tree. It lists those biggest files sorted by size:
+$ find  -type f  -exec  du -Sh {} +  |  sort -rh  |  head -n 50
+
+##delete all hidden directories:
+find .  -maxdepth 1 -type d -iname ".[^.]*" -print0 | xargs -I {} -0 rm -rvf "{}"
+
+
+
+
+--------------------------------------------------------------------------------------
+##Disk file size
+$ du -chs * | tail -1
+
+-X, --exclude=Pattern
+$ du -ah --exclude="*.dll" /home/tcar/
+
+##skip the virtual file systems do this:
+du -hsx --exclude=/{proc,sys,dev,run} /*
+
+##exclude multiple folders
+du -ch --exclude={path/to/folder1,path/to_folder2/,...,}
+
+
+--------------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------------
+
