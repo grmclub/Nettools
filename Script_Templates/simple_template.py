@@ -35,15 +35,6 @@ class Item:
         self.m_price = price
         self.m_name  = name
 
-def printHelp():
-    print ("""Usage: %s -f <filename>
-
-    OPTIONS:
-         -f  input file
-         -h  Display this help message.
-    """ % os.path.basename(__file__))
-
-
 def process_file(data_file):
     with open(data_file, "r") as ifile:
         reader = csv.reader(ifile)
