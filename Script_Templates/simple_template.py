@@ -4,7 +4,23 @@ import os, sys, getopt
 import errno, traceback
 import csv
 from decimal import Decimal
+import subprocess
 
+
+def printHelp():
+    print ("""Usage: %s -f <filename>
+
+    OPTIONS:
+         -f  host list file
+         -h  Display this help message.
+    """ % os.path.basename(__file__))
+
+def execCmd(cmd):
+    #print (cmd)
+    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
+    (output, err) = p.communicate()
+    ret = p.returncode
+    return (output,err,ret)
 
 class Item:
     self.m_code
