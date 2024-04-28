@@ -1,0 +1,180 @@
+
+-------------------------------------------------------------
+--csv2html
+
+https://blog.finxter.com/5-best-ways-to-convert-csv-to-html-in-python/
+
+import csv
+import html
+csv_data = open('data.csv', 'r')
+csv_reader = csv.reader(csv_data)
+html_output = '<table>\n'
+for row in csv_reader:
+    html_output += '  <tr>\n'
+    for cell in row:
+        html_output += '    <td>' + html.escape(cell) + '</td>\n'
+    html_output += '  </tr>\n'
+html_output += '</table>'
+print(html_output)
+====================================
+https://gist.github.com/mdupuis13/bb3bdcfad966d730188caa76a7988ee2
+https://www.pythonforbeginners.com/basics/convert-csv-to-html-table-in-python
+import pandas as pd
+
+df1 = pd.read_csv('student_details.csv')
+print("The dataframe is:")
+print(df1)
+html_string = df1.to_html()
+print("The html string is:")
+print(html_string)
+====================================
+https://unix.stackexchange.com/questions/105501/convert-csv-to-html-table
+If you have sqlite and the command-line program sqlite3, you can run that program and then:
+
+.import --csv input.csv tmp
+.mode html
+
+====================================
+ chmod +x csv_to_html.awk
+$ ./csv_to_html.awk table.csv > table.html
+
+#!/bin/awk -f
+
+# Set field separator as comma for csv and print the HTML header line
+BEGIN {
+    FS=",";
+    print "<html><body><table>"
+}
+# Function to print a row with one argument to handle either a 'th' tag or 'td' tag
+function printRow(tag) {
+    print "<tr>";
+    for(i=1; i<=NF; i++) print "<"tag">"$i"</"tag">";
+    print "</tr>"
+}
+# If CSV file line number (NR variable) is 1, call printRow fucntion with 'th' as argument
+NR==1 {
+    printRow("th")
+}
+# If CSV file line number (NR variable) is greater than 1, call printRow fucntion with 'td' as argument
+NR>1 {
+    printRow("td")
+}
+# Print HTML footer
+END {
+    print "</table></body></html>"
+}
+====================================
+  BEGIN{header = "<html><body><table>"; print header}
+         {c = NR == 1 ? "th" : "td";
+          OFS = et(c) bt(c);
+          $1 = $1;
+          print wrap("tr", wrap(c,$0)) }
+      END{gsub("<","</",header); print header }
+
+    function wrap(t, v) { return bt(t) v et(t)}
+    function bt(t) {return "<" t ">"}
+    function et(t) {return "</" t ">"}
+====================================
+
+
+
+-------------------------------------------------------------
+##Perl implementation
+
+https://github.com/robert-geake/csv-to-html-perl/blob/master/csv-to-html
+--------------------
+#!/usr/local/bin/perl
+
+use strict;
+use warnings;
+
+use HTML::Template;
+
+my @table;
+while (my $line = <DATA>){
+    chomp $line;
+    my @row = map{{cell => $_}} split(/,/, $line);
+    push @table, {row => \@row};
+}
+
+my $tmpl = HTML::Template->new(scalarref => \get_tmpl());
+$tmpl->param(table => \@table);
+print $tmpl->output;
+
+sub get_tmpl{
+    return <<TMPL
+<html>
+<TMPL_LOOP table>
+<tr>
+<TMPL_LOOP row>
+<td><TMPL_VAR cell></td></TMPL_LOOP>
+</tr></TMPL_LOOP>
+</html>
+TMPL
+}
+
+__DATA__
+1,HF6,08-Oct-08,34:22:13,df,jhj,fh,fh,ffgh,gh,g,rt,ffgsaf,asdf,dd,yoawa,DWP,tester,Pattern
+2,hf35,08-Oct-08,34:12:13,dg,jh,fh,fgh,fgh,gh,gfh,re,fsaf,asdf,dd,yokogawa,DWP,DWP,Pattern
+3,hf35,08-Oct-08,31:22:03,dg,jh,fh,fgh,gh,gh,gh,rte,ffgsaf,asdf,dfffd,yokogawa,DWP,DWP,ghh
+
+
+-------------------------------------------------------------
+##table Stylesheet
+
+ flat-table.css:
+
+.flat-table {
+  display: block;
+  font-family: sans-serif;
+  -webkit-font-smoothing: antialiased;
+  font-size: 115%;
+  overflow: auto;
+  width: auto;
+}
+  th {
+    background-color: rgb(112, 196, 105);
+    color: white;
+    font-weight: normal;
+    padding: 20px 30px;
+    text-align: center;
+  }
+  td {
+    background-color: rgb(238, 238, 238);
+    color: rgb(111, 111, 111);
+    padding: 20px 30px;
+  }
+-----------------
+##Inside markdown
+
+<style>
+  .flat-table {
+    display: block;
+    font-family: sans-serif;
+    -webkit-font-smoothing: antialiased;
+    font-size: 115%;
+    overflow: auto;
+    width: auto;
+  }
+  thead {
+    background-color: rgb(112, 196, 105);
+    color: white;
+    font-weight: normal;
+    padding: 20px 30px;
+    text-align: center;
+  }
+  tbody {
+    background-color: rgb(238, 238, 238);
+    color: rgb(111, 111, 111);
+    padding: 20px 30px;
+  }
+</style>
+
+
+
+
+-------------------------------------------------------------
+-------------------------------------------------------------
+-------------------------------------------------------------
+-------------------------------------------------------------
+
