@@ -113,6 +113,15 @@ def removeFiles(rm_path, rexp):
 
 def getAccessTime(filepath):
     return os.stat(filepath).st_mtime
+    
+def getLatestFile(filepath):
+    try:
+        list_of_files = glob.glob(filepath) ## Filename can be specified with regex pattern
+        latest_file = max(list_of_files, key=os.path.getmtime)
+        return latest_file
+    except OSError as err:
+        if err.errno != errno.ENOENT: # no such file or directory
+            raise OSError("%s: Error: %s" % sys._getframe().f_code.co_name,err)
 
 #--File archive functions----------------------------------------------------------
 def archiveFiles(arch_filename, src_path):
