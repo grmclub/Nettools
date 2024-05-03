@@ -1,0 +1,51 @@
+
+-------------------------------------------------------------
+##Display the top ten running processes - sorted by memory usage
+ps aux | sort -nk +4 | tail
+ps aux –sort=%mem,%cpu
+ps -eo size.command --sort -size|head
+top -b -o +%MEM|head -17
+
+##Watch CPU Processes
+watch -n 1 'ps -eo pid,ppid,cmd,%mem,%cpu --sort=-%mem | head'
+
+
+-------------------------------------------------------------
+##Check CPU Usage from Linux
+
+#top –i
+
+This hides all the idle processes, making it easier to sort through the list.
+
+To quit the top function, press the letter q on your keyboard.
+
+Some other useful commands while top is running include:
+
+    M – sort task list by memory usage
+    P – sort task list by processor usage
+    N – sort task list by process ID
+    T – sort task list by run time
+	
+#top -u $USER	
+
+#mpstat –P ALL
+Use the following command to direct sar to monitor CPU usage at set intervals:
+
+#Top memory consuming processes
+ps aux --sort -rss |pr -TW 256|head -15
+
+-------------------------------------------------------------
+####Network Usage
+ 
+##watch network Service Activity in Real-time
+lsof -i
+
+##Show apps that use internet connection at the moment. (Multi-Language)
+lsof -P -i -n
+-------------------------------------------------------------
+-------------------------------------------------------------
+-------------------------------------------------------------
+-------------------------------------------------------------
+-------------------------------------------------------------
+-------------------------------------------------------------
+-------------------------------------------------------------
