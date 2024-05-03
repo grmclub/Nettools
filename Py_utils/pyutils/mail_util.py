@@ -65,25 +65,6 @@ def send_email_with_attachment(subject, body_text, from_email,
     finally:
         server.quit()
         
-def send_html_mail(msg):
-	from_addr="xx@yahoo.com"
-	to_addr="xx@yahoo.com"
-	today = datetime.datetime.now().strftime("%Y%m%d")
-	sub ="XXX Report for %s" %(today)
-	cmd = """
-	(
-	echo "To: %s"
-	echo "From: %s"
-	echo "Subject: %s"
-	echo "Mime-version: 1.0"
-	echo "Content-Type: text/html; charset='utf-8'"
-	echo
-	echo "%s"
-	) | /usr/sbin/sendmail -t """ %(to_addr,from_addr,sub,msg)
-	result,e,r = execCmd(cmd)
-	print "Mail send done"
-
-
 class unit_test:
     def check_simple_mail(self):
         sub = "test"
