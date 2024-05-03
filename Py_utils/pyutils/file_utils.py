@@ -144,6 +144,16 @@ def archiveFiles(arch_filename, src_path):
 def extract_zip_archive(src_archive_path, dst_path):
     with contextlib.closing(zipfile.ZipFile(src_archive_path, "r")) as zip_ref:
         zip_ref.extractall(dst_path)
+        
+def cleanup_files(data_dir):
+    day_of_week = datetime.today().isoweekday() #Monday is 1
+        days_before = 7
+    if day_of_week == 1:
+            days_before =10
+    #data_dir=”/home/xx/yy/data”
+    cmd=”find %s -type f -mtime +%d -delete” %(data_dir,days_before)
+    result,e,r = execCmd(cmd)
+    print result
 
 #--Remote file functions-----------------------------------------------------------
 def upload_to_hosts(rhost_list, rlogin, src_file_path, dst_path, timeout=10):
