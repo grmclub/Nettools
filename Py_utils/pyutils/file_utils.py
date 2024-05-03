@@ -124,6 +124,10 @@ def getLatestFile(filepath):
             raise OSError("%s: Error: %s" % sys._getframe().f_code.co_name,err)
 
 #--File archive functions----------------------------------------------------------
+def archive(data_dir,today):
+	cmd=”cd %s;zip -r %s.zip *.%s*.csv” %(data_dir,today,today)
+	result,e,r = execCmd(cmd)
+
 def archiveFiles(arch_filename, src_path):
     arch_dir = os.path.dirname(arch_filename)
     src_dir  = os.path.dirname(src_path)
