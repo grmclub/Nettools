@@ -4,8 +4,13 @@ https://www.thegeekstuff.com/2011/03/sar-examples/
 https://www.thegeekstuff.com/2011/03/linux-performance-monitoring-intro/
 https://www.thegeekstuff.com/2010/01/15-practical-unix-linux-top-command-examples/
 
+–sar utils
+sar -A /var/log/sa/sa09 |less
+sar -A -f sa21 > YYYYMM21.txt
 
-*sar
+for file in $(ls /var/log/sa*);do sar -P ALL -f$file > ~/data/$file;done
+
+*sar options
 -u =cpu
 -r = memory
 -b = io
@@ -19,7 +24,6 @@ https://www.thegeekstuff.com/2010/01/15-practical-unix-linux-top-command-example
 #cpu -2 sec intervals
 sar 2 5
 sar -f /var/log/sa/sa02 -u -s 07:00:00 -e 08:00:00 > /tmp/xx
-
 
 #CPU Usage of Individual CPU or Core (sar -P)
 sar -P ALL 1 1
