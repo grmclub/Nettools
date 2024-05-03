@@ -1,28 +1,4 @@
 --------------------------------------------------------------------------------------
-Check CPU Usage from Linux
-
-#top –i
-
-This hides all the idle processes, making it easier to sort through the list.
-
-To quit the top function, press the letter q on your keyboard.
-
-Some other useful commands while top is running include:
-
-    M – sort task list by memory usage
-    P – sort task list by processor usage
-    N – sort task list by process ID
-    T – sort task list by run time
-	
-#top -u $USER	
-
-#mpstat –P ALL
-Use the following command to direct sar to monitor CPU usage at set intervals:
-
-#Top memory consuming processes
-ps aux --sort -rss |pr -TW 256|head -15
-
---------------------------------------------------------------------------------------
 --perf kb
 https://www.thegeekstuff.com/2011/03/sar-examples/
 https://www.thegeekstuff.com/2011/03/linux-performance-monitoring-intro/
