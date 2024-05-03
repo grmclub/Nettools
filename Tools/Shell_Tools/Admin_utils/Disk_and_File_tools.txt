@@ -11,11 +11,14 @@ $ find  -type f  -exec  du -Sh {} +  |  sort -rh  |  head -n 50
 find .  -maxdepth 1 -type d -iname ".[^.]*" -print0 | xargs -I {} -0 rm -rvf "{}"
 
 --------------------------------------------------------------------------------------
+====================================
 ##Disk file size
 alias dx=”du -shc *|sort -rh|head”
 
-$ du -chs * | tail -1
-
+du -axh --max-depth=3|sort -h 
+du -h --max-depth=1 / | sort -hr
+du -chs * | tail -1
+====================================
 -X, --exclude=Pattern
 $ du -ah --exclude="*.dll" /home/tcar/
 
