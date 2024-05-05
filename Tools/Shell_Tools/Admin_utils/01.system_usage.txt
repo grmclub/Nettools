@@ -1,10 +1,35 @@
+##system information
+
+##core dump pattern
+cat /proc/sys/kernel/core_pattern
+
+##HW Info
+HW_INFO="cat /sys/devices/virtual/dmi/id/product_name"
+CPU_INFO="lscpu|egrep 'Arch|Core|Socket|Model'|paste -d';' - - - -|tr -s ' '"
+MEM_INFO="free -h|grep Mem|awk '{print \$1,\$2}'"
+NET_INFO="lspci|grep Ethernet"
+DISK_INFO="lsblk -d -o NAME,SERIAL,SIZE"
+OS_INFO="lsb_release -a|grep Desc"; #cat /proc/version #cat /etc/os-release #cat /etc/issue
 
 -------------------------------------------------------------
 ##Display the top ten running processes - sorted by memory usage
 ps aux | sort -nk +4 | tail
 ps aux –sort=%mem,%cpu
 ps -eo size.command --sort -size|head
-top -b -o +%MEM|head -17
+top -b -o +%MEM|head -15
+
+--cpu
+ps -aux --sort -pcpu|pr -TW 256|head
+
+--mem
+ps -aux --sort -rss|pr -TW 256|head 
+ps -eo pid,ppid,%mem,%cpu,cmd,comm --sort=-%mem|head 
+top -o %MEM
+top -o %CPU| head 
+
+--use
+echo "rss,pid,pcpu,pmem,user,args"
+ps -eo rss,pid=,pcpu=,pmem=,user=,args=, |sort -b -nrk3|pr -TW 256|head
 
 ##Watch CPU Processes
 watch -n 1 'ps -eo pid,ppid,cmd,%mem,%cpu --sort=-%mem | head'
