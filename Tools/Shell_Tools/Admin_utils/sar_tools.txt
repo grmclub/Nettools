@@ -14,6 +14,15 @@ for file in $(ls /var/log/sa*);do sar -P ALL -f$file > ~/data/$file;done
 ##sar display context switches per sec
 sar -w 1 3
 
+##monitor CPU run queue
+sar -q 1
+- runq-sz: Run queue length
+- plist-sz: Number of tasks in the task list
+- ldavg-1: System load average for the last minute
+- ldavg-5: System load average for the last five minutes
+- ldavg-15: System load average for the last 15 minutes
+- blocked: Number of currently blocked tasks, waiting for I/O to complete
+
 *sar options
 -u =cpu
 -r = memory
