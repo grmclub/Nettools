@@ -194,11 +194,15 @@ def delRemoteFile(user, host, filename):
             raise IOError("%s: Error: %s" % (sys._getframe().f_code.co_name, err))
             
 #--Shell mail Functions--------------------------------------------------------------
-def send_html_mail(msg,from_addr,to_addr):
+def send_file(from_addr,to_addr,cc,sub,body,filename):
+	cmd = """ echo \"%s\"| mailx -s \"%s\" -r \"%s\" -c \"%s\" -a %s %s """ %(body,sub,from_addr,cc,fiilename,to_addr)
+	result,e,r = execCmd(cmd)
+
+def send_html_mail(sub,body,from_addr,to_addr):
 	#from_addr="xx@yahoo.com"
 	#to_addr="xx@yahoo.com"
-	today = datetime.datetime.now().strftime("%Y%m%d")
-	sub ="XXX Report for %s" %(today)
+	#today = datetime.datetime.now().strftime("%Y%m%d")
+	#sub ="XXX Report for %s" %(today)
 	cmd = """
 	(
 	echo "To: %s"
@@ -208,6 +212,6 @@ def send_html_mail(msg,from_addr,to_addr):
 	echo "Content-Type: text/html; charset='utf-8'"
 	echo
 	echo "%s"
-	) | /usr/sbin/sendmail -t """ %(to_addr,from_addr,sub,msg)
+	) | /usr/sbin/sendmail -t """ %(to_addr,from_addr,sub,body)
 	result,e,r = execCmd(cmd)
 	print "Mail send done"
