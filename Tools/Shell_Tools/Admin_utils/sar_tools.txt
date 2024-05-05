@@ -1,14 +1,18 @@
 --------------------------------------------------------------------------------------
 --perf kb
+https://www.baeldung.com/linux/sar-system-statistics
 https://www.thegeekstuff.com/2011/03/sar-examples/
 https://www.thegeekstuff.com/2011/03/linux-performance-monitoring-intro/
 https://www.thegeekstuff.com/2010/01/15-practical-unix-linux-top-command-examples/
 
-–sar utils
+##sar utils
 sar -A /var/log/sa/sa09 |less
 sar -A -f sa21 > YYYYMM21.txt
 
 for file in $(ls /var/log/sa*);do sar -P ALL -f$file > ~/data/$file;done
+
+##sar display context switches per sec
+sar -w 1 3
 
 *sar options
 -u =cpu
