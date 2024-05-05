@@ -115,6 +115,12 @@ https://www.site24x7.com/learn/linux/top-commands-for-sysadmins.html
 https://www.site24x7.com/learn/linux/page-faults-memory-swapping.html
 https://www.site24x7.com/learn/linux/context-switching.html
 
+-------------------------
+https://tanelpoder.com/posts/high-system-load-low-cpu-utilization-on-linux/
+https://github.com/tanelpoder/0xtools
+https://www.brendangregg.com/blog/2017-08-08/linux-load-averages.html
+
+-------------------------
 
 Several metrics can help monitor the three pillars of any server CPU,RAM,Disk IO
 Some of these metrics are:
