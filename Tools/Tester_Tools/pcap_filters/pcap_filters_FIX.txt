@@ -53,25 +53,27 @@ function gen_dump(){
 
 
 ---------------------------------------------------------------------------------
-    tshark -r $file \
-    -Tfields  \
-    -E header=y  -E separator='|' \
-    -e frame.time \
-    -e fix.MsgType\
-    -e fix.MsgSeqNum \
-    -e fix.RefSeqNum \
-    -e fix.SenderCompID\
-    -e fix.TargetCompID\
-    -e fix.SendingTime\
-    -e fix.TransactTime \
-    -e fix.ClOrdID\
-    -e fix.Symbol \
-    -e fix.Price \
-    -e fix.OrderQty \
-    -e fix.ExecType
+##Fix protocol extract data
+tshark -r $file \
+-T fields \
+-E header=y  \
+-E separator='|' \
+-e frame_time \
+-e fix.MsgType \
+-e fix.MsgSeqNum \
+-e fix.RefSeqNum \
+-e fix.SenderCompId \
+-e fix.TargetCompId \
+-e fix.SendingTime \
+-e TransactTime \
+-e fix.ClOrdID \
+-e fix.Symbol \
+-e fix.Price \
+-e fix.OrderQty \
+-e fix.ExecType
 ---------------------------------------------------------------------------------
-
-tshark -r fix.pcap -Y "fix" -Tfields  -E separator=',' -e frame.time_epoch -e fix.MsgType
+##Extract key field
+tshark -r fix.pcap -Y "fix" -Tfields  -E separator=',' -e frame.time_epoch -e fix.MsgType -e fix.ClOrdID -e fix.ExecType
 
 https://stackoverflow.com/questions/13810156/tshark-export-fix-messages
 tshark -r fix.pcap -Tfields -Eseparator=, -Eoccurrence=l -e frame.time_epoch -e fix.MsgType -e fix.SenderCompID -e fix.SenderSubID -e fix.TargetCompID -e fix.Symbol -e fix.Side -e fix.Price -e fix.OrderQty -e fix.ClOrdID -e fix.OrderID -e fix.OrdStatus
@@ -81,8 +83,7 @@ tshark -nr fix.pcap -Y'fix' -w- | tcpdump -r- -l -w- | tcpflow -r- -C -B  | tr \
 
 tcpflow ensures that the TCP stream is followed, so no FIX messages are missed (in the case where a single TCP packet contains more than 1 FIX message). -C writes to the console and -B ensures binary output. This approach is not unlike following a TCP stream in Wireshark.
 
-The FIX delimiters are preserved which means that I can do some handy grepping on the output, e.g.
-
+The FIX delimiters are preserved, grep can be applied in output
 ... | tcpflow -r- -C -B | grep -P "\x0135=8\x01"
 
 

@@ -4,23 +4,34 @@ https://danielmiessler.com/p/tcpdump/
 
 -------------------------------------------------------------
 * Core Filters
-
 ==================================
---convert & extract from erf
-editcap -F libpcap -T ether -A "$(date -I) 08:00:00" -B  "$(date -I) 08:00:00" Capture_$(date +%Y%m%d).erf ext_$(date -I).pcap
+##Conversion of erf to pcap
+https://www.netresec.com/?page=Blog&month=2012-11&post=Convert-Endace-ERF-capture-files-to-PCAP
 
-#Filter by IP/portrange
+##pcap to erf
+/usr/bin/dagconvert -T pcap:erf -i fle.pcap -o file.erf
+ 
+##erf to pcap
+editcap -F libpcap -T ether -A "$(date -I) 09:00:00" -B "$(date -I) 09:10:00" xx.erf out.pcap
+tcpdump -r out.pcap -A|grep XXABC
 
+-A dumps ascii
+-X dumps in hexdump
+
+##tcpdump: Filter by IP/portrange
 file=xx.pcap
-IP=
+IP=xxx.xxx.xxx.xxx
 tcpdump -r $file "host $IP  or (vlan and host $IP) " -w ip.pcap
 
 RANGE=
 tcpdump -r $file "portrange $RANGE or (vlan and portrange $RANGE)" -w range.pcap   
+tcpslice /var/sniffer/dump{5..8}*.pcap | tcpdump -r - "portrange 11003 or (vlan and portrange 11003)" -w xx.pcap
 
-tcpslice /var/db/sniffer/dump{5..8}*.pcap | tcpdump -r - "portrange 11003 or (vlan and portrange 11003)" -w xx.pcap
+##ts Filter by port
+tshark -r xx.pcap -Y "tcp.port == 24636"
+-T fields -e eth.src -e eth.dst -e data 
 
---ascii/ hex dump
+##Ascii/ hex dump
 tcpdump -r out.pcap -A |grep -a XX
 -A dumps ASCII
 -X dumps output in Hex
@@ -28,13 +39,90 @@ tcpdump -r out.pcap -A |grep -a XX
 -t : Give human-readable timestamp output.
 -tttt : Give maximally human-readable timestamp output
 
+##split file into smaller files
+tcpdump -r out.pcap -C 1024 -w capxx
+tshark -r out.pcap -Y "frame.number >=1 && frame.number <=100" -w out.pcap
 
-
---Check tcp establish & teardown
+##Check tcp establish & teardown
 tcp.flags.syn==1||(tcp.flags.syn==1 && tcp.flags.ack==1)||tcp.flags.fin==1||tcp.flags.reset==1
+tshark -r xx.pcap -R "(tcp.flags.syn==1||(tcp.flags.syn==1 && tcp.flags.ack==1)||tcp.flags.fin==1||tcp.flags.reset==1) && tcp.len==0 && tcp.seq<10 \
+-T fields \
+-e frame.time \
+-e tcp.seq \
+-e ip.src  \
+-e tcp.srcport \
+-e ip.dst \
+-e tcp.srcport \
+-e col.Info | egrep 'SYN|ACK, ACK|ACK|RST|FIN'
 
+##ws exclude retransmission
+!(tcp.retransmission or tcp.analysis.fast_retransmission)
+tcp.srcport ==10300 && !(tcp.retransmission or tcp.analysis.fast_retransmission)
+
+##ws check frame contents
+frame contains "XXYYZZ1234"
+
+##ts convert payload to ascii with timestamp
+https://ask.wireshark.org/question/26086/formatting-tshark-payload-output-with-timestamp/
+tshark -r xx.pcap -T fields -e frame.time -e data| perl -ne 's/\s+$//; ($date,$hexstr) = split("\t"); print substr($date,13,8),"\t",(pack,"H",$hexstr),"\r\n";'
+tshark -r xx.pcap -T fields -e frame.time -e data| perl -ne 's/\s+$//; ($date,$hexstr) = split("\t"); print substr($date, 13,8),"\t",(pack "H*", $hexstr), "\r\n";'
+
+##Extract and hexify data
+tshark -r $file -Tfields -e data|sed -e 's/^$/d'|sed 's/.\{2\}/& /g'
 ==================================
+##Connectivity Filters
 
+##Extract connectivity details of seq no.
+file=xx.pcap
+tshark -r $file \
+-o tcp.relative_sequence_numbers:FALSE\
+-T fields \
+-E header=y  \
+-E separator='|' \
+-e frame.time \
+-e tcp.seq \
+-e ip.src  \
+-e tcp.srcport \
+-e ip.dst \
+-e tcp.dstport \
+-e col.Info
+
+##decode by protocol
+file=xx.pcap
+port=11200
+tshark -r $file \
+-o tcp.relative_sequence_numbers:FALSE\
+-o "soupbintcp.tcp.port:$port" \
+-Y "tcp.port ==$port && tcp.flags.push ==1" \
+-T fields \
+-E header=y  \
+-E separator='|' \
+-e frame.time \
+-e tcp.seq \
+-e ip.src  \
+-e tcp.srcport \
+-e ip.dst \
+-e tcp.dstport \
+-e soupbintcp.packet_type -V -l
+
+##Calc outgoing msgrate - soupintcp
+file=xx.pcap
+port=11200
+tshark -r $file \
+-o tcp.relative_sequence_numbers:FALSE\
+-o "soupbintcp.tcp.port:$port" \
+-Y "tcp.dstport ==$port && tcp.flags.push ==1" \
+-T fields \
+-E header=y  \
+-E separator='|' \
+-e frame.time_epoch \
+-e tcp.seq \
+-e ip.src  \
+-e tcp.srcport \
+-e ip.dst \
+-e tcp.dstport \
+-e soupbintcp.packet_type |awk -F'|' '{print $1}'|cut -c1-10|uniq -c > ${port}_msg_rate.csv
+==================================
 --TCP Connections
 
 1.tshark -r $file -R "tcp.flags.syn == 1" -T fields -e frame.time_epoch -e ip.src -e ip.dst -e tcp.srcport -e tcp.dstport
