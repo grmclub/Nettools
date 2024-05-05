@@ -3,6 +3,24 @@
 ##core dump pattern
 cat /proc/sys/kernel/core_pattern
 
+##max limits
+sysctl -a | grep threads-max
+ulimit -a | grep "stack size"
+cat /proc/sys/kernel/threads-max
+cat /proc/sys/kernel/pid-max
+
+--threads count
+ls /proc/<pid>/task | wc -l
+ps hH p <PID> | wc -l    #H: Thread mode. This will show information about threads.
+cat /proc/<pid>/status| grep Threads
+
+--tcp window scaling
+cat /proc/sys/net/ipv4/tcp_window_scaling 
+To enable TCP window scaling temporarily, run the following command:
+$ sysctl net.ipv4.tcp_window_scaling=1 
+Here is how to enable it permanently:
+$ echo net.ipv4.tcp_window_scaling=1 \ > /etc/sysctl.d/50-tcp-window-scaling.conf \ && sysctl --system
+
 ##HW Info
 HW_INFO="cat /sys/devices/virtual/dmi/id/product_name"
 CPU_INFO="lscpu|egrep 'Arch|Core|Socket|Model'|paste -d';' - - - -|tr -s ' '"
@@ -82,6 +100,91 @@ lsof -i
 ##Show apps that use internet connection at the moment. (Multi-Language)
 lsof -P -i -n
 -------------------------------------------------------------
+##Server performance metrics
+https://www.redhat.com/sysadmin/troubleshooting-slow-servers
+https://www.site24x7.com/learn/linux/monitor-linux-server-performance.html
+https://www.site24x7.com/learn/linux/cpu-run-queue-length.html
+https://erravindrapawadia.medium.com/linux-troubleshooting-why-is-the-server-so-slow-c524e372973d
+
+https://www.site24x7.com/learn/linux/context-switching.html
+https://www.site24x7.com/learn/linux/disk-io-troubleshooting.html
+https://www.site24x7.com/learn/linux/nfs-troubleshooting.html
+https://www.site24x7.com/learn/linux/troubleshoot-high-io-wait.html
+https://www.site24x7.com/learn/linux/network-performance-troubleshooting.html
+https://www.site24x7.com/learn/linux/top-commands-for-sysadmins.html
+https://www.site24x7.com/learn/linux/page-faults-memory-swapping.html
+https://www.site24x7.com/learn/linux/context-switching.html
+
+
+Several metrics can help monitor the three pillars of any server CPU,RAM,Disk IO
+Some of these metrics are:
+- CPU utilization: Percentage of CPU time to perform a task
+- Load average: Number of processes running on the CPU over a while
+- Uptime: Amount of time passed since the last reboot of the system
+- Memory utilization: Memory percentage utilized
+- Disk utilization: Percentage of the total disk space used
+- I/O wait time: Percentage of the CPU time spent waiting for I/O operations
+
+##Troubleshoot system slowness
+##Cmd basics
+free -h
+top -o %CPU | head -n12
+
+Another route to investigate slowness is see if system errors are getting kicked down into system log
+dmesg
+dmesg --time-format=iso  #  show timestamp
+watch "dmesg | tail -20"
+
+Here are more logs to examine
+grep -i error /var/log/syslog
+cat /var/log/syslog
+cat  /var/log/kern.log 
+
+##Basics Slow Response and System Lag
+sudo apt-get install htop iotop
+
+    Start a terminal, in it run htop
+    Start another terminal, in it run iotop
+    Start another terminal, it it run tail -f /var/log/kern.log
+
+Wait until the lag occurs, then look at your three terminals :
+
+    The first one will tell you if a process is hogging the processor
+    The second one will tell you if your hard disk is being thrashed by a process.
+    The third one will tell you if an event has occurred regarding your hardware.
+
+---------------------------------------------------
+##Top usage
+The -b option is for batch mode and the -n option lets you control how many times top will update before it closes.
+
+$ top -b -n 1 > top_output
+https://www.site24x7.com/learn/linux/top-command.html
+
+
+
+---------------------------------------------------
+#Commands to monitor CPU run queue
+sar -q 1
+
+    runq-sz: Run queue length
+    plist-sz: Number of tasks in the task list
+    ldavg-1: System load average for the last minute
+    ldavg-5: System load average for the last five minutes
+    ldavg-15: System load average for the last 15 minutes
+    blocked: Number of currently blocked tasks, waiting for I/O to complete
+	
+ps command includes the STAT column, which displays the state of each running process
+The first letter of the STAT column value is the state of the process, where S stands for sleep and R stands for runnable.
+
+/proc status file
+cat /proc/126/status | grep State
+
+iotop command will reveal the list of all processes using the I/O resources
+
+---------------------------------------------------
+
+
+
 -------------------------------------------------------------
 -------------------------------------------------------------
 -------------------------------------------------------------
