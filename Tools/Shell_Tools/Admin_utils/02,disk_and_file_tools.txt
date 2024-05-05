@@ -10,6 +10,14 @@ $ find  -type f  -exec  du -Sh {} +  |  sort -rh  |  head -n 50
 ##delete all hidden directories:
 find .  -maxdepth 1 -type d -iname ".[^.]*" -print0 | xargs -I {} -0 rm -rvf "{}"
 
+##Delete by inode number
+$ls -i
+7404301 "la*
+
+$find . -maxdepth 1 -type f -inum 7404301
+./"la*
+$find . -maxdepth 1 -type f -inum 7404301 -delete
+
 --------------------------------------------------------------------------------------
 ====================================
 ##Disk file size
