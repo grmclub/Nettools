@@ -32,7 +32,7 @@ OS_INFO="lsb_release -a|grep Desc"; #cat /proc/version #cat /etc/os-release #cat
 -------------------------------------------------------------
 ##Display the top ten running processes - sorted by memory usage
 ps aux | sort -nk +4 | tail
-ps aux –sort=%mem,%cpu
+ps aux –-sort=%mem,%cpu
 ps -eo size.command --sort -size|head
 top -b -o +%MEM|head -15
 
