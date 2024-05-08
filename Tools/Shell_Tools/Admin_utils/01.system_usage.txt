@@ -35,6 +35,7 @@ ps aux | sort -nk +4 | tail
 ps aux –-sort=%mem,%cpu
 ps -eo size.command --sort -size|head
 top -b -o +%MEM|head -15
+top -b -n2 -d0 -o +%CPU
 
 --cpu
 ps -aux --sort -pcpu|pr -TW 256|head
@@ -93,9 +94,13 @@ ps aux --sort -rss |pr -TW 256|head -15
 
 -------------------------------------------------------------
 ####Network Usage
- 
+
+##Get connections
+lsof -i -aP -p<pid>
+
 ##watch network Service Activity in Real-time
 lsof -i
+
 
 ##Show apps that use internet connection at the moment. (Multi-Language)
 lsof -P -i -n
