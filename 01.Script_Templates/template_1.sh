@@ -11,6 +11,33 @@ set -eu
 
 TODAY=$(date "+%Y%m%d");
 
+##Send mail
+send_mail()
+{
+	send_from="xx@yahoo.com"
+	send_to="xx@gmail.com"
+	cc_to=""
+	bcc_to=""
+	tm=$(date +%H%M)
+	
+	sub="Report for $today"
+	body="Please find file(s) attached"
+	echo $body| mailx -r $send_from -c $cc_to -b $bcc_to -a "$file1" -a "$file2" $send_to
+	echo "Mail sent"	
+}
+
+##Auto cleanup old files
+cleanup_dir()
+{
+	day_of_week=$(date +%w)
+	days_before=7
+	if [[ day_of_week == "1" ]]: then
+		days_before=10
+	fi
+	cmd="find $data_dir -mtime +${days_before} -delete"
+	echo $cmd|ssh ${sync_host}
+}
+
 function filter1(){
     tcpslice /var/xx/dump-$NIC-$(date -I)-*.tcpdump | tcpdump -r - "portrange $RANGE or (vlan and portrange $RANGE)" -w $OUTFILE.pcap
 
