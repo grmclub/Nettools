@@ -1,0 +1,49 @@
+-------------------------------------------------------------
+--SFTP Speedup
+ Use HPN-SSH library if you can.
+
+The stock SSH library limits TCP Window size to 64K... because who will ever need more?
+
+TCP Window size is needed for transmission over long pipes.
+
+If you want to know why:
+
+https://www.psc.edu/research/networking/hpn-ssh/ 
+
+Well, first off you should use iperf3 to figure out what your actual available bandwidth looks like. That should help you figure out how much improvement you can reasonably expect. 
+
+https://gist.github.com/KartikTalwar/4393116
+
+
+1. Local Data Upload. Avoid Wan Transfer 
+https://aws.amazon.com/blogs/storage/minimize-network-latency-with-your-aws-transfer-for-sftp-servers/?sc_channel=sm&sc_publisher=REDDIT&sc_outcome=AWS%20Support&linkId=201082685
+
+2. Remount network shared drive periodically
+3. TCP tuning / Enable High Performance optimizations on high volume servers
+4. SFTP Tuning params
+
+--SFTP Optimizations
+https://serverfault.com/questions/843691/speed-up-sftp-uploads-on-high-latency-network
+With OpenSSH sftp client (which you seem to use), you can use:
+
+    -R switch to increase request queue length (default is 64)
+    -B switch to increase read/write request size (default is 32 KB)
+
+For a start, try to double both:
+
+sftp -R 128 -B 65536 user@host
+
+The -C flag enables a gzip compression of an SSH stream.
+https://unix.stackexchange.com/questions/218668/what-does-the-c-flag-exactly-do-in-scp
+
+The parallelized AES-CTR cipher is a performance boost on systems with multiple cores if you need to have full encryption end to end.
+https://stackoverflow.com/questions/8849240/why-when-i-transfer-a-file-through-sftp-it-takes-longer-than-ftp
+https://unix.stackexchange.com/questions/288768/slow-scp-transfer-speed-over-wan
+https://github.com/sshnet/SSH.NET/pull/866
+
+
+--Use rsync
+https://ss64.com/bash/rsync_options.html
+https://stackoverflow.com/questions/24058544/speed-up-rsync-with-simultaneous-concurrent-file-transfers
+
+-------------------------------------------------------------
