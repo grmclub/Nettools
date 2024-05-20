@@ -13,7 +13,7 @@ https://www.cadc-ccda.hia-iha.nrc-cnrc.gc.ca/netperf/tuning-tcp.shtml
 https://docs.amd.com/r/en-US/ug1523-x3522-user/Tuning-Recommendations
 
 https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/9/html/monitoring_and_managing_system_status_and_performance/tuning-the-network-performance_monitoring-and-managing-system-status-and-performance#tuning-tcp-connections-for-high-throughput_tuning-the-network-performance
-ttps://docs.oracle.com/cd/E19879-01/820-4343/abeji/index.html
+https://docs.oracle.com/cd/E19879-01/820-4343/abeji/index.html
 https://www.ateam-oracle.com/post/tcpip-tuning
 
 
@@ -37,7 +37,31 @@ net.ipv4.tcp_wmem=4096 16384 8388608
 net.ipv4.route.flush=1
 EOF'
 
+https://indico.cern.ch/event/558754/contributions/2387602/attachments/1380046/2097515/ATCF2-20161130-TCP-Tuning.pdf
+##Checking send and receive buffers
+To check the current value type either:
+$ sysctl net.core.rmem_max net.core.rmem_max = 65535
+$ sysctl net.core.wmem_max net.core.wmem_max = 65535
+or
+$ cat /proc/sys/net/core/rmem_max 65535
+$ cat /proc/sys/net/core/wmem_max 65535
+
+To change those value simply type:
+sysctl -w net.core.rmem_max=33554432
+sysctl -w net.core.wmem_max=33554432
+In this example the value 32MByte has been chosen:
+32 x 1024 x 1024 = 33554432 Byte
 -------------------------------------------------------------
+http://bagder.github.io/I-D/httpbis-tcp/
+https://github.com/zhuichao001/tcp-tuning
+http://xgu.ru/wiki/TCP_tuning
+https://www.psc.edu/research/networking/tcp-tune/
+
+https://www.cyberciti.biz/faq/linux-tcp-tuning/
+https://www.cyberciti.biz/faq/linux-unix-tuning-nfs-server-client-performance/
+http://lcg.in2p3.fr/wiki/index.php/TCP-Tuning
+https://datatracker.ietf.org/doc/draft-stenberg-httpbis-tcp/00/
+https://cloud.google.com/compute/docs/networking/tcp-optimization-for-network-performance-in-gcp-and-hybrid
 -------------------------------------------------------------
 -------------------------------------------------------------
 -------------------------------------------------------------
