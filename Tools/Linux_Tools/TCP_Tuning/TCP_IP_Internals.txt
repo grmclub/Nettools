@@ -1,0 +1,44 @@
+
+
+-------------------------------------------------------------
+
+--Tcp Internals
+https://en.wikipedia.org/wiki/TCP_window_scale_option
+TCP Has
+
+- Connection management
+- Reliable data delivery
+- Flow control
+- Congestion control
+The throughput of a TCP communication is limited by two windows: the congestion window and the receive window
+The congestion window tries not to exceed the capacity of the network (congestion control); the receive window tries not to exceed the capacity of the receiver to process data (flow control). 
+
+TCP provides an I/O buffer for applications to use, allowing them to send and receive data as contiguous streams, with TCP converting the data into individually monitored segments that are sent over IP
+
+
+https://en.wikipedia.org/wiki/TCP_congestion_control#Congestion_window
+In TCP, the congestion window (CWND) is one of the factors that determines the number of bytes that can be sent out at any time. The congestion window is maintained by the sender and is a means of stopping a link between the sender and the receiver from becoming overloaded with too much traffic.
+
+The flow of data over a TCP connection is also controlled by the use of the receive window advertised by the receiver. A sender can send data less than its own congestion window and the receive window. 
+
+https://en.wikipedia.org/wiki/Flow_control_(data)
+Sliding window
+A method of flow control in which a receiver gives a transmitter permission to transmit data until a window is full. When the window is full, the transmitter must stop transmitting until the receiver advertises a larger window
+
+---------
+https://wiki.wireshark.org/TCP_Analyze_Sequence_Numbers
+https://stackoverflow.com/questions/3253117/resources-and-tools-for-tcp-tuning
+https://github.com/agokhale/viamillipede
+https://www.wikiwand.com/en/Bufferbloat
+https://www.geeksforgeeks.org/tcp-timers/?ref=lbp
+
+---------
+
+
+-------------------------------------------------------------
+-------------------------------------------------------------
+-------------------------------------------------------------
+
+
+
+
