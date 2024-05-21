@@ -1,0 +1,42 @@
+
+--------------------------------------------------------------------------------------
+https://designdatascience.com/convert-csv-to-html-table-in-python/
+https://stackoverflow.com/questions/44320329/converting-csv-to-html-table-in-python
+https://developer.mozilla.org/en-US/docs/Web/HTML/Element/table
+https://developer.mozilla.org/en-US/docs/Web
+https://www.w3schools.com/html/html_table_styling.asp
+
+import pandas as pd
+
+df1 = pd.read_csv('student_details.csv')
+print("The dataframe is:")
+print(df1)
+html_string = df1.to_html()
+print("The html string is:")
+print(html_string)
+
+import pandas as pd
+
+df1 = pd.read_csv('student_details.csv')
+print("The dataframe is:")
+print(df1)
+df1.to_html("html_output.html")
+print("CSV file saved into html file.")
+
+--------------------------------------------------------------------------------------
+##perl csv2html
+https://stackoverflow.com/questions/200140/how-do-i-convert-csv-into-an-html-table-using-perl
+
+
+##perl html2csv
+https://stackoverflow.com/questions/1403087/how-can-i-convert-an-html-table-to-csv
+
+
+--------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------
+
