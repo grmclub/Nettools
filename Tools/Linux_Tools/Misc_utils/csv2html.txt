@@ -1,3 +1,12 @@
+https://www.textfixer.com/html/html-table-generator.php
+https://stackoverflow.com/questions/39026366/change-html-table-row-color-which-has-an-style-applied
+
+https://stackoverflow.com/questions/10245724/color-a-table-row-with-style-colorfff-for-displaying-in-an-email
+https://stackoverflow.com/questions/32748771/color-table-row-based-on-column-value
+
+https://www.w3schools.com/tags/tag_td.asp
+https://forum.freecodecamp.org/t/how-to-give-red-color-for-rows-on-html-table-that-have-different-values-on-same-row/347825/4
+
 
 --------------------------------------------------------------------------------------
 https://designdatascience.com/convert-csv-to-html-table-in-python/
@@ -36,6 +45,55 @@ https://stackoverflow.com/questions/1403087/how-can-i-convert-an-html-table-to-c
 ##py requests
 https://stackoverflow.com/questions/34301368/alternative-to-requests-post-function
 
+##bash csv2html
+https://unix.stackexchange.com/questions/105501/convert-csv-to-html-table
+https://gist.github.com/jschaub30/c67cf9e214d83accd4db
+
+--version1
+CSV_FN=$1
+if [[ $# -eq 2 ]]; then
+    echo "<table border=\"$2\">"
+else
+    echo '<table>'
+fi
+
+head -n 1 "$CSV_FN" | \
+    sed -e 's/^/<tr><th>/' -e 's/,/<\/th><th>/g' -e 's/$/<\/th><\/tr>/'
+tail -n +2 "$CSV_FN" | \
+    sed -e 's/^/<tr><td>/' -e 's/,/<\/td><td>/g' -e 's/$/<\/td><\/tr>/'
+echo "</table>"
+
+--version2
+cat > input.csv
+a,b,c
+d,e,f
+g,h,i
+
+echo "<table>" ; while read INPUT ; do echo "<tr><td>${INPUT//,/</td><td>}</td></tr>" ; done < input.csv ; echo "</table>"
+<table>
+<tr><td>a</td><td>b</td><td>c</td></tr>
+<tr><td>d</td><td>e</td><td>f</td></tr>
+<tr><td>g</td><td>h</td><td>i</td></tr>
+</table>
+
+--version3
+awk 'BEGIN{
+FS=","
+print  "MIME-Version: 1.0"
+print  "Content-Type: text/html"
+print  "Content-Disposition: inline"
+print  "<HTML>""<TABLE border="1"><TH>Heading1</TH><TH>Heading2</TH><TH>Heading3</TH>" 
+}
+ {
+printf "<TR>"
+for(i=1;i<=NF;i++)
+printf "<TD>%s</TD>", $i
+print "</TR>"
+ }
+END{
+print "</TABLE></BODY></HTML>"
+ }
+' file-to-convert.csv > file.html
 
 --------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------
