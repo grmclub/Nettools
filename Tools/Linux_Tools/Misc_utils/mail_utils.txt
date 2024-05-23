@@ -1,0 +1,175 @@
+https://www.gnu.org/software/bash/manual/html_node/index.html
+
+-------------------------------------------------------------
+--send html mail
+
+##Using  mailx
+mailx -s "$(echo -e "This is Subject\nContent-Type: text/html")"  test@yahoo.com  <  mytest.html
+cat ~/campaigns/release-status.html | mail -s "Release Status [Green]" -a "Content-Type: text/html" to.address@company.com
+
+##Using mutt
+mutt -e "my_hdr Content-Type: text/html" test@yahoo.com  -s "subject" < mytest.html
+
+##using sendmail
+(
+echo "From: ${from}";
+echo "To: ${to}";
+echo "Subject: ${subject}";
+echo "Content-Type: text/html";
+echo "MIME-Version: 1.0";
+echo "";
+echo "${message}";
+) | sendmail -t
+
+--version2
+ARG_EMAIL_TO="recipient@domain.com"
+ARG_EMAIL_FROM="Your Name <you@host.com>"
+ARG_EMAIL_SUBJECT="Subject Line"
+
+(
+  echo "To: ${ARG_EMAIL_TO}"
+  echo "From: ${ARG_EMAIL_FROM}"
+  echo "Subject: ${ARG_EMAIL_SUBJECT}"
+  echo "Mime-Version: 1.0"
+  echo "Content-Type: text/html; charset='utf-8'"
+  echo
+  cat contents.html
+) | sendmail -t
+
+--version3
+#!/bin/sh
+
+(
+echo "To: me@example.com"
+echo "Subject: hello"
+echo "Content-Type: text/html"
+echo
+echo "<html><b><font size='7'>H</font>ello</b></html>"
+echo
+) | /usr/sbin/sendmail -t
+
+-------------------------------------------------------------
+RedHat distros running postfix. You need to use the -t switch, not the -a switch as in other distros. Below is an example complete with the email content. You can copy the entire code example, swap in your information in notepad, and then paste the entire example to a CLI at the $ prompt.
+
+mail -t << EOF
+From: no-reply@domain.tld
+To: uaser@domain.tld
+Subject: Some subject here
+Content-Type: text/html
+
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  </head>
+  <body>
+    This is normal text.<br>
+    <b>This is bold text.</b><br>
+    <i>This is text in italics.</i><br>
+  </body>
+</html>
+EOF
+
+##using sendmail
+
+#!/bin/ksh
+
+fileToAttach=data.txt
+
+`(echo "To: user@company.example"
+  echo "Cc: user@company.example"
+  echo "From: Application"
+  echo "Subject: your subject"
+  echo  your body
+  uuencode $fileToAttach $fileToAttach
+  )| eval /usr/sbin/sendmail -t `;
+
+
+
+-------------------------------------------------------------
+##Send attachments
+
+echo "This is the message body" | mutt -a "/path/to/file.to.attach" -s "subject of message" -- recipient@domain.example
+mutt -s "Backup" -a mysqldbbackup.sql backup@example.com < message.txt
+echo "Message Body Here" | mutt -s "Subject Here" -a backup.zip user@example.com
+
+    -s – indicates the message subject.
+    -a – identifies the attachment(s).
+
+echo "Message Body Here" | mailx -s "Subject Here" -a backup.zip user@example.com
+
+
+##Send HTML body email with a PDF attachment with sendmail:
+
+#!/usr/bin/ksh
+export MAILFROM="el@defiant.com"
+export MAILTO="youremail@example.com"
+export SUBJECT="Test PDF for Email"
+export BODY="/home/el/email_body.htm"
+export ATTACH="/home/el/pdf-test.pdf"
+export MAILPART=`uuidgen` ## Generates Unique ID
+export MAILPART_BODY=`uuidgen` ## Generates Unique ID
+
+(
+ echo "From: $MAILFROM"
+ echo "To: $MAILTO"
+ echo "Subject: $SUBJECT"
+ echo "MIME-Version: 1.0"
+ echo "Content-Type: multipart/mixed; boundary=\"$MAILPART\""
+ echo ""
+ echo "--$MAILPART"
+ echo "Content-Type: multipart/alternative; boundary=\"$MAILPART_BODY\""
+ echo ""
+ echo "--$MAILPART_BODY"
+ echo "Content-Type: text/plain; charset=ISO-8859-1"
+ echo "You need to enable HTML option for email"
+ echo "--$MAILPART_BODY"
+ echo "Content-Type: text/html; charset=ISO-8859-1"
+ echo "Content-Disposition: inline"
+ cat $BODY
+ echo "--$MAILPART_BODY--"
+
+ echo "--$MAILPART"
+ echo 'Content-Type: application/pdf; name="'$(basename $ATTACH)'"'
+ echo "Content-Transfer-Encoding: uuencode"
+ echo 'Content-Disposition: attachment; filename="'$(basename $ATTACH)'"'
+ echo ""
+ uuencode $ATTACH $(basename $ATTACH)
+ echo "--$MAILPART--"
+) | /usr/sbin/sendmail $MAILTO
+
+
+##Send a Plaintext body email with one plaintext attachment with mailx:
+
+(
+  /usr/bin/uuencode attachfile.txt myattachedfilename.txt; 
+  /usr/bin/echo "Body of text"
+) | mailx -s 'Subject' youremail@example.com
+
+
+
+
+
+-------------------------------------------------------------
+##mutt usage
+https://www.tecmint.com/send-mail-from-command-line-using-mutt-command/
+
+--Adding Carbon Copy(Cc) and Blind Carbon copy(Bcc) with Mutt
+mutt -s "Subject" -c "john@server1.tecmint.com" -b "bcc@example.com" recipient@example.com < message.txt
+mutt -s “Test Email” -c tecmint.com@gmail.com  -b root@server1.tecmint.com john@server1.tecmint.com > message.txt
+
+--Sending Emails with Attachments
+mutt -s "Site Backup" -a /backups/backup.tar -c tarunika@centos58server.example.com root@centos58server.example.com
+
+--send html mail 
+mutt -e "my_hdr Content-Type: text/html" test@yahoo.com  -s "subject" < mytest.html
+
+
+
+-------------------------------------------------------------
+-------------------------------------------------------------
+-------------------------------------------------------------
+-------------------------------------------------------------
+-------------------------------------------------------------
+-------------------------------------------------------------
+-------------------------------------------------------------
+-------------------------------------------------------------
