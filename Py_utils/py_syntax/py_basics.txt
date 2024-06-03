@@ -1,10 +1,12 @@
 
 https://www.turing.com/kb/22-hottest-python-tricksfor-efficient-coding
 
+How to Think Like a Computer Scientist: Interactive Edition
+https://levjj.github.io/thinkcspy/
 ------------------------------------------------------------------
 1. String
 2. Date_time
-3. Files
+3. File IO
 
 ----------------------------------------
 strcat
@@ -38,7 +40,8 @@ if substring in fullstr:
 if fullstr.find(substr) != -1
 	print("found")
 	
-import regexif re.search(substring, fullstring):
+import regex
+if re.search(substring, fullstring):
 	print("found")
 	
 	
@@ -68,7 +71,7 @@ from datetime import datetime, timedelta
 def yesterday(string=False, frmt='%Y%m%d'):
 	yesterday = datetime.now() - timedelta(1)
 	if string:
-		return yesterday.strftime(frmt)
+            return yesterday.strftime(frmt)
 	return yesterday
 	
 -----
@@ -78,8 +81,6 @@ datetime.datetime.today().isoweekday() #Monday=1 and Sun=7
 
 #datetime object in string
 datetime(2002,12.4,20,30,40).ctime()
-
-
 	
 def gen_calendar(holiday_file, date_range, output_opt):
 	(start_date,end_date) = date_range.split(':')
@@ -141,6 +142,46 @@ print(page.read())
 
 
 ----------------------------------------
+Basic authentication 
+
+https://stackoverflow.com/questions/6999565/python-https-get-with-basic-authentication
+https://www.w3schools.com/tags/ref_httpmethods.asp
+http://www.ietf.org/rfc/rfc2617.txt
+
+
+In Python 3 the following will work. I am using the lower level http.client from the standard library. Also check out section 2 of rfc2617 for details of basic authorization. This code won't check the certificate is valid, but will set up a https connection. See the http.client docs on how to do that.
+
+from http.client import HTTPSConnection
+from base64 import b64encode
+
+
+# Authorization token: we need to base 64 encode it 
+# and then decode it to acsii as python 3 stores it as a byte string
+def basic_auth(username, password):
+    token = b64encode(f"{username}:{password}".encode('utf-8')).decode("ascii")
+    return f'Basic {token}'
+
+username = "user_name"
+password = "password"
+
+#This sets up the https connection
+c = HTTPSConnection("www.google.com")
+#then connect
+headers = { 'Authorization' : basic_auth(username, password) }
+c.request('GET', '/', headers=headers)
+#get the response back
+res = c.getresponse()
+# at this point you could check the status etc
+# this gets the page text
+data = res.read()  
+
+---------
+-Using requests 
+
+import requests
+
+r = requests.get('https://my.website.com/rest/path', auth=('myusername', 'mybasicpass'))
+print(r.text)
 ----------------------------------------
 
 ----------------------------------------
