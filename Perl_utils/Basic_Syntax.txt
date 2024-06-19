@@ -8,6 +8,9 @@
 -date_time
 
 https://perldoc.perl.org/functions
+https://www.perlmonks.org/?node=Tutorials
+
+
 -------------------------------------------------------------
 $a = 100;
 
