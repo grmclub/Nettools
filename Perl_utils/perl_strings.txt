@@ -186,6 +186,13 @@ $var =~ s/\,//g; # Substitute all commas with nothing
 $var =~ s/\$//g; # Substitute all dollar signs with nothing
 
 
+##Sort multiline strings
+chomp @lines;
+my @sorted = sort @lines;
+my $names = join "\n", @sorted;
+
+
+
 -------------------------------------------------------------
 
 -------------------------------------------------------------

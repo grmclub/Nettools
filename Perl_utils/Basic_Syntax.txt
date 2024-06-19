@@ -12,6 +12,19 @@ https://www.perlmonks.org/?node=Tutorials
 
 
 -------------------------------------------------------------
+ perl string comparisons
+
+For string comparisons in Perl, use eq or ne:
+if ($str eq "")
+{
+  // ...
+}
+
+The == and != operators are numeric comparison operators. They will attempt to convert both operands
+to integers before comparing them.
+
+
+
 $a = 100;
 
 if( $a  ==  20 ) {

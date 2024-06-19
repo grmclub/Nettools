@@ -1,0 +1,101 @@
+
+
+
+-------------------------------------------------------------
+1. Check empty integers
+
+    ## Get market-code
+    if ( $args{c} ) {
+        $g_mkt_code = $args{c};
+
+        unless(POSIX::isdigit($g_mkt_code)){
+            die "Market-code must be numeric...";
+        }
+        if($g_mkt_code < 0 || $g_mkt_code >=10 ){
+            die "Invalid market-code specified. Range is 0-9...";
+        }
+    }
+
+
+    ## Get output dir
+    if ( $args{o} ) {
+        $OUT = $args{o};
+
+        unless( -d "$JSDA_HOME/".$OUT) {
+            die "Invalid output directory specified...";
+        }
+    }
+
+-------------------------------------------------------------
+2. Check empty strings
+
+    if ($name ne '') {
+        # do something with $name
+    }
+
+---------------
+    # let's say you've got the user input in $input..
+
+    if (defined($input) && $input ne "") {
+      # input is defined and not empty
+    }
+    else {
+      print "input wasn't filled in\n";
+    }
+
+--------------
+
+if (defined $str and length $str)
+
+Due to the way that strings are stored in Perl, getting the length of a string is optimized.
+if (length $str) is a good way of checking that a string is non-empty.
+
+
+-------------------------------------------------------------
+2. Test Empty String
+
+    # let's say you've got the user input in $input..
+
+    if (defined($input) && $input ne "") {
+      # input is defined and not empty
+    }
+    else {
+      print "input wasn't filled in\n";
+    }
+----------------------
+    As mobrule indicates, you could use the following instead for a small savings:
+    if (defined $name && $name ne '') {
+        # do something with $name
+    }
+
+    You could ditch the defined check and get something even shorter, e.g.:
+    if ($name ne '') {
+        # do something with $name
+    }
+----------------------
+    use Scalar::MoreUtils qw(empty);
+
+    if(not empty($name)) {
+        # do something with $name
+    }
+----------------------
+2.1 perl string comparisons
+
+For string comparisons in Perl, use eq or ne:
+if ($str eq "")
+{
+  // ...
+}
+
+The == and != operators are numeric comparison operators. They will attempt to convert both operands
+to integers before comparing them.
+
+----------------------
+Due to the way that strings are stored in Perl, getting the length of a string is optimized.
+if (length $str) is a good way of checking that a string is non-empty.
+
+
+If you're in a situation where you haven't already guarded against undef, then the catch-all for "non-empty" that won't warn is if (defined $str and length $str).
+
+
+-------------------------------------------------------------
