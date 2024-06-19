@@ -89,7 +89,21 @@ We can split a character at more than one delimiter. In the following example, w
     my @words = split /[=,]/, $str;    
     print "@words\n";    
   
-  
+===============
+## split multiline strings
+
+my @lines = split("\n", $str);
+foreach my $line (@lines) {
+...
+}
+
+perl -wMstrict -e
+"my $filelike = qq{Line 1\nLine 2\nLine etc.\n};
+ open my $fh, '<', \$filelike or die $!;
+ while (<$fh>) {
+   print
+   }
+ close $fh or die $!;  
 -------------------------------------------------------------
 * join Function
 
@@ -167,6 +181,10 @@ Match not Found
 
 
 -------------------------------------------------------------
+##Removing commas and dollar signs from a variable
+$var =~ s/\,//g; # Substitute all commas with nothing
+$var =~ s/\$//g; # Substitute all dollar signs with nothing
+
 
 -------------------------------------------------------------
 
