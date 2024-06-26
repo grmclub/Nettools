@@ -192,7 +192,51 @@ my @sorted = sort @lines;
 my $names = join "\n", @sorted;
 
 
+-------------------------------------------------------------
+##String match
+
+To find out if a string contains substring you can use the index function:
+
+if (index($str, $substr) != -1) {
+    print "$str contains $substr\n";
+} 
+
+
+## regex match
+To search a string for a pattern match, use the match operator m//:
+
+if ($string =~ m/pattern/) {  # the initial m is optional if "/" is the delimiter
+    print "'$string' matches the pattern\n";       
+}
+
+https://perldoc.perl.org/perlrequick
+https://perldoc.perl.org/perlre
+
+
+
+
+-------------------------------------------------------------
+##extract substring
+$name = "alvin alexander";
+$firstname = substr($name, 0, 5);
+$lastname = substr($name, 6, 9);
+
 
 -------------------------------------------------------------
 
 -------------------------------------------------------------
+
+-------------------------------------------------------------
+
+-------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,77 @@
+
+-------------------------------------------------------------
+## Extract from fixed length fields
+
+Field Number	Field Description	Field Width 
+1 	Last name	9
+2 	First name	9
+3 	City	11
+
+Given these definitions, here’s how I’d grab the data from each record from a file named database:
+
+open (IN, 'database');
+
+while (<IN>) {
+    chomp;
+    $last_name = substr $_, 0, 9;     # extract the last name field
+    $first_name = substr $_, 9, 9;    # extract the first name field
+    $city = substr $_, 18, 11;        # extract the city field
+    # do something useful here with each value ...
+    print "$first_name $last_name lives in $city\n";
+}
+
+close (IN);
+
+
+
+-------------------------------------------------------------
+##Use split over a delimited string
+
+$file = 'input.csv';
+
+open (F, $file) || die ("Could not open $file!");
+
+while ($line = <F>)
+{
+  ($field1,$field2,$field3,$field4) = split ',', $line;
+  print "$field1 : $field2 : $field3 : $field4";
+}
+
+close (F);
+
+-------------------------------------------------------------
+##Using Text::csv module
+
+ #!/usr/bin/perl
+
+  use strict;
+  use warnings;
+  use Text::CSV;
+
+  my $file = "prospects.csv";
+  open my $fh, "<", $file or die "$file: $!";
+
+  my $csv = Text::CSV->new ({
+      binary    => 1, # Allow special character. Always set this
+      auto_diag => 1, # Report irregularities immediately
+      });
+  while (my $row = $csv->getline ($fh)) {
+      print "@$row\n";
+      }
+  close $fh;
+-------------------------------------------------------------
+
+-------------------------------------------------------------
+
+-------------------------------------------------------------
+
+-------------------------------------------------------------
+
+-------------------------------------------------------------
+
+
+
+
+
+
+

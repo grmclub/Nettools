@@ -42,26 +42,31 @@ say -s $outfile;
       print "$row\n";
     }
 -------------------------------------------------------------
-** csv files
+##Find files in directory
 
- #!/usr/bin/perl
+#!/usr/bin/perl -w
 
-  use strict;
-  use warnings;
-  use Text::CSV;
+opendir(DIR, ".");
+@files = grep(/\.html$/,readdir(DIR));
+closedir(DIR);
 
-  my $file = "prospects.csv";
-  open my $fh, "<", $file or die "$file: $!";
+foreach $file (@files) {
+   print "$file\n";
+}
 
-  my $csv = Text::CSV->new ({
-      binary    => 1, # Allow special character. Always set this
-      auto_diag => 1, # Report irregularities immediately
-      });
-  while (my $row = $csv->getline ($fh)) {
-      print "@$row\n";
-      }
-  close $fh;
--------------------------------------------------------------
+##List all files in directory
+#!/usr/bin/perl -w
+
+# a perl file example
+
+opendir(DIR, ".");
+@files = readdir(DIR);
+closedir(DIR);
+
+foreach $file (@files) {
+  # put your perl code here
+  print "$file\n";
+}
 
 -------------------------------------------------------------
 
