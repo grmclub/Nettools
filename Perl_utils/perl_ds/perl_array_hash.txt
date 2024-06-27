@@ -1,4 +1,85 @@
 -------------------------------------------------------------
+##Check if hash key exists
+
+if(!exists($docTerms{$element})){
+	$docTerms{$element}++;
+} 
+
+-------------------------------------------------------------
+##Creating an array reference
+
+Creating an array reference. References are created using the "\" symbol.
+
+my @nums = (1, 2, 3);
+my $nums = \@nums;
+
+##array dereference
+
+To retrieve an array from an array reference, you need to do dereference operation. Use "@{}" to dereference the array.
+
+my @nums = @{$nums}
+-------------------------------------------------------------
+##Output array elements
+
+First, let's output all the elements.
+
+for my $person (@$persons) {
+  for my $column (@$person) {
+    print "$column\n";
+  }
+}
+
+for my $person (@$persons) {
+  print join(',', @$person) . "\n";
+}
+
+
+
+-------------------------------------------------------------
+##Creating a hash reference
+
+Creating a hash reference. References are created using the "\" symbol.
+
+my %person = (name =>'Ken', age => 19);
+my $person = \%person;
+
+##Hash reference dereference
+
+To retrieve a hash from a hash reference, you need to do something called dereference. Use "%{}" for hash dereference.
+
+my %person = %{$person};
+-------------------------------------------------------------
+##Hash array
+
+Let's create an array of hashes in Perl. As explained in Array Array, you can only have scalar values as elements of an array. So you need to specify the hash reference as an element of the array.
+
+my %person1 = (name =>'Ken', country =>'Japan', age => 19);
+my %person2 = (name =>'Taro', country =>'USA', age => 45);
+
+my @persons = (\%person1, \%person2);
+
+
+-------------------------------------------------------------
+##Creating a hash of hashes
+
+Creating a hash of hashes. Imagine what you're doing when you're doing hourly aggregation.
+
+my $infos = {
+  '01:01' => {count => 3, ave_time => 2.1, max_time => 4.6},
+  '01:02' => {count => 5, ave_time => 4.1, max_time => 7.4},
+  '01:03'=> {count => 6, ave_time => 3.5, max_time => 5.7}
+};
+
+for my $time(sort keys %$infos) {
+  print "$time\n";
+  
+  # (2) Inner loop
+  for my $name (sort keys %{$infos->{$time}}) {
+    my $value = $infos->{$time}{$name};
+    print "$name: $value\n";
+  }
+}
+
 
 -------------------------------------------------------------
 
@@ -9,3 +90,6 @@
 -------------------------------------------------------------
 
 -------------------------------------------------------------
+
+
+
