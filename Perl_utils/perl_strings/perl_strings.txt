@@ -223,8 +223,44 @@ $lastname = substr($name, 6, 9);
 
 
 -------------------------------------------------------------
+##Core string functions: length, lc, uc, index, substr
+
+my $str = 'HeLlo';
+say lc $str;      # hello
+say uc $str;      # HELLO
+say length $str;  # 5
+
+my $str = "The black cat climbed the green tree";
+ 
+say index $str, 'cat';             # 10
+say index $str, 'dog';             # -1
+say index $str, "The";             # 0
+
+
 
 -------------------------------------------------------------
+##substring
+
+my $str = "The black cat climbed the green tree";
+
+#string, offset, length
+say substr $str, 4, 5;  
+
+    my $str = "The black cat climbed the green tree";
+    say substr $str, 4, -11;                    # black cat climbed the
+
+The 3rd parameter (the length) can also be a negative number. In that case it tells us the number of characters from the right hand side of the original string that should NOT be included. So the above means: count 4 from the left, 11 from the right, return what is between.
+
+    my $str = "The black cat climbed the green tree";
+    say substr $str, 14;                        # climbed the green tree
+
+You can also leave out the 3rd (length) parameter which will mean: return all the characters starting from the 14th place till the end of the string.
+
+    my $str = "The black cat climbed the green tree";
+    say substr $str, -4;                        # tree
+    say substr $str, -4, 2;                     # tr
+
+We can also use a negative number in the offset, which will mean: count 4 from the right and start from there. It is the same as having length($str)-4 in the offset. 
 
 -------------------------------------------------------------
 
