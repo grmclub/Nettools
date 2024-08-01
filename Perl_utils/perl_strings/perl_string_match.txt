@@ -1,0 +1,112 @@
+
+
+-------------------------------------------------------------
+* Equality Operators
+
+Binary "==" returns true if the left argument is numerically equal to the right argument.
+
+Binary "!=" returns true if the left argument is numerically not equal to the right argument.
+
+Binary "eq" returns true if the left argument is stringwise equal to the right argument.
+
+Binary "ne" returns true if the left argument is stringwise not equal to the right argument. 
+
+-------------------------------------------------------------
+##Simple word matching
+
+
+my $str1 = "Hello";
+my $str2 = "World";
+
+if ($str1 eq $str2) {
+    print "Strings are equal";
+} else {
+    print "Strings are not equal";
+}
+
+https://perldoc.perl.org/perlrequick
+
+print "It matches\n" if "Hello World" =~ /World/;
+print "It doesn't match\n" if "Hello World" !~ /World/;
+
+##Replace strings
+$x = "Time to feed the cat!";
+$x =~ s/cat/hacker/;   # $x contains "Time to feed the hacker!"
+
+##Split by delimeter
+$x = "Calvin and Hobbes";
+@word = split /\s+/, $x;  # $word[0] = 'Calvin'
+                          # $word[1] = 'and'
+                          # $word[2] = 'Hobbes'
+
+-------------------------------------------------------------
+## Matching repetitions
+
+    a? = match 'a' 1 or 0 times
+    a* = match 'a' 0 or more times, i.e., any number of times
+    a+ = match 'a' 1 or more times, i.e., at least once
+    a{n,m} = match at least n times, but not more than m times.
+    a{n,} = match at least n or more times
+    a{,n} = match n times or fewer (Added in v5.34)
+    a{n} = match exactly n times
+
+
+-------------------------------------------------------------
+## string match tests
+
+
+    cmp Compare
+
+    'a' cmp 'b' # -1
+    'b' cmp 'a' #  1
+    'a' cmp 'a' #  0
+
+    eq Equal to
+
+    'a' eq  'b' #  0
+    'b' eq  'a' #  0
+    'a' eq  'a' #  1
+
+    ne Not-Equal to
+
+    'a' ne  'b' #  1
+    'b' ne  'a' #  1
+    'a' ne  'a' #  0
+
+    lt Less than
+
+    'a' lt  'b' #  1
+    'b' lt  'a' #  0
+    'a' lt  'a' #  0
+
+    le Less than or equal to
+
+    'a' le  'b' #  1
+    'b' le  'a' #  0
+    'a' le  'a' #  1
+
+    gt Greater than
+
+    'a' gt  'b' #  0
+    'b' gt  'a' #  1
+    'a' gt  'a' #  0
+
+    ge Greater than or equal to
+
+    'a' ge  'b' #  0
+    'b' ge  'a' #  1
+    'a' ge  'a' #  1
+
+
+
+-------------------------------------------------------------
+
+
+-------------------------------------------------------------
+-------------------------------------------------------------
+-------------------------------------------------------------
+
+
+
+
+
