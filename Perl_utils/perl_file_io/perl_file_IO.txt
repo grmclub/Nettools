@@ -3,6 +3,17 @@ https://perlmaven.com/open-files-in-the-old-way
 
 
 -------------------------------------------------------------
+#!/usr/bin/perl
+
+open(DATA, "<file.txt") or die "Couldn't open file file.txt, $!";
+
+while(<DATA>) {
+   print "$_";
+}
+
+
+-------------------------------------------------------------
+
 use 5.010;
 use strict;
 use warnings;
@@ -22,9 +33,9 @@ while (1) {
 }
 close $in;
  
-open my $out, '>', $outfile or die;
-print $out $cont;
-close $out;
+open(my $fout, '>', $outfile) or die;
+print $fout $cont;
+close $fout;
  
 say length($cont);
 say -s $infile;
@@ -69,5 +80,78 @@ foreach $file (@files) {
 }
 
 -------------------------------------------------------------
+##Directories
+
+#!/usr/bin/perl
+
+# Display all the files in /tmp directory.
+$dir = "/tmp/*";
+my @files = glob( $dir );
+
+foreach (@files ) {
+   print $_ . "\n";
+}
+
+# Display all the C source files in /tmp directory.
+$dir = "/tmp/*.c";
+@files = glob( $dir );
+
+foreach (@files ) {
+   print $_ . "\n";
+}
+
+# Display all the hidden files.
+$dir = "/tmp/.*";
+@files = glob( $dir );
+foreach (@files ) {
+   print $_ . "\n";
+}
+
+# Display all the files from /tmp and /home directories.
+$dir = "/tmp/* /home/*";
+@files = glob( $dir );
+
+foreach (@files ) {
+   print $_ . "\n";
+}
+
+##Use syscall to list dir contents
+
+#!/usr/bin/perl
+
+opendir (DIR, '.') or die "Couldn't open directory, $!";
+while ($file = readdir DIR) {
+   print "$file\n";
+}
+closedir DIR;
+
+One more example to print the list of C source files you might use is −
+
+#!/usr/bin/perl
+
+opendir(DIR, '.') or die "Couldn't open directory, $!";
+foreach (sort grep(/^.*\.c$/,readdir(DIR))) {
+   print "$_\n";
+}
+closedir DIR;
+
 
 -------------------------------------------------------------
+
+-------------------------------------------------------------
+-------------------------------------------------------------
+-------------------------------------------------------------
+-------------------------------------------------------------
+-------------------------------------------------------------
+-------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
