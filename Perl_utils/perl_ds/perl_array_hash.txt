@@ -33,7 +33,29 @@ for my $person (@$persons) {
   print join(',', @$person) . "\n";
 }
 
+##Output hash elements
 
+my %hash = (
+    "name" => "John",
+    "age" => 30,
+    "city" => "New York"
+);
+
+foreach my $key (keys %hash) {
+    print "$key: $hash{$key}n";
+}
+
+##Sorted hash
+
+my %hash = (
+    "name" => "John",
+    "age" => 30,
+    "city" => "New York"
+);
+
+foreach my $key (sort keys %hash) {
+    print "$key: $hash{$key}n";
+}
 
 -------------------------------------------------------------
 ##Creating a hash reference
