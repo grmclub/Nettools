@@ -11,6 +11,8 @@ https://perldoc.perl.org/functions
 https://www.perlmonks.org/?node=Tutorials
 https://www.perltutorial.org/perl-string/
 
+https://www.perltutorial.org/
+
 -------------------------------------------------------------
 ##conditionals
 
