@@ -45,6 +45,60 @@ alias dx="du -hx *|sort -hr|head"
 du -a | sort -n -r | head
 
 --------------------------------------------------------------------------------------
+https://phoenixnap.com/kb/rsync-command-linux-examples
+https://phoenixnap.com/kb/linux-scp-command
+https://phoenixnap.com/kb/linux-ssh-commands
+
+* Copy File with compression
+scp -ro Compression=yes $folder $host:$remote_folder
+scp -C Desktop/sample_example.txt root@147.182.143.27:/home/remote_dir
+
+* Copy File with SCP Using Specific Cipher
+scp -c 3des Desktop/sample_example.txt root@147.182.143.27:/home/remote_dir
+
+
+* Copy File with SCP and Limit Bandwidth
+scp -l 800 Desktop/sample_example.txt root@147.182.143.27:/home/remote_dir
+
+* Copy File with SCP and Preserve File Attributes
+scp -p Desktop/sample_example.txt root@147.182.143.27:/home/remote_dir
+
+
+##rsync
+rsync -av --exclude 'testfile1.txt' sourcedir/ destinationdir/
+rsync -av --exclude 'dir1' sourcedir/ destinationdir/
+
+* Exclude Files by Size
+to exclude all files larger than 500MB,
+rsync -av --max-size=500m sourcedir/ destinationdir/
+
+to exclude files smaller than a specific size
+rsync -av --min-size=1m sourcedir/ destinationdir/
+
+* Exclude Multiple Files or Directories
+rsync -av --exclude '*.txt' --exclude 'dir3' --exclude 'dir4' sourcedir/ destinationdir/
+
+* Exclude Files and Directories from a List
+rsync -av --exclude-from={'list.txt'} sourcedir/ destinationdir/
+
+* Specify rsync Protocol for Remote Transfers
+rsync -e ssh /home/test/Desktop/sample.txt 192.168.56.100:/home/test/Desktop
+
+* Delete Source Files After Transfer
+rsync -v --remove-source-files /home/test/backup/weekly.zip 192.168.56.100:/home/test/Desktop/rsync/
+
+* Set Maximum File Size for Transfer
+rsync -av --max-size=500k /home/test/Desktop/Dir1 192.168.56.100:/home/test/Desktop/rsync/
+
+* Set Minimum File Size for Transfer
+rsync -av --min-size=10k /home/test/Desktop/ 192.168.56.100:/home/test/Desktop/rsync/
+
+* Set rsync Bandwidth Limit
+To set the maximum transfer speed to 50KB/s, enter:
+
+rsync -av --bwlimit=50 --progress /home/test/Desktop/Dir1 192.168.56.100:/home/test/Desktop/rsync/
+
+
 
 --------------------------------------------------------------------------------------
 
