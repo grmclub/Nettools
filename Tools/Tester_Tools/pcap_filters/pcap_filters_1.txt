@@ -9,7 +9,7 @@ https://danielmiessler.com/p/tcpdump/
 https://www.netresec.com/?page=Blog&month=2012-11&post=Convert-Endace-ERF-capture-files-to-PCAP
 
 ##pcap to erf
-/usr/bin/dagconvert -T pcap:erf -i fle.pcap -o file.erf
+/usr/bin/dagconvert -T pcap:erf -i file.pcap -o file.erf
  
 ##erf to pcap
 editcap -F libpcap -T ether -A "$(date -I) 09:00:00" -B "$(date -I) 09:10:00" xx.erf out.pcap
@@ -31,6 +31,12 @@ tcpslice /var/sniffer/dump{5..8}*.pcap | tcpdump -r - "portrange 11003 or (vlan 
 tshark -r xx.pcap -Y "tcp.port == 24636"
 -T fields -e eth.src -e eth.dst -e data 
 
+===============================
+tshark -r xx.pcap -Y “not tcp.analysis.retransmission” -T fields -e data
+
+-o tcp.relative_sequence_numbers:FALSE
+-Y “tcp.len > 0”
+===============================
 ##Ascii/ hex dump
 tcpdump -r out.pcap -A |grep -a XX
 -A dumps ASCII
@@ -38,6 +44,9 @@ tcpdump -r out.pcap -A |grep -a XX
 -S : Print absolute sequence numbers. 
 -t : Give human-readable timestamp output.
 -tttt : Give maximally human-readable timestamp output
+
+tshark -r xx.pcap -o data.show_as_text:TRUE -T fields -e data.text
+===============================
 
 ##split file into smaller files
 tcpdump -r out.pcap -C 1024 -w capxx
