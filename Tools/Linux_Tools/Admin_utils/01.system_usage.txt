@@ -1,3 +1,5 @@
+https://phoenixnap.com/kb/check-cpu-usage-load-linux
+
 ##system information
 
 ##core dump pattern
