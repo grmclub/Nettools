@@ -32,6 +32,7 @@ tshark -r xx.pcap -Y "tcp.port == 24636"
 -T fields -e eth.src -e eth.dst -e data 
 
 ===============================
+##Exclude Retransmissions
 tshark -r xx.pcap -Y “not tcp.analysis.retransmission” -T fields -e data
 
 -o tcp.relative_sequence_numbers:FALSE
@@ -47,8 +48,7 @@ tcpdump -r out.pcap -A |grep -a XX
 
 tshark -r xx.pcap -o data.show_as_text:TRUE -T fields -e data.text
 ===============================
-
-##split file into smaller files
+##Split file into smaller files
 tcpdump -r out.pcap -C 1024 -w capxx
 tshark -r out.pcap -Y "frame.number >=1 && frame.number <=100" -w out.pcap
 
