@@ -97,7 +97,7 @@ dd if=/dev/dsp | ssh -c arcfour -C username@host dd of=/dev/dsp
 readom dev=/dev/scd0 f=/path/to/image.iso
 
 ##Matrix Style
-tr -c “[:digit:]” ” ” < /dev/urandom | dd cbs=$COLUMNS conv=unblock | GREP_COLOR=”1;32″ grep –color “[^ ]”
+tr -c "[:digit:]" " " < /dev/urandom | dd cbs=$COLUMNS conv=unblock | GREP_COLOR="1;32" grep –color "[^ ]"
 
 
 --------------------------------------------------------------------------------------
