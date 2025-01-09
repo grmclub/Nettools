@@ -1,0 +1,88 @@
+
+https://opensource.com/article/17/6/ffmpeg-convert-media-file-formats
+--------------------------------------------------------------------------------------
+* Converting audio files
+    Lossless and uncompressed
+        WAV
+        PCM
+        AIFF
+    Lossless and compressed
+        FLAC
+        ALAC
+    Lossy
+        WEBM
+        OPUS
+        OGG (Vorbis)
+        AAC (some implementations of this are not open formats)
+        MP3
+        M4A
+        WMA (not an open format)
+
+Using ffmpeg is usually pretty straightforward. Here's the standard syntax. The -i flag identifies the input file, and the -vn flag tells ffmpeg not to invoke any video-related code that might alter the audio output:
+
+$ ffmpeg  -i  audiofile_input.ext -vn audiofile_output.new
+
+$ ffmpeg -i audio.wav -vn audio.ogg  # 38.3MB to 3.3MB
+$ ffmpeg -i audio.wav -vn audio.mp3  # 38.3MB to 3.5MB
+$ ffmpeg -i audio.wav -vn audio.m4a  # 38.3MB to 3.6MB
+$ ffmpeg -i audio.wav -vn audio.webm # 38.3MB to 2.9MB
+
+All the commands reduced the size of the lossless input files by a factor of 10
+
+--------------------------------------------------------------------------------------
+* Converting video files
+A video format is the combination of a container file format and a codec. A codec is software that encodes and decodes a data stream as it moves to and from the container file.
+
+These are some of today's most widely used open source video formats:
+
+    The MP4 format, containing H.264 video and AAC audio, is used in BluRay and Internet streaming.
+    The WEBM format, containing VP9 video and Opus audio, is remarkably flexible and is used for both archival-quality files as well as smaller files for streaming.
+    The Matroska (MKV) container format can contain nearly any combination of video, audio, and even stereoscopic (3D) imagery. It's the basis for WEBM.
+
+The main factors that determine video file size and quality are:
+
+    Resolution (dimension of the frame)
+    Bitrate
+    Encoding
+
+The ffmpeg command can change all three parameters. Here's a simple conversion example:
+
+$ ffmpeg -i input_video.mov output.webm
+
+--------------------------------------------------------------------------------------
+##Misc Audio tuning in MP4
+
+##increase audio volume 
+ffmpeg -i in.mp4 -vcodec copy -af "volume=19dB" outputfile.mp4
+
+
+##Basic noise reduction
+ffmpeg -i out4.mp4 -af lowpass=3000,highpass=200,afftdn=nf=-50 out5.mp4
+
+##combine audio and video　after noise reduction
+https://www.amirsharif.com/using-ffmpeg-to-reduce-background-noise
+
+
+1. Extract the audio file from the video
+	ffmpeg -i <path> -vn -acodec copy output-audio.aac
+
+2. Pipe it through a rnn model.
+	ffmpeg -i <audiopath> -af arnndn=<path to model>
+
+	For path to model I just downloaded the std model from https://github.com/GregorR/rnnoise-models
+
+3. Recombine the new audio with the video
+	ffmpeg -i v.mp4 -i a.wav -c:v copy -map 0:v:0 -map 1:a:0 new.mp4
+
+--------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
