@@ -1,5 +1,6 @@
 
 https://opensource.com/article/17/6/ffmpeg-convert-media-file-formats
+
 --------------------------------------------------------------------------------------
 * Converting audio files
     Lossless and uncompressed
@@ -56,6 +57,7 @@ $ ffmpeg -i input_video.mov output.webm
 ##Misc Audio tuning in MP4
 
 ##increase audio volume 
+https://www.videolouder.com/
 ffmpeg -i in.mp4 -vcodec copy -af "volume=19dB" outputfile.mp4
 
 
