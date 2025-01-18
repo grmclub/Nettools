@@ -32,6 +32,25 @@ $ ffmpeg -i audio.wav -vn audio.webm # 38.3MB to 2.9MB
 
 All the commands reduced the size of the lossless input files by a factor of 10
 
+## Extract audio from mp4 videos
+https://stackoverflow.com/questions/9913032/how-can-i-extract-audio-from-video-with-ffmpeg
+ffmpeg -i in.mp4 -b:a 320K -vn out.mp3
+
+## To encode a high quality MP3 or MP4 audio from a movie file (eg AVI, MP4, MOV, etc) or audio file (eg WAV), 
+use -q:a 0 for variable bit rate and it's good practice to specify -map a to exclude video/subtitles and only grab audio:
+
+ffmpeg -i sample.avi -q:a 0 -map a sample.mp3
+
+## To extract a portion of audio from a video use the -ss option to specify the starting timestamp, 
+and the -t option to specify the encoding duration, eg from 3 minutes and 5 seconds in for 45 seconds:
+
+ffmpeg -i sample.avi -ss 00:03:05 -t 00:00:45.0 -q:a 0 -map a sample.mp3
+
+The timestamps need to be in HH:MM:SS.xxx format or in seconds.
+If you don't specify the -t option it will go to the end.
+You can use the -to option instead of the -t option, if you want to specify the range, eg for 45 seconds: 00:03:05 + 45 = 00:03:50
+
+
 --------------------------------------------------------------------------------------
 * Converting video files
 A video format is the combination of a container file format and a codec. 
@@ -83,7 +102,10 @@ https://www.amirsharif.com/using-ffmpeg-to-reduce-background-noise
 --------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------
-
+--------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------
 
 
 
