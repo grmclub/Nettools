@@ -113,6 +113,12 @@ https://www.amirsharif.com/using-ffmpeg-to-reduce-background-noise
 	ffmpeg -i v.mp4 -i a.wav -c:v copy -map 0:v:0 -map 1:a:0 new.mp4
 
 --------------------------------------------------------------------------------------
+https://ffmpegbyexample.com/
+https://dylanbeattie.net/2022/09/19/the-road-to-guitaraoke-part-1-vamp-chordino-imagesharp-ffmpeg.html
+https://hannahilea.com/blog/video-timelapses-with-ffmpeg/
+
+
+
 --------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------
