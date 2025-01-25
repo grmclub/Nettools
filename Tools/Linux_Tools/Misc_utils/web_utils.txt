@@ -2,12 +2,9 @@
 https://curl.se/book.html
 https://curl.se/libcurl/c/example.html
 
-
-
-
 -------------------------------------------------------------
 ##Upload files with CURL:
-curl -F "data=@file.name' https://url/name
+curl -F "data=@file.name" https://url/name
 
 To post data with fields:
 curl --data "f=foo&d=bar" https://url/name
