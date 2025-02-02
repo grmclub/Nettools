@@ -91,11 +91,11 @@ $ ffmpeg -i input_video.mov output.webm
 
 ##increase audio volume 
 https://www.videolouder.com/
-ffmpeg -i in.mp4 -vcodec copy -af "volume=19dB" outputfile.mp4
+ffmpeg -i in.mp4 -vcodec copy -af "volume=19dB" out.mp4
 
 
 ##Basic noise reduction
-ffmpeg -i out4.mp4 -af lowpass=3000,highpass=200,afftdn=nf=-50 out5.mp4
+ffmpeg -i in.mp4 -af lowpass=3000,highpass=200,afftdn=nf=-50 out.mp4
 
 ##combine audio and video　after noise reduction
 https://www.amirsharif.com/using-ffmpeg-to-reduce-background-noise
