@@ -32,45 +32,6 @@ DISK_INFO="lsblk -d -o NAME,SERIAL,SIZE"
 OS_INFO="lsb_release -a|grep Desc"; #cat /proc/version #cat /etc/os-release #cat /etc/issue
 
 -------------------------------------------------------------
-##Display the top ten running processes - sorted by memory usage
-ps aux | sort -nk +4 | tail
-ps aux –-sort=%mem,%cpu
-ps -eo size.command --sort -size|head
-top -b -o +%MEM|head -15
-top -b -n2 -d0 -o +%CPU
-
---cpu
-ps -aux --sort -pcpu|pr -TW 256|head
-
---mem
-ps -aux --sort -rss|pr -TW 256|head 
-ps -eo pid,ppid,%mem,%cpu,cmd,comm --sort=-%mem|head 
-top -o %MEM
-top -o %CPU| head 
-
---use
-echo "rss,pid,pcpu,pmem,user,args"
-ps -eo rss,pid=,pcpu=,pmem=,user=,args=, |sort -b -nrk3|pr -TW 256|head
-
-##Watch CPU Processes
-watch -n 1 'ps -eo pid,ppid,cmd,%mem,%cpu --sort=-%mem | head'
--------------------------------------------------------------
-##check processes by memory/cpu
-top -o %MEM
-
---sort by mem & cpu
-*top -> shif+m, shift+t
-ps aux --sort -rss
-ps aux --sort -pcpu
-
-##The difference between VIRT, RES and SHR:
-
-VIRT stands for the virtual size of a process, which is the sum of memory it is actually using, memory it has mapped into itself (for instance the video card's RAM for the X server), files on disk that have been mapped into it (most notably shared libraries), and memory shared with other processes. VIRT represents how much memory the program is able to access at the present moment.
-
-RES stands for the resident size, which is an accurate representation of how much actual physical memory a process is consuming. (This also corresponds directly to the %MEM column)
-
-SHR indicates how much of the VIRT size is actually sharable memory or libraries. In the case of libraries, it does not necessarily mean that the entire library is resident. For example, if a program only uses a few functions in a library, the whole library is mapped and will be counted in VIRT and SHR, but only the parts of the library file containing the functions being used will actually be loaded in and be counted under RES.
--------------------------------------------------------------
 ##Check CPU Usage from Linux
 
 #top –i
@@ -165,38 +126,6 @@ Wait until the lag occurs, then look at your three terminals :
     The first one will tell you if a process is hogging the processor
     The second one will tell you if your hard disk is being thrashed by a process.
     The third one will tell you if an event has occurred regarding your hardware.
-
----------------------------------------------------
-##Top usage
-The -b option is for batch mode and the -n option lets you control how many times top will update before it closes.
-
-$ top -b -n 1 > top_output
-https://www.site24x7.com/learn/linux/top-command.html
-
-
-
----------------------------------------------------
-#Commands to monitor CPU run queue
-sar -q 1
-
-    runq-sz: Run queue length
-    plist-sz: Number of tasks in the task list
-    ldavg-1: System load average for the last minute
-    ldavg-5: System load average for the last five minutes
-    ldavg-15: System load average for the last 15 minutes
-    blocked: Number of currently blocked tasks, waiting for I/O to complete
-	
-ps command includes the STAT column, which displays the state of each running process
-The first letter of the STAT column value is the state of the process, where S stands for sleep and R stands for runnable.
-
-/proc status file
-cat /proc/126/status | grep State
-
-iotop command will reveal the list of all processes using the I/O resources
-
----------------------------------------------------
-
-
 
 -------------------------------------------------------------
 -------------------------------------------------------------
