@@ -5,6 +5,13 @@ https://danielmiessler.com/p/tcpdump/
 -------------------------------------------------------------
 * Core Filters
 ==================================
+##Filter tcp connection/teardown
+tcp.flags.syn ==1|| (tcp.flags.syn ==1 && tcp.flags.ack ==1) ||tcp.flags.fin ==1||tcp.flags.reset ==1
+
+##Filter raw packets
+tshark -r test.pcap -Y ‘frame contains “foo”’
+tcpdump -r out.pcap -A|grep XXABC
+
 ##Conversion of erf to pcap
 https://www.netresec.com/?page=Blog&month=2012-11&post=Convert-Endace-ERF-capture-files-to-PCAP
 
@@ -13,7 +20,7 @@ https://www.netresec.com/?page=Blog&month=2012-11&post=Convert-Endace-ERF-captur
  
 ##erf to pcap
 editcap -F libpcap -T ether -A "$(date -I) 09:00:00" -B "$(date -I) 09:10:00" xx.erf out.pcap
-tcpdump -r out.pcap -A|grep XXABC
+
 
 -A dumps ascii
 -X dumps in hexdump
@@ -34,6 +41,8 @@ tshark -r xx.pcap -Y "tcp.port == 24636"
 ===============================
 ##Exclude Retransmissions
 tshark -r xx.pcap -Y “not tcp.analysis.retransmission” -T fields -e data
+ws:
+!(tcp.analysis.retransmission or tcp.analysis.fast_retransmission or tcp.analysis.duplicate_ack)
 
 -o tcp.relative_sequence_numbers:FALSE
 -Y “tcp.len > 0”
