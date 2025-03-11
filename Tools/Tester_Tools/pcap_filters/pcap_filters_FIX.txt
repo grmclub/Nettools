@@ -2,7 +2,7 @@
 * FIX
 
     1. Fix logon Filter
-       fix.SenderCompID == TCD1234 && fix.MsgType == "A"
+       fix.SenderCompID == TC1234 && fix.MsgType == "A"
 
     2. Check outgoing heartbeats from GW
 
