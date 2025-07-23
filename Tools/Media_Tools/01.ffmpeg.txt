@@ -166,9 +166,25 @@ If we instead use -copyts, and we want the part from 5–35 seconds, we should u
 
 --Use
 #ffmpeg -i out.mp4 -ss 00:00:15 -c copy out2.mp4
+#ffmpeg -ss 00:00:02 -to  00:00:05 -i video.mp4 -c copy trim-1.mp4
+
+ trim the video from the 2-second mark to the 5-second mark using this format 00:00:02:00 to 00:00:05:00:
 
 
 --------------------------------------------------------------------------------------
+create inputs.txt with the following content:
+
+file 'part1.mp4'
+file 'part2.mp4'
+file 'part3.mp4'
+
+Now we are finally ready to concatenate our files, and we can do that with the following syntax:
+
+ffmpeg -f concat -i inputs.txt -c copy output.mp4
+
+https://ottverse.com/recipes-in-ffmpeg/
+https://www.mux.com/articles
+
 --------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------
