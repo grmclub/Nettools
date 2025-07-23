@@ -117,6 +117,55 @@ https://ffmpegbyexample.com/
 https://dylanbeattie.net/2022/09/19/the-road-to-guitaraoke-part-1-vamp-chordino-imagesharp-ffmpeg.html
 https://hannahilea.com/blog/video-timelapses-with-ffmpeg/
 
+##Video clipping
+
+#ffmpeg -i input_file.mp4 -ss 00:01:30 -t 00:00:30 -c copy output.mp4
+
+    -i input_file.mp4: Specifies the input video file
+    -ss 00:01:30: Sets the start time (1 minute and 30 seconds into the video)
+    -t 00:00:30: Sets the duration of the clip (30 seconds)
+    -c copy: Copies the streams without re-encoding (faster)
+    output.mp4: Name of the output file
+
+-Using -ss and -to for precise end time
+#ffmpeg -i input_file.mp4 -ss 00:01:30 -to 00:02:00 -c copy output.mp4
+
+Here -to 00:02:00 specifies the end time of the clip (2 minutes into the original video)
+
+-cut a video, without re-encoding
+Use this to cut video from [start] for [duration]:
+
+#ffmpeg -ss [start] -i in.mp4 -t [duration] -map 0 -c copy out.mp4
+
+Use this to cut video from [start] to [end]:
+
+#ffmpeg -copyts -ss [start] -i in.mp4 -to [end] -map 0 -c copy out.mp4
+
+The options mean the following:
+
+    -ss specifies the start time, e.g. 00:01:23.000 or 83 (in seconds)
+    -t specifies the duration of the clip. The format of the time is the same.
+    Instead of -t, you can also use -to, which specifies the end time.
+    -map 0 maps all streams, audio, video and subtitles
+
+For example:
+
+#ffmpeg -ss 5 -i in.mp4 -t 30 -map 0 -c copy out.mp4
+
+This seeks forward in the input by 5 seconds and generates a 30 second long output file. In other words, you get the input video's part from 5–35 seconds.
+
+Or, same as above, but using -to:
+
+#ffmpeg -ss 5 -i in.mp4 -to 30 -map 0 -c copy out.mp4
+
+This achieves the same result as the previous command, since the internal timestamps of the video get reset to 0 after seeking 5 seconds in the input. The output will still be 30 seconds long.
+
+If we instead use -copyts, and we want the part from 5–35 seconds, we should use:
+
+#ffmpeg -copyts -ss 5 -i in.mp4 -to 35 -map 0 -c copy out.mp4
+
+--Use
+#ffmpeg -i out.mp4 -ss 00:00:15 -c copy out2.mp4
 
 
 --------------------------------------------------------------------------------------
