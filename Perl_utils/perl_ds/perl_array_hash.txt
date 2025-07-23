@@ -32,7 +32,7 @@ for my $person (@$persons) {
 for my $person (@$persons) {
   print join(',', @$person) . "\n";
 }
-
+-------------------------------------------------------------
 ##Output hash elements
 
 my %hash = (
@@ -56,6 +56,39 @@ my %hash = (
 foreach my $key (sort keys %hash) {
     print "$key: $hash{$key}n";
 }
+
+-------------------------------------------------------------
+##perl hash initialization
+
+#!/usr/bin/perl
+use strict;
+use warnings;
+
+use Data::Dumper; 
+
+my %hash; 
+my @keys   = ("a","b"); 
+my @values = ("1","2");
+@hash{@keys} = @values;
+print Dumper(\%hash);' 
+
+%hash = ('current_symbol' => 'BLR', 'currency_name' => 'Real'); 
+
+##Initialize hash in a loop
+
+#!/usr/bin/perl -w
+
+use strict;
+use Data::Dumper;
+
+my @array_items = qw(expectedvalue1 expectedvalue2 expectedvalue3);
+my %hash_example;
+
+foreach my $value (@array_items) {
+        push(@{$hash_example{$value}}, $value);
+}
+
+print Dumper(\%hash_example);
 
 -------------------------------------------------------------
 ##Creating a hash reference
