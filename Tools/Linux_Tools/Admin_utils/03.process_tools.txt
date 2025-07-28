@@ -46,7 +46,10 @@ echo "rss,pid,pcpu,pmem,user,args"
 ps -eo rss,pid=,pcpu=,pmem=,user=,args=, |sort -b -nrk3|pr -TW 256|head
 
 ##Watch CPU Processes
-watch -n 1 'ps -eo pid,ppid,cmd,%mem,%cpu --sort=-%mem | head'
+watch -n 1 'ps -eo psr,pid,ppid,cmd,%mem,%cpu --sort=-%mem | head'
+            ps -eo psr,pid,ppid,cmd,%cpu,%mem --sort=-%cpu
+watch "ps aux | sort -nrk 3,3 | head -n 5"			
+			
 -------------------------------------------------------------
 ##Display the top ten running processes - sorted by memory usage
 ps aux | sort -nk +4 | tail
@@ -54,10 +57,21 @@ ps aux –-sort=%mem,%cpu
 ps -eo size.command --sort -size|head
 top -b -o +%MEM|head -15
 top -b -n2 -d0 -o +%CPU
+top -b -n 1 | head -n 12  | tail -n 5
+
+##Use top to get CPU usage in real time(current short interval):
+
+top -b -n 2 -d 0.2 -p 6962 
+    -b: Batch-mode
+    -n 2: Number-of-iterations, use 2 because: When you first run it, it has no previous sample to compare to, so these initial values are the percentages since boot.
+    -d 0.2: Delay-time(in second, here is 200ms)
+    -p 6962: Monitor-PIDs
 
 -------------------------------------------------------------
 ##check processes by memory/cpu
 top -o %MEM
+
+top -b -n 5 -o %MEM -u usrx > top_output.txt
 
 --sort by mem & cpu
 *top -> shif+m, shift+t
