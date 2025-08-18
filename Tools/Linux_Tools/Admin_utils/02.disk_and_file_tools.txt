@@ -48,6 +48,7 @@ du -a | sort -n -r | head
 https://phoenixnap.com/kb/rsync-command-linux-examples
 https://phoenixnap.com/kb/linux-scp-command
 https://phoenixnap.com/kb/linux-ssh-commands
+https://gist.github.com/dharma017/ec786f211275b1fa5d3c
 
 * Copy File with compression
 scp -ro Compression=yes $folder $host:$remote_folder
