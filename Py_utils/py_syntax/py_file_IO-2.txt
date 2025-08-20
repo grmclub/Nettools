@@ -1,0 +1,56 @@
+##Python File read text files
+
+Reading Methods
+
+    file.read(): Reads the entire file into a single string. This is best for small files.
+
+    file.readline(): Reads a single line from the file. You can call this method repeatedly to read line by line.
+
+    file.readlines(): Reads all lines into a list of strings. Each element in the list is a line from the file, including the newline character \n.
+
+    Iterating over the file object: The most efficient way to read a file line by line, especially for large files. It's memory-efficient because it reads one line at a time.
+
+
+	#Read contents as a string //Slurping small files
+	try:
+		with open('your_file.txt', 'r', encoding='utf-8') as file:
+			file_contents = file.read()
+			print(file_contents)
+	except FileNotFoundError:
+		print("Error: The file was not found.")
+	except Exception as e:
+		print(f"An error occurred: {e}")
+	
+	#In this example, the variable file_content will contain the entire text from my_file.txt as a single string.
+	with open('my_file.txt', 'r') as file:
+    file_content = file.read()
+    print(file_content)
+	
+---
+    with open('your_file.txt', 'r') as file:
+        lines = file.readlines()
+    # 'lines' is now a list where each element is a line from the file
+	
+	with open('your_file.txt', 'r') as file:
+		lines = [line.strip() for line in file]
+    # 'lines' is now a list with each line stripped of whitespace
+---
+	#Process line by line
+    with open('your_file.txt', 'r') as file:
+        for line in file:
+            # Process each 'line' here
+            print(line.strip()) # .strip() removes leading/trailing whitespace, including newline
+
+	# Example of iterating over the file object
+	with open('my_file.txt', 'r') as file:
+		for line in file:
+			print(line, end='')  # end='' prevents adding extra newlines
+		
+--------------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------		
+		
+		
