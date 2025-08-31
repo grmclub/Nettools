@@ -1,3 +1,14 @@
+It refers to sections of the man pages. They are organized like this:
+1. General Commands
+2. System Calls
+3. Subroutines
+4. Special Files
+5. File Formats
+6. Games
+7. Macros and Conventions
+8. Maintenence Commands
+
+
 --------------------------------------------------------------------------------------
 ##Clear Shared Memory
 ipcs -m | egrep "0x[0-9a-f]+ [0-9]+" | cut -f1 -d' '| awk ' { print "ipcrm -M "$1 }'
