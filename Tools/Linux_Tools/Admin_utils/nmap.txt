@@ -2,6 +2,12 @@
 https://github.com/jasonniebauer/Nmap-Cheatsheet
 https://www.stationx.net/nmap-cheat-sheet/
 
+--nmap versions lower than 5.30BETA1:
+nmap -sn --traceroute 192.168.1.0/24
+nmap -sP 192.168.1.*
+
+--newer nmap versions:
+nmap -sn 192.168.1.*
 nmap -sP 192.168.0.0/24
 
 -------------------------------------------------------------
