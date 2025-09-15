@@ -21,6 +21,8 @@ curl -m 15 -X POST -d "param1=value1&param2=value2" https://reqbin.com/echo/post
 curl -m 20 -u username:password ftp://ftp.example.com/file.txt
 curl --connect-timeout 5 --max-time 30 --speed-time 20 --speed-limit 50 https://reqbin.com/echo/get/json
 
+curl -s -o response.log -w “%{http_code}” http://localhost:9289
+for port in $(cat xx);do echo -e “--$port” ; curl -s -o response.log -w “%{http_code}” http://localhost:$port;echo -e “\n”;done
 
 -------------------------------------------------------------
 ##cURL ignore SSL certificate warnings command
