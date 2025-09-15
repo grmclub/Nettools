@@ -1,14 +1,16 @@
 --------------------------------------------------------------------------------------
+##Tag search
 https://www.onixs.biz/fix-dictionary/4.2/fields_by_tag.html
-https://fixparser.dev/what-is-fix
-https://fixparser.targetcompid.com/
+https://fiximate.fixtrading.org/
+https://b2bits.com/fixopaedia/fixdic44/fields_by_tag_.html
 
+##Specifications
 https://www.fixtrading.org/online-specification/
 https://www.fixtrading.org/standards/
-https://fiximate.fixtrading.org/
 
-
-
+##Tools
+https://fixparser.dev/what-is-fix
+https://fixparser.targetcompid.com/
 
 --------------------------------------------------------------------------------------
 ##Extract fix tags
