@@ -13,6 +13,15 @@ To upload multiple files, run:
 Pass the -v switch to see more info including progress:
 curl -F 'foo=@/path/to/img1.jpg' -F 'bar=@/path/to/img2.jpg' https://server1.cyberciti.biz/form/
 
+#Setting a Timeout in Curl Requests
+curl -m [timeout_seconds] [URL]
+curl -m 10 https://reqbin.com/echo/get/json
+curl -m 30 -o outputfile.txt https://reqbin.com/echo/get/file.txt
+curl -m 15 -X POST -d "param1=value1&param2=value2" https://reqbin.com/echo/post/json
+curl -m 20 -u username:password ftp://ftp.example.com/file.txt
+curl --connect-timeout 5 --max-time 30 --speed-time 20 --speed-limit 50 https://reqbin.com/echo/get/json
+
+
 -------------------------------------------------------------
 ##cURL ignore SSL certificate warnings command
 
