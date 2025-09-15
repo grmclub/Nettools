@@ -31,6 +31,12 @@ ps -T -o pid,tid,%cpu,psr,rss,cmd,comm -p pid
 –thread details 
 cat /proc/<pid>/task/<tid>/status
 cat /proc/<pid>/status
+
+##sort by mem/cpu
+ps aux --sort=-%mem | grep -i '[p]ython'
+ps aux --sort=-%cpu | grep -i '[p]ython'
+pgrep -af '[p]ython'
+
 -------------------------------------------------------------
 --cpu
 ps -aux --sort -pcpu|pr -TW 256|head
