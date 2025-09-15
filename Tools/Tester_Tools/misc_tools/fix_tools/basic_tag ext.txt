@@ -1,7 +1,17 @@
 --------------------------------------------------------------------------------------
+https://www.onixs.biz/fix-dictionary/4.2/fields_by_tag.html
+https://fixparser.dev/what-is-fix
+https://fixparser.targetcompid.com/
+
+https://www.fixtrading.org/online-specification/
+https://www.fixtrading.org/standards/
+https://fiximate.fixtrading.org/
+
+
+
+
 --------------------------------------------------------------------------------------
 ##Extract fix tags
-
 #35,150,11,49,56,54,55,38,44,31,32,52,60,58
 
 OrderQty <38>
