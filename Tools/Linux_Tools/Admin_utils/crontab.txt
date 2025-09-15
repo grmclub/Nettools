@@ -1,0 +1,42 @@
+--------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------
+  * * * * * <command to execute>
+# | | | | |
+# | | | | day of the week (0–6) (Sunday to Saturday; 
+# | | | month (1–12)             7 is also Sunday on some systems)
+# | | day of the month (1–31)
+# | hour (0–23)
+# minute (0–59)
+
+
+Syntax of Linux Crontab
+
+The Linux Crontab Format is represented by the following syntax:
+
+MIN HOUR DOM MON DOW CMD
+
+--------------------------------------------------------------------------------------
+To Schedule a Background Cron Job for Every 10 Minutes:
+
+Use the following command, if you want to check the disk space every 10 minutes.
+
+Command:
+
+*/10 * * * * /home/sujal/myscript.sh
+
+
+
+--------------------------------------------------------------------------------------
+Keyword    Equivalent
+@yearly    0 0 1 1 *
+@daily     0 0 * * *
+@hourly    0 * * * *
+@reboot    Run at startup.
+
+
+@yearly /home/sujal/myscript.sh
+
+To Schedule a Cron Job Beginning of Every Month Using @monthly:
+@monthly /home/sujal/myscript.sh
+
+--------------------------------------------------------------------------------------
