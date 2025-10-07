@@ -126,7 +126,17 @@ wget -qO- --user=$user --password=$password "http://xx"
 
 
 -------------------------------------------------------------
+##Curl
+https://www.baeldung.com/curl-send-post-request-data-from-file
+https://www.baeldung.com/curl-post-raw-body-data
+https://www.baeldung.com/linux/curl-download-multiple-files
+https://www.baeldung.com/linux/curl-request-timeout
+https://www.baeldung.com/linux/curl-specific-interface
 
+https://stackoverflow.com/questions/21404181/how-to-download-file-with-curl-from-sftp-server
+https://javarevisited.blogspot.com/2017/03/10-examples-of-curl-command-in-unix-and-Linux.html
+https://www.linuxjournal.com/content/use-curl-monitor-your-vonage-phone-bill
+https://www.cyberciti.biz/faq/download-a-file-with-curl-on-linux-unix-command-line/
 -------------------------------------------------------------
 
 -------------------------------------------------------------
