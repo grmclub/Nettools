@@ -158,9 +158,31 @@ new_str = string.replace(our_str, 'World', 'Jackson')
 
 
 -------------------------------------------------------------
+##python3 bytes to strings
+https://sourcebae.com/blog/how-to-convert-bytes-to-a-string-in-python/
+
+--In Python 3, the default encoding is "utf-8", so you can directly use:
+
+b'hello'.decode()
+
+which is equivalent to
+b'hello'.decode(encoding="utf-8")
+
+--On the other hand, in Python 2, encoding defaults to the default string encoding. Thus, you should use:
+
+b'hello'.decode(encoding)
+
+where encoding is the encoding you want.
+Note: support for keyword arguments was added in Python 2.7
 
 -------------------------------------------------------------
+For Python 3.6, Popen accepts an encoding keyword:
 
+>>> from subprocess import Popen, PIPE
+>>> text = Popen(['ls', '-l'], stdout=PIPE, encoding='utf-8').communicate()[0]
+>>> type(text)
+str
+>>> print(text)
 -------------------------------------------------------------
 
 -------------------------------------------------------------
