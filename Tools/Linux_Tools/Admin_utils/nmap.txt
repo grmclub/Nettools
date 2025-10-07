@@ -8,6 +8,16 @@ https://www.cyberciti.biz/networking/nmap-command-examples-tutorials/
 nmap -sn --traceroute 192.168.1.0/24
 nmap -sP 192.168.1.*
 
+--Fast scan of host ports
+nmap -F 192.168.1.1
+
+### Stealthy scan ###
+nmap -sS 192.168.1.1
+ 
+### Find out the most commonly used TCP ports using  TCP connect scan (warning: no stealth scan)
+###  OS Fingerprinting ###
+nmap -sT 192.168.1.1
+
 --newer nmap versions:
 nmap -sn 192.168.1.*
 nmap -sP 192.168.0.0/24
