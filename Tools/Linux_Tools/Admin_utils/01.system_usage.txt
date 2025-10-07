@@ -1,6 +1,33 @@
 https://phoenixnap.com/kb/check-cpu-usage-load-linux
+https://www.cyberciti.biz/tips/top-linux-monitoring-tools.html
+https://www.cyberciti.biz/tips/linux-resource-utilization-to-detect-system-bottlenecks.html
+https://www.cyberciti.biz/tips/linux-security.html
+https://www.cyberciti.biz/tips/linux-unix-bsd-openssh-server-best-practices.html
+
 
 ##system information
+
+--Get system memory, cpu usage
+
+## pass options to free ##
+alias meminfo='free -m -l -t'
+ 
+## get top process eating memory
+alias psmem='ps auxf | sort -nr -k 4'
+alias psmem10='ps auxf | sort -nr -k 4 | head -10'
+ 
+## get top process eating cpu ##
+alias pscpu='ps auxf | sort -nr -k 3'
+alias pscpu10='ps auxf | sort -nr -k 3 | head -10'
+ 
+## Get server cpu info ##
+alias cpuinfo='lscpu'
+ 
+## older system use /proc/cpuinfo ##
+##alias cpuinfo='less /proc/cpuinfo' ##
+
+
+
 
 ##core dump pattern
 cat /proc/sys/kernel/core_pattern
