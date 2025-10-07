@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import os, sys, getopt
 import errno, traceback
@@ -19,6 +19,7 @@ def execCmd(cmd):
     #print (cmd)
     p = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
     (output, err) = p.communicate()
+    output = output.decode('utf-8')
     ret = p.returncode
     return (output,err,ret)
 
