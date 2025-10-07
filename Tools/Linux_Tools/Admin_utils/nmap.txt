@@ -1,6 +1,8 @@
 -------------------------------------------------------------
 https://github.com/jasonniebauer/Nmap-Cheatsheet
 https://www.stationx.net/nmap-cheat-sheet/
+https://www.cyberciti.biz/networking/nmap-command-examples-tutorials/
+
 
 --nmap versions lower than 5.30BETA1:
 nmap -sn --traceroute 192.168.1.0/24
