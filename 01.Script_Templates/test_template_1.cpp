@@ -45,7 +45,7 @@ void parse_csv(const char* filename, std::string &delimeter)
             if(line.empty() || line[0] =='#')
                 continue;           
             std::istringstream iss(line);
-            while(std;;getline(iss,token, '\x01')){
+            while(std::getline(iss,token, '\x01')){
                 tokens.push_back(token);
             }
             for (const std::string &t : tokens){
