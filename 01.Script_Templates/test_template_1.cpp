@@ -89,6 +89,7 @@ int main(int argc, char *argv[])
                 break;
             }
         }
+	}
     try {   
         parse_csv(f_opt,delimeter);
         
@@ -99,6 +100,7 @@ int main(int argc, char *argv[])
     }
     return EXIT_SUCCESS;
 }
+
 
 
 
