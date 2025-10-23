@@ -3,6 +3,7 @@
 set -eu
 
 # vim:ts=4:sw=4:et
+# :%s=\s\+$==
 
 : ${RANGE=""}
 : ${IP=""}
