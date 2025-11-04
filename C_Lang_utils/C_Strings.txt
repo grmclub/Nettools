@@ -1,0 +1,297 @@
+Few commonly used string handling functions are discussed below:
+
+	strlen() -		computes string's length
+	strcpy() -		copies a string to another
+	strcat() -		concatenates(joins) two strings
+	strcmp() -		compares two strings
+	strlwr() -		converts string to lowercase
+	strupr() -		converts string to uppercase
+
+
+https://medium.com/@musheerk799/mastering-string-functions-in-c-9d71c3a6c19a
+https://blog.mbedded.ninja/programming/languages/c/string-manipulation-in-c/
+https://medium.com/@heynineteen/a-brief-and-incomplete-history-of-strings-1ff1aa442b24
+https://prdeving.wordpress.com/2017/04/24/how-to-parse-key-value-strings-into-associative-arrays-in-ansi-c89/
+
+Tokenization 	     - Breaking string into tokens 	         // Splitting CSV data
+Pattern Matching 	 - Identifying specific patterns 	     // Validating input
+Substring Extraction - Retrieving specific parts of a string //	Parsing configuration files
+
+--misc
+https://gabrielbarberini.medium.com/programming-paradigms-part-1-8fecf1d59f98
+
+--------------------------------------------------------------------------------------
+
+Here are examples of some fundamental C string operations:
+1. String Length (strlen)
+
+#include <stdio.h>
+#include <string.h>
+
+int main() {
+    char str[] = "Hello, World!";
+    size_t length = strlen(str);
+    printf("Length of string: %zu\n", length); // Output: Length of string: 13
+    return 0;
+}
+
+2. String Copy (strcpy, strncpy)
+C
+
+#include <stdio.h>
+#include <string.h>
+
+int main() {
+    char source[] = "Copy me!";
+    char destination[20]; // Ensure destination has enough space
+
+    // strcpy copies the entire string
+    strcpy(destination, source);
+    printf("Copied string (strcpy): %s\n", destination); // Output: Copied string (strcpy): Copy me!
+
+    char partial_source[] = "Partial copy";
+    char partial_destination[10]; 
+
+    // strncpy copies a specified number of characters
+    strncpy(partial_destination, partial_source, 7); // Copy first 7 characters
+    partial_destination[7] = '\0'; // Null-terminate the destination string
+    printf("Copied string (strncpy): %s\n", partial_destination); // Output: Copied string (strncpy): Partial
+    return 0;
+}
+
+3. String Concatenation (strcat, strncat)
+C
+
+#include <stdio.h>
+#include <string.h>
+
+int main() {
+    char str1[50] = "Hello, ";
+    char str2[] = "World!";
+
+    // strcat appends one string to another
+    strcat(str1, str2);
+    printf("Concatenated string (strcat): %s\n", str1); // Output: Concatenated string (strcat): Hello, World!
+
+    char str3[50] = "First ";
+    char str4[] = "Second part";
+
+    // strncat appends a specified number of characters
+    strncat(str3, str4, 6); // Append first 6 characters of str4
+    printf("Concatenated string (strncat): %s\n", str3); // Output: Concatenated string (strncat): First Second
+    return 0;
+}
+
+4. String Comparison (strcmp, strncmp)
+C
+
+#include <stdio.h>
+#include <string.h>
+
+int main() {
+    char s1[] = "apple";
+    char s2[] = "banana";
+    char s3[] = "apple";
+
+    // strcmp compares two strings lexicographically
+    int result1 = strcmp(s1, s2); // s1 < s2, so result1 will be negative
+    int result2 = strcmp(s1, s3); // s1 == s3, so result2 will be 0
+
+    printf("Comparison of '%s' and '%s': %d\n", s1, s2, result1); // Output: Comparison of 'apple' and 'banana': (negative value)
+    printf("Comparison of '%s' and '%s': %d\n", s1, s3, result2); // Output: Comparison of 'apple' and 'apple': 0
+
+    char s4[] = "testing";
+    char s5[] = "test_data";
+
+    // strncmp compares a specified number of characters
+    int result3 = strncmp(s4, s5, 4); // Compare first 4 characters ("test")
+    printf("Partial comparison of '%s' and '%s' (4 chars): %d\n", s4, s5, result3); // Output: Partial comparison of 'testing' and 'test_data' (4 chars): 0
+    return 0;
+}
+
+--------------------------------------------------------------------------------------
+string greeting1 = "Hello";  // Regular String
+char greeting2[] = "Hello";  // C-Style String (an array of characters) 
+
+Different Ways Of Creating Strings
+
+Whenever you write anything in double quotes in C (e.g. "abc"), you are creating what is called a string literal. 
+You can assign a string literal to a pointer to char, like so:
+
+char* myStr = "abc"; // This is a string literal
+char myStr2[] = "abc"; // Creating a string literal and assigning it to any array
+                       // (the size is inferred from the right-hand side of the equation)
+
+https://www.w3schools.com/cpp/cpp_ref_cstring.asp
+https://www.w3schools.com/cpp/cpp_ref_string.asp
+
+Char vs. String
+
+In C, 'a' and "A" are completely different types
+--------------------------------------------------------------------------------------
+##How to initialize strings?
+
+You can initialize strings in a number of ways.
+char c[] = "abcd";
+char c[50] = "abcd";
+char c[] = {'a', 'b', 'c', 'd', '\0'};
+char c[5] = {'a', 'b', 'c', 'd', '\0'};
+##Assigning Values to Strings
+Arrays and strings do not support the assignment operator once it is declared. For example,
+char c[100];
+c = "C programming";  // Error! array type is not assignable.
+Note: Use the strcpy() function to copy the string instead.
+
+##Read String from the user
+
+You can use the scanf() function to read a string.
+
+The scanf() function reads the sequence of characters until it encounters whitespace (space, newline, tab, etc.).
+Example 1: scanf() to read a string
+
+#include <stdio.h>
+int main()
+{
+    char name[20];
+    printf("Enter name: ");
+    scanf("%s", name);
+    printf("Your name is %s.", name);
+    return 0;
+}
+
+##How to read a line of text?
+
+You can use the fgets() function to read a line of string. And, you can use puts() to display the string.
+Example 2: fgets() and puts()
+
+#include <stdio.h>
+int main()
+{
+    char name[30];
+    printf("Enter name: ");
+    fgets(name, sizeof(name), stdin);  // read string
+    printf("Name: ");
+    puts(name);    // display string
+    return 0;
+}
+
+##Passing Strings to Functions
+
+Strings can be passed to a function in a similar way as arrays. Learn more about passing arrays to a function.
+Example 3: Passing string to a Function
+
+#include <stdio.h>
+void displayString(char str[]);
+
+int main()
+{
+    char str[50];
+    printf("Enter string: ");
+    fgets(str, sizeof(str), stdin);             
+    displayString(str);     // Passing string to a function.    
+    return 0;
+}
+void displayString(char str[])
+{
+    printf("String Output: ");
+    puts(str);
+}
+
+##Strings and Pointers
+
+Similar like arrays, string names are "decayed" to pointers. Hence, you can use pointers to manipulate elements of the string. We recommended you to check C Arrays and Pointers before you check this example.
+Example 4: Strings and Pointers
+
+#include <stdio.h>
+
+int main(void) {
+  char name[] = "Harry Potter";
+
+  printf("%c", *name);     // Output: H
+  printf("%c", *(name+1));   // Output: a
+  printf("%c", *(name+7));   // Output: o
+
+  char *namePtr;
+
+  namePtr = name;
+  printf("%c", *namePtr);     // Output: H
+  printf("%c", *(namePtr+1));   // Output: a
+  printf("%c", *(namePtr+7));   // Output: o
+}
+
+=======================
+=======================
+=======================
+https://docs.gtk.org/glib/
+https://stackoverflow.com/questions/31930046/what-is-a-hash-table-and-how-do-you-make-it-in-c
+https://codereview.stackexchange.com/questions/226293/parse-a-simple-key-value-config-file-in-c
+https://labex.io/tutorials/c-how-to-implement-safe-string-parsing-418490
+--------------------------------------------------------------------------------------
+##Parse a Key-Value string
+
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h> // For malloc and free
+
+void parse_key_value(const char *input_string, char **key, char **value) {
+    char *equals_sign = strchr(input_string, '=');
+
+    if (equals_sign == NULL) {
+        *key = NULL;
+        *value = NULL;
+        return;
+    }
+
+    // Allocate memory for the key
+    size_t key_len = equals_sign - input_string;
+    *key = (char *)malloc(key_len + 1);
+    if (*key == NULL) {
+        perror("Failed to allocate memory for key");
+        exit(EXIT_FAILURE);
+    }
+    strncpy(*key, input_string, key_len);
+    (*key)[key_len] = '\0'; // Null-terminate the key
+
+    // Allocate memory for the value
+    size_t value_len = strlen(equals_sign + 1);
+    *value = (char *)malloc(value_len + 1);
+    if (*value == NULL) {
+        perror("Failed to allocate memory for value");
+        exit(EXIT_FAILURE);
+    }
+    strcpy(*value, equals_sign + 1); // Copy the value
+}
+
+int main() {
+    const char *test_string = "name=John Doe";
+    char *parsed_key = NULL;
+    char *parsed_value = NULL;
+
+    parse_key_value(test_string, &parsed_key, &parsed_value);
+
+    if (parsed_key != NULL && parsed_value != NULL) {
+        printf("Key: %s\n", parsed_key);
+        printf("Value: %s\n", parsed_value);
+    } else {
+        printf("Failed to parse key-value pair.\n");
+    }
+
+    // Free allocated memory
+    free(parsed_key);
+    free(parsed_value);
+
+    return 0;
+}
+
+
+=======================
+=======================
+=======================
+--------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------
