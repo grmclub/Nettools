@@ -1,0 +1,91 @@
+--------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------
+Here are examples of common C++ string operations:
+
+#include <iostream>
+#include <string>
+
+int main() {
+    std::string str1 = "Hello";
+    std::string str2 = " World";
+    std::string result;
+
+    // 1. Concatenation
+    // Using the + operator
+    result = str1 + str2; // result is "Hello World"
+    std::cout << "Concatenation (+): " << result << std::endl;
+
+    // Using the append() method
+    str1.append(str2); // str1 becomes "Hello World"
+    std::cout << "Concatenation (append): " << str1 << std::endl;
+    
+    // Using the += operator
+    std::string str3 = "The end";
+    str3 += "!"; // str3 becomes "The end!"
+    std::cout << "Concatenation (+=): " << str3 << std::endl;
+
+
+    // 2. Length/Size
+    // Use length() or size()
+    int len = str1.length(); // or str1.size()
+    std::cout << "Length of str1: " << len << std::endl;
+
+
+    // 3. Accessing Characters
+    // Using the index operator []
+    char firstChar = str1[0]; // 'H'
+    std::cout << "First character: " << firstChar << std::endl;
+
+
+    // 4. Substring Extraction
+    // Using substr(start_pos, length)
+    std::string sub = str1.substr(0, 5); // Extracts "Hello" from index 0 with length 5
+    std::cout << "Substring: " << sub << std::endl;
+
+
+    // 5. Searching
+    // Using find() to get the position of a substring
+    size_t pos = str1.find("World"); // Returns the index of the first occurrence
+    if (pos != std::string::npos) {
+        std::cout << "'World' found at position: " << pos << std::endl;
+    } else {
+        std::cout << "'World' not found." << std::endl;
+    }
+
+
+    // 6. Replacement
+    // Using replace(start_pos, length, replacement_string)
+    std::string original = "I like cats";
+    original.replace(7, 4, "dogs"); // Replaces 4 chars starting at index 7 with "dogs"
+    std::cout << "Replacement: " << original << std::endl;
+
+
+    // 7. Comparison
+    // Using the == operator
+    std::string s1 = "test";
+    std::string s2 = "test";
+    if (s1 == s2) { // Relational operators (==, !=, <, etc.) are all defined
+        std::cout << "s1 and s2 are equal." << std::endl;
+    }
+
+    return 0;
+}
+
+
+--------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------
+
+
+
+
+
+
+
