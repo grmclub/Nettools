@@ -7,6 +7,14 @@
 - utilities - config_parser, file_logger, tag_extractor
 - protocol extractors - fix_injector
 -------------------------------------------------------------
+https://www.learncpp.com/
+https://www.studyplan.dev/cpp
+https://hackingcpp.com/
+
+https://www.cppreference.com/
+
+
+
 -------------------------------------------------------------
 -------------------------------------------------------------
 -------------------------------------------------------------
