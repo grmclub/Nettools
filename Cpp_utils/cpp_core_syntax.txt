@@ -12,10 +12,23 @@ https://www.studyplan.dev/cpp
 https://hackingcpp.com/
 
 https://www.cppreference.com/
+https://en.cppreference.com/w/cpp/header.html
+https://en.cppreference.com/w/
 
+https://isocpp.org/faq
+https://isocpp.org/wiki/faq
 
-
+https://cplusplus.com/reference/stl/
 -------------------------------------------------------------
+https://github.com/AnthonyCalandra/modern-cpp-features
+https://github.com/gibsjose/cpp-cheat-sheet/blob/master/Data%20Structures%20and%20Algorithms.md
+https://github.com/datawookie/awesome-public-datasets
+
+
+
+
+
+
 -------------------------------------------------------------
 -------------------------------------------------------------
 -------------------------------------------------------------
