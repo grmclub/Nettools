@@ -25,7 +25,7 @@ class upload_dir:
     def __init__(self,DATA_DIR, REMOTE_DIR):
          self.remote_host = xx
          self.remote_dir = REMOTE_DIR
-         self.cmd = “SCP -ro Compression=yes %s/# %s:%s” % (DATA_DIR, self.remote_host,REMOTE_DIR)
+         self.cmd = "SCP -ro Compression=yes %s/* %s:%s" % (DATA_DIR, self.remote_host,REMOTE_DIR)
          self.cmd_list = []
 
 
@@ -34,20 +34,20 @@ class upload_dir:
             end = int(folder_end)
             cmd = self.cmd
             for folder in range(start,end+1):
-                 xx = cmd.replace(‘#’,str(folder))
+                 xx = cmd.replace('#',str(folder))
                  self.cmd_list.append(xx)
 
        def parse_filelist(self, file_list):
            lines = ""
            cmd = self.cmd
-           with open(file_list, “r”) as ifile:
+           with open(file_list, "r") as ifile:
                 lines = "".join(ifile.readlines())
 
-            for folder in lines.split(“\n”):
+            for folder in lines.split("\n"):
                    if folder == "":
                       continue 
                       #print (folder)
-                  xx = cmd.replace(‘#’,str(folder))
+                  xx = cmd.replace('#',str(folder))
                  self.cmd_list.append(xx)
 
        def trigger_upload(self):
@@ -90,7 +90,7 @@ def main():
                 sys.exit(0)
 
         ud = upload_dir(DATA_DIR, REMOTE_DIR)
-        if (FILE_LIST != “”):
+        if (FILE_LIST != ""):
              ud.parse_file(FILE_LIST)
         else:
              ud.parse_sequence(FOLDER_START, FOLDER_END)
