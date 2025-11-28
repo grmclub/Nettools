@@ -108,6 +108,8 @@ tshark -r fix_capture.pcap -V -O fix
 
 ---------------------------------------------------------------------------------
 ##Extract fix messages with Timestamp
+
+file=xx.pcap
 port=53867
 tshark -r $file -Y "tcp.port == $port && tcp.len > 0" -T fields \
 -Eseparator='|' \
