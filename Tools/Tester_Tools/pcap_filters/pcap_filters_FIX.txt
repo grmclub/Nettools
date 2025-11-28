@@ -99,7 +99,12 @@ tshark -nr fix.pcap -T pdml
 tshark -nr fix.pcap -T json
 https://ask.wireshark.org/question/12850/command-line-tshark-json-and-packet-details-all-expanded/
 
+# Read a pcap file and display FIX protocol details
+tshark -r fix_capture.pcap -V -O fix
 
+    -r fix_capture.pcap specifies the input PCAP file.
+    -V displays full packet details.
+    -O fix specifically requests full details for the FIX protocol.
 
 ---------------------------------------------------------------------------------
 
