@@ -9,13 +9,13 @@ import struct
 import binascii
 
 def printHelp():
-    print """Usage: %s -f <filename>
+    print (("""Usage: %s -f <filename>
 
     OPTIONS:
          -f  input file
          -p  pcap file
          -h  Display this help message.
-    """ % os.path.basename(__file__)  # sys.argv[0]
+    """) % (os.path.basename(__file__)))  # sys.argv[0]
 
 def execCmd(cmd):
     print (cmd)
@@ -52,7 +52,7 @@ def main():
     try:
         opts, args = getopt.getopt(sys.argv[1:], "f:p:h")
     except getopt.GetoptError as e:
-        print e
+        print (e)
         sys.exit()
 
     try:
@@ -62,7 +62,7 @@ def main():
         for o,a in opts:
             if o == "-f":
                 DATA_FILE = a
-            if o == "-f":
+            if o == "-p":
                 PCAP_FILE = a
             if o == "-h":
                 printHelp()
@@ -73,7 +73,7 @@ def main():
             DATA_FILE = OUT_FILE
         process_file(DATA_FILE)
 
-    except Exception, err:
+    except Exception as err:
         traceback.print_exc(file=sys.stderr)
         sys.stderr.flush()
         print("Error: %s\n" %str(err))
