@@ -53,13 +53,17 @@ function gen_dump(){
 
 
 ---------------------------------------------------------------------------------
+https://www.wireshark.org/docs/dfref/f/fix.html
+https://stackoverflow.com/questions/13810156/tshark-export-fix-messages
+
 ##Fix protocol extract data
 tshark -r $file \
 -T fields \
 -E header=y  \
 -E separator='|' \
--e frame_time \
+-e frame.time \
 -e fix.MsgType \
+-e fix.ExecType \
 -e fix.MsgSeqNum \
 -e fix.RefSeqNum \
 -e fix.SenderCompId \
@@ -68,9 +72,13 @@ tshark -r $file \
 -e TransactTime \
 -e fix.ClOrdID \
 -e fix.Symbol \
+-e fix.Side \
 -e fix.Price \
 -e fix.OrderQty \
--e fix.ExecType
+-e fix.LastPx \
+-e fix.LastQty \
+fix.Text
+
 ---------------------------------------------------------------------------------
 ##Extract key field
 tshark -r fix.pcap -Y "fix" -Tfields  -E separator=',' -e frame.time_epoch -e fix.MsgType -e fix.ClOrdID -e fix.ExecType
