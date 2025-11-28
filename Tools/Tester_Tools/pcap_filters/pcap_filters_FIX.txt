@@ -107,7 +107,15 @@ tshark -r fix_capture.pcap -V -O fix
     -O fix specifically requests full details for the FIX protocol.
 
 ---------------------------------------------------------------------------------
+##Extract fix messages with Timestamp
+port=53867
+tshark -r $file -Y "tcp.port == $port && tcp.len > 0" -T fields \
+-Eseparator='|' \
+-Eoccurrence=l \
+-e frame.time \
+-d tcp.port==$port,data -e data.data > fix.ext
 
+./pcap_decode_ascii.py -f fix.ext|sed -E 's/\\x01/|/g;s/(bytearray|\(b|\))//g'
 
 ---------------------------------------------------------------------------------
 
