@@ -117,7 +117,12 @@ tshark -r $file -Y "tcp.port == $port && tcp.len > 0" -T fields \
 -e frame.time \
 -d tcp.port==$port,data -e data.data > fix.ext
 
-./pcap_decode_ascii.py -f fix.ext|sed -E 's/\\x01/|/g;s/(bytearray|\(b|\))//g'
+python3 ./pcap_decode_ascii.py -f fix.ext|sed -E 's/\\x01/|/g;s/(bytearray|\(b|\))//g'
+
+==============
+tshark -r $file -Y "fix" -T fields -e frame.time -e tcp.payload > fix.ext
+python3 ./pcap_decode_ascii.py -f fix.ext|sed -E 's/\\x01/|/g;s/(bytearray|\(b|\))//g'
+==============
 
 ---------------------------------------------------------------------------------
 
