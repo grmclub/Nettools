@@ -93,7 +93,7 @@ tshark -r $file -Tfields -e data|sed -e 's/^$/d'|sed 's/.\{2\}/& /g'
 ##Extract connectivity details of seq no.
 file=xx.pcap
 tshark -r $file \
--o tcp.relative_sequence_numbers:FALSE\
+-o tcp.relative_sequence_numbers:FALSE \
 -T fields \
 -E header=y  \
 -E separator='|' \
