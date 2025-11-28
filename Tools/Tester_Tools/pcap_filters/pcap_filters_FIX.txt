@@ -77,7 +77,7 @@ tshark -r $file \
 -e fix.OrderQty \
 -e fix.LastPx \
 -e fix.LastQty \
-fix.Text
+-e fix.Text
 
 ---------------------------------------------------------------------------------
 ##Extract key field
