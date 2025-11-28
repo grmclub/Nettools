@@ -55,6 +55,8 @@ function gen_dump(){
 ---------------------------------------------------------------------------------
 https://www.wireshark.org/docs/dfref/f/fix.html
 https://stackoverflow.com/questions/13810156/tshark-export-fix-messages
+https://wiki.wireshark.org/samplecaptures#financial-information-exchange-fix
+https://www.netresec.com/?page=PcapFiles
 
 ##Fix protocol extract data
 tshark -r $file \
