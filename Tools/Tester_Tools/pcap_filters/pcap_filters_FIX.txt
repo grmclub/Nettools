@@ -91,7 +91,7 @@ tshark -nr fix.pcap -Y'fix' -w- | tcpdump -r- -l -w- | tcpflow -r- -C -B  | tr \
 tcpflow ensures that the TCP stream is followed, so no FIX messages are missed (in the case where a single TCP packet contains more than 1 FIX message). -C writes to the console and -B ensures binary output. This approach is not unlike following a TCP stream in Wireshark.
 
 The FIX delimiters are preserved, grep can be applied in output
-... | tcpflow -r- -C -B | grep -P "\x0135=8\x01"
+tshark -nr <input_file> -Y'fix' -w- | tcpdump -r- -l -w- | tcpflow -r- -C -B| grep -P "\x0135=8\x01"
 
 
 ---------------------------------------------------------------------------------
