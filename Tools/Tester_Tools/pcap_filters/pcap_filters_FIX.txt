@@ -67,11 +67,10 @@ tshark -r $file \
 -e fix.MsgType \
 -e fix.ExecType \
 -e fix.MsgSeqNum \
--e fix.RefSeqNum \
--e fix.SenderCompId \
--e fix.TargetCompId \
+-e fix.SenderCompID \
+-e fix.TargetCompID \
 -e fix.SendingTime \
--e TransactTime \
+-e fix.TransactTime \
 -e fix.ClOrdID \
 -e fix.Symbol \
 -e fix.Side \
