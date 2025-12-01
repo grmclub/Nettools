@@ -9,6 +9,10 @@ https://linuxopsys.com/tshark-examples-with-cheat-sheet
 
 https://www.promptzine.com/threat-hunting-zine/cool-tshark-tricks
 https://gist.github.com/joaoceron/e09b5baa23c6d27dbfe8446f629f6da8
+
+misc:
+https://github.com/Open-Markets-Initiative/omi-low-latency-reference/tree/main/articles
+https://github.com/Open-Markets-Initiative/wireshark-lua
 -------------------------------------------------------------
 ==================================
 * Core Filters
