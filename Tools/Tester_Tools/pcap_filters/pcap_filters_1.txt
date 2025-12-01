@@ -118,10 +118,11 @@ ws:
 ===============================
 * Split file into smaller files
 
-tcpdump -r out.pcap -C 1024 -w capxx
 tshark -r out.pcap -Y "frame.number >=1 && frame.number <=100" -w out.pcap
 
-
+##Split Files by 1024MB -> 1GB
+tcpdump -r "large_dump.pcap" -C 1024 -w capX
+tcpdump -r out.pcap -C 1024 -w capxx
 ===============================
 * Quick GUI Filters
 
@@ -131,7 +132,6 @@ tcp.srcport ==10300 && !(tcp.retransmission or tcp.analysis.fast_retransmission)
 
 ##ws check frame contents
 frame contains "XXYYZZ1234"
-
 
 ===============================
 * Connectivity Filters
@@ -234,14 +234,9 @@ eth.dst
    
  
 -------------------------------------------------------------
-*Get potocols in the packet
+* Get potocols in the packet
 
 tshark -r test.cap -q -z io,phs
-
-* Split Files by 1024MB -> 1GB
-tcpdump -r "large_dump.pcap" -C 1024 -w capX
--------------------------------------------------------------
-
 
 -------------------------------------------------------------
 https://github.com/wuseman/tshark-cheatsheet
