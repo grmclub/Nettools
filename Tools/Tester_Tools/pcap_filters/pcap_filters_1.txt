@@ -9,7 +9,7 @@ https://danielmiessler.com/p/tcpdump/
 tcp.flags.syn ==1|| (tcp.flags.syn ==1 && tcp.flags.ack ==1) ||tcp.flags.fin ==1||tcp.flags.reset ==1
 
 ##Filter raw packets
-tshark -r test.pcap -Y ‘frame contains “foo”’
+tshark -r test.pcap -Y 'frame contains "foo"'
 tcpdump -r out.pcap -A|grep XXABC
 
 ##Conversion of erf to pcap
@@ -40,12 +40,12 @@ tshark -r xx.pcap -Y "tcp.port == 24636"
 
 ===============================
 ##Exclude Retransmissions
-tshark -r xx.pcap -Y “not tcp.analysis.retransmission” -T fields -e data
+tshark -r xx.pcap -Y "not tcp.analysis.retransmission" -T fields -e data
 ws:
 !(tcp.analysis.retransmission or tcp.analysis.fast_retransmission or tcp.analysis.duplicate_ack)
 
 -o tcp.relative_sequence_numbers:FALSE
--Y “tcp.len > 0”
+-Y "tcp.len > 0"
 ===============================
 ##Ascii/ hex dump
 tcpdump -r out.pcap -A |grep -a XX
