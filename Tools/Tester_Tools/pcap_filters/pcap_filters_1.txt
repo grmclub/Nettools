@@ -3,63 +3,11 @@ https://danielmiessler.com/p/tcpdump/
 
 
 -------------------------------------------------------------
-* Core Filters
 ==================================
+* Core Filters
+
 ##Filter tcp connection/teardown
 tcp.flags.syn ==1|| (tcp.flags.syn ==1 && tcp.flags.ack ==1) ||tcp.flags.fin ==1||tcp.flags.reset ==1
-
-##Filter raw packets
-tshark -r test.pcap -Y 'frame contains "foo"'
-tcpdump -r out.pcap -A|grep XXABC
-
-##Conversion of erf to pcap
-https://www.netresec.com/?page=Blog&month=2012-11&post=Convert-Endace-ERF-capture-files-to-PCAP
-
-##pcap to erf
-/usr/bin/dagconvert -T pcap:erf -i file.pcap -o file.erf
- 
-##erf to pcap
-editcap -F libpcap -T ether -A "$(date -I) 09:00:00" -B "$(date -I) 09:10:00" xx.erf out.pcap
-
-
--A dumps ascii
--X dumps in hexdump
-
-##tcpdump: Filter by IP/portrange
-file=xx.pcap
-IP=xxx.xxx.xxx.xxx
-tcpdump -r $file "host $IP  or (vlan and host $IP) " -w ip.pcap
-
-RANGE=
-tcpdump -r $file "portrange $RANGE or (vlan and portrange $RANGE)" -w range.pcap   
-tcpslice /var/sniffer/dump{5..8}*.pcap | tcpdump -r - "portrange 11003 or (vlan and portrange 11003)" -w xx.pcap
-
-##ts Filter by port
-tshark -r xx.pcap -Y "tcp.port == 24636"
--T fields -e eth.src -e eth.dst -e data 
-
-===============================
-##Exclude Retransmissions
-tshark -r xx.pcap -Y "not tcp.analysis.retransmission" -T fields -e data
-ws:
-!(tcp.analysis.retransmission or tcp.analysis.fast_retransmission or tcp.analysis.duplicate_ack)
-
--o tcp.relative_sequence_numbers:FALSE
--Y "tcp.len > 0"
-===============================
-##Ascii/ hex dump
-tcpdump -r out.pcap -A |grep -a XX
--A dumps ASCII
--X dumps output in Hex
--S : Print absolute sequence numbers. 
--t : Give human-readable timestamp output.
--tttt : Give maximally human-readable timestamp output
-
-tshark -r xx.pcap -o data.show_as_text:TRUE -T fields -e data.text
-===============================
-##Split file into smaller files
-tcpdump -r out.pcap -C 1024 -w capxx
-tshark -r out.pcap -Y "frame.number >=1 && frame.number <=100" -w out.pcap
 
 ##Check tcp establish & teardown
 tcp.flags.syn==1||(tcp.flags.syn==1 && tcp.flags.ack==1)||tcp.flags.fin==1||tcp.flags.reset==1
@@ -73,12 +21,24 @@ tshark -r xx.pcap -R "(tcp.flags.syn==1||(tcp.flags.syn==1 && tcp.flags.ack==1)|
 -e tcp.srcport \
 -e col.Info | egrep 'SYN|ACK, ACK|ACK|RST|FIN'
 
-##ws exclude retransmission
-!(tcp.retransmission or tcp.analysis.fast_retransmission)
-tcp.srcport ==10300 && !(tcp.retransmission or tcp.analysis.fast_retransmission)
+##Filter raw packets
+tshark -r test.pcap -Y 'frame contains "foo"'
+tcpdump -r out.pcap -A|grep XXABC
 
-##ws check frame contents
-frame contains "XXYYZZ1234"
+-A dumps ascii
+-X dumps in hexdump
+
+##Ascii/ hex dump
+tcpdump -r out.pcap -A |grep -a XX
+-A dumps ASCII
+-X dumps output in Hex
+-S : Print absolute sequence numbers. 
+-t : Give human-readable timestamp output.
+-tttt : Give maximally human-readable timestamp output
+
+tshark -r xx.pcap -o data.show_as_text:TRUE -T fields -e data.text
+==================================
+* Convert Payload
 
 ##ts convert payload to ascii with timestamp
 https://ask.wireshark.org/question/26086/formatting-tshark-payload-output-with-timestamp/
@@ -88,7 +48,93 @@ tshark -r xx.pcap -T fields -e frame.time -e data| perl -ne 's/\s+$//; ($date,$h
 ##Extract and hexify data
 tshark -r $file -Tfields -e data|sed -e 's/^$/d'|sed 's/.\{2\}/& /g'
 ==================================
-##Connectivity Filters
+* Type Convertions
+
+##Conversion of erf to pcap
+https://www.netresec.com/?page=Blog&month=2012-11&post=Convert-Endace-ERF-capture-files-to-PCAP
+
+##erf to pcap
+/usr/bin/dagconvert -T erf:pcap -i file.erf -o file.pcap
+
+##pcap to erf
+/usr/bin/dagconvert -T pcap:erf -i file.pcap -o file.erf
+ 
+##erf to pcap
+editcap -F libpcap -T ether -A "$(date -I) 09:00:00" -B "$(date -I) 09:10:00" xx.erf out.pcap
+==================================
+* ERF to pcap
+
+https://www.netresec.com/?page=Blog&month=2012-11&post=Convert-Endace-ERF-capture-files-to-PCAP
+https://www.thegeekstuff.com/2009/02/editcap-guide-11-examples-to-handle-network-packet-dumps-effectively/
+
+#editcap -F libpcap -T ether erf-ethernet-example.erf erf-ethernet-example.pcap 
+
+*Extract packets between a specific timeperiod using option -A and -B
+# editcap -v -A "2009-02-11 11:26:30" -B "2009-02-11 11:27:00"  input_dump output_dump
+
+
+ERF (Endace Record Format) is a proprietary binary format for captured network packets. An ERF File is simply one or more records concatenated, with no file header. This makes it conceptually simpler than pcap files, which it is not directly compatible with.
+
+The Wireshark package (including mergecap, editcap, capinfos, tshark, wireshark etc) has the ability to read ERF Files and dissect the records. This functionality is split between wiretap (wtap/erf.c) and a dissector (epan/dissectors/packet-erf.c).
+
+Because of this, editcap/mergecap/tshark/wireshark can read in an ERF File and output any format they support writing into, defaulting to pcap. The DLT you get will depend on the tool settings.
+
+
+==================================
+* Filter by IP/Port
+
+##tcpdump: Filter by IP/portrange
+file=xx.pcap
+IP=xxx.xxx.xxx.xxx
+tcpdump -r $file "host $IP  or (vlan and host $IP) " -w ip.pcap
+
+RANGE=32001-32501
+tcpdump -r $file "portrange $RANGE or (vlan and portrange $RANGE)" -w range.pcap   
+tcpslice /var/sniffer/dump{5..8}*.pcap | tcpdump -r - "portrange 11003 or (vlan and portrange 11003)" -w xx.pcap
+
+##ts Filter by port
+tshark -r xx.pcap -Y "tcp.port == 24636"
+-T fields -e eth.src -e eth.dst -e data 
+
+##Basic Filters
+tcpslice /var/db/sniffer/dump{0..6}*.tcpdump | tcpdump -r - "host 10.65.2.116  or (vlan and host 10.65.2.116) " -w ww.pcap
+tcpslice /var/db/sniffer/dump{5..8}*.tcpdump | tcpdump -r - "portrange 11003 or (vlan and portrange 11003)" -w xx.pcap
+
+IP=
+tcpslice *.tcpdump | tcpdump -r - "host $IP  or (vlan and host $IP) " -w ip.pcap
+
+RANGE=
+tcpslice *.tcpdump | tcpdump -r - "portrange $RANGE or (vlan and portrange $RANGE)" -w range.pcap  
+
+===============================
+*Exclude Retransmissions
+
+tshark -r xx.pcap -Y "not tcp.analysis.retransmission" -T fields -e data
+ws:
+!(tcp.analysis.retransmission or tcp.analysis.fast_retransmission or tcp.analysis.duplicate_ack)
+
+-o tcp.relative_sequence_numbers:FALSE
+-Y "tcp.len > 0"
+===============================
+* Split file into smaller files
+
+tcpdump -r out.pcap -C 1024 -w capxx
+tshark -r out.pcap -Y "frame.number >=1 && frame.number <=100" -w out.pcap
+
+
+===============================
+* Quick GUI Filters
+
+##ws exclude retransmission
+!(tcp.retransmission or tcp.analysis.fast_retransmission)
+tcp.srcport ==10300 && !(tcp.retransmission or tcp.analysis.fast_retransmission)
+
+##ws check frame contents
+frame contains "XXYYZZ1234"
+
+
+===============================
+* Connectivity Filters
 
 ##Extract connectivity details of seq no.
 file=xx.pcap
@@ -186,37 +232,16 @@ eth.dst
    tcp.analysis.flags
    !tcp
    
---Basic Filters
-tcpslice /var/db/sniffer/dump{0..6}*.tcpdump | tcpdump -r - "host 10.65.2.116  or (vlan and host 10.65.2.116) " -w ww.pcap
-tcpslice /var/db/sniffer/dump{5..8}*.tcpdump | tcpdump -r - "portrange 11003 or (vlan and portrange 11003)" -w xx.pcap
-
-IP=
-tcpslice *.tcpdump | tcpdump -r - "host $IP  or (vlan and host $IP) " -w ip.pcap
-
-RANGE=
-tcpslice *.tcpdump | tcpdump -r - "portrange $RANGE or (vlan and portrange $RANGE)" -w range.pcap   
+ 
 -------------------------------------------------------------
 *Get potocols in the packet
+
 tshark -r test.cap -q -z io,phs
 
 * Split Files by 1024MB -> 1GB
 tcpdump -r "large_dump.pcap" -C 1024 -w capX
 -------------------------------------------------------------
-* ERF to pcap
-https://www.netresec.com/?page=Blog&month=2012-11&post=Convert-Endace-ERF-capture-files-to-PCAP
-https://www.thegeekstuff.com/2009/02/editcap-guide-11-examples-to-handle-network-packet-dumps-effectively/
 
-#editcap -F libpcap -T ether erf-ethernet-example.erf erf-ethernet-example.pcap 
-
-*Extract packets between a specific timeperiod using option -A and -B
-# editcap -v -A "2009-02-11 11:26:30" -B "2009-02-11 11:27:00"  input_dump output_dump
-
-
-ERF (Endace Record Format) is a proprietary binary format for captured network packets. An ERF File is simply one or more records concatenated, with no file header. This makes it conceptually simpler than pcap files, which it is not directly compatible with.
-
-The Wireshark package (including mergecap, editcap, capinfos, tshark, wireshark etc) has the ability to read ERF Files and dissect the records. This functionality is split between wiretap (wtap/erf.c) and a dissector (epan/dissectors/packet-erf.c).
-
-Because of this, editcap/mergecap/tshark/wireshark can read in an ERF File and output any format they support writing into, defaulting to pcap. The DLT you get will depend on the tool settings.
 
 -------------------------------------------------------------
 https://github.com/wuseman/tshark-cheatsheet
