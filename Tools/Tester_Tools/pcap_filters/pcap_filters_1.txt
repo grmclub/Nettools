@@ -6,6 +6,9 @@ https://gist.github.com/githubfoam/6c9e07f95c2eb03ec4ae9709252c713f
 https://cheatography.com/mbwalker/cheat-sheets/tshark-wireshark-command-line/
 https://techjunction.co/tshark-cheat-sheet-for-network-engineers-master-command-line-packet-analysis-wireshark-cli/
 https://linuxopsys.com/tshark-examples-with-cheat-sheet
+
+https://www.promptzine.com/threat-hunting-zine/cool-tshark-tricks
+https://gist.github.com/joaoceron/e09b5baa23c6d27dbfe8446f629f6da8
 -------------------------------------------------------------
 ==================================
 * Core Filters
