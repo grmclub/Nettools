@@ -20,11 +20,11 @@ send_mail()
 	cc_to=""
 	bcc_to=""
 	tm=$(date +%H%M)
-	
+
 	sub="XX Report for $TODAY"
 	body="Please find file(s) attached"
 	echo $body| mailx -r $send_from -c $cc_to -b $bcc_to -a "$file1" -a "$file2" $send_to
-	echo "Mail sent"	
+	echo "Mail sent"
 }
 
 ##Auto cleanup old files
