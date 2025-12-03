@@ -32,7 +32,7 @@ cleanup_dir()
 {
 	day_of_week=$(date +%w)
 	days_before=7
-	if [[ day_of_week == "1" ]]: then
+	if [[ day_of_week == "1" ]]; then
 		days_before=10
 	fi
 	cmd="find $data_dir -mtime +${days_before} -delete"
