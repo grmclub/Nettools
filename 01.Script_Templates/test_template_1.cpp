@@ -8,7 +8,7 @@
 #include <chrono>
 #include <cstddef>
 #include <cstdio>
-#include <cstdlib> //required for EXIT_FAILURE and exit()
+#include <cstdlib>
 #include <cstring>
 #include <fcntl.h>
 #include <unistd.h>
