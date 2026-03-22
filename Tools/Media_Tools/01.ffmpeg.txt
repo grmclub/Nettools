@@ -2,7 +2,7 @@
 https://opensource.com/article/17/6/ffmpeg-convert-media-file-formats
 Recipes in FFmpeg: https://ottverse.com/recipes-in-ffmpeg/
 
-
+https://blogs.igalia.com/llepage/ffmpeg-101/
 --------------------------------------------------------------------------------------
 * Converting audio files
     Lossless and uncompressed
