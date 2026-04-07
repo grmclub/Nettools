@@ -1,0 +1,172 @@
+
+
+--------------------------------------------------------------------------------------
+##HTML Table styling
+https://www.ionos.com/digitalguide/websites/web-development/html-table-styling/
+https://piccalil.li/blog/styling-tables-the-modern-css-way/
+
+https://www.w3schools.com/html/html_table_styling.asp
+https://www.w3schools.com/css/css_table.asp
+https://www.w3schools.com/css/tryit.asp?filename=trycss_table_fancy
+https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Tables
+
+
+
+--------------------------------------------------------------------------------------
+##Table templates
+https://www.quackit.com/html/templates/tables/
+https://blog.openreplay.com/designing-interactive-beautiful-tables-with-css/
+
+--------------------------------------------------------------------------------------
+<!DOCTYPE html>
+<title>My Example</title>
+
+<style>
+.table-bordered {
+    width: 100%;
+    border-collapse: collapse; /* This is key for clean, single borders */
+    font-family: sans-serif;
+    font-size: 0.9rem;
+}
+
+.table-bordered thead {
+    /* A subtle background color for the header */
+    background-color: #f2f2f2; 
+}
+
+.table-bordered th,
+.table-bordered td {
+    /* The border around each cell */
+    border: 1px solid #dddddd; 
+    text-align: left;
+    padding: 8px; /* Standard padding */
+}
+
+</style>
+
+
+<table class="table-bordered">
+    <thead>
+        <tr>
+            <th scope="col">Invoice #</th>
+            <th scope="col">Client Name</th>
+            <th scope="col">Issue Date</th>
+            <th scope="col">Amount</th>
+            <th scope="col">Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>INV-2024-001</td>
+            <td>Globex Corporation</td>
+            <td>2024-05-15</td>
+            <td>$1,250.00</td>
+            <td>Paid</td>
+        </tr>
+        <tr>
+            <td>INV-2024-002</td>
+            <td>Stark Industries</td>
+            <td>2024-05-18</td>
+            <td>$3,500.75</td>
+            <td>Paid</td>
+        </tr>
+        <tr>
+            <td>INV-2024-003</td>
+            <td>Wayne Enterprises</td>
+            <td>2024-05-20</td>
+            <td>$800.00</td>
+            <td>Pending</td>
+        </tr>
+        <tr>
+            <td>INV-2024-004</td>
+            <td>Cyberdyne Systems</td>
+            <td>2024-05-21</td>
+            <td>$5,200.50</td>
+            <td>Overdue</td>
+        </tr>
+    </tbody>
+</table>
+=======================
+<!DOCTYPE html>
+<title>My Example</title>
+
+<style>
+.table-hover {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: sans-serif;
+    font-size: 0.9rem;
+}
+
+.table-hover thead th {
+    /* Style for the header */
+    padding: 12px 15px;
+    background-color: #f4f4f4;
+    border-bottom: 2px solid #ccc;
+    text-align: left;
+}
+
+.table-hover td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+/* This is the key part of the template */
+.table-hover tbody tr:hover {
+    background-color: #f5f5f5; /* A light grey for the highlight */
+    cursor: pointer; /* Changes the cursor to a pointer to indicate interactivity */
+}
+</style>
+
+
+<table class="table-hover">
+    <thead>
+        <tr>
+            <th scope="col">Document Title</th>
+            <th scope="col">Modified By</th>
+            <th scope="col">Last Modified</th>
+            <th scope="col">File Size</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Q2 Financial Projections.xlsx</td>
+            <td>Carol Danvers</td>
+            <td>2024-05-20 11:45 AM</td>
+            <td>1.2 MB</td>
+        </tr>
+        <tr>
+            <td>Marketing Strategy Deck.pptx</td>
+            <td>Peter Parker</td>
+            <td>2024-05-19 03:22 PM</td>
+            <td>5.8 MB</td>
+        </tr>
+        <tr>
+            <td>Client Onboarding Notes.docx</td>
+            <td>Jessica Jones</td>
+            <td>2024-05-21 09:10 AM</td>
+            <td>256 KB</td>
+        </tr>
+        <tr>
+            <td>Project Phoenix Spec.pdf</td>
+            <td>Bruce Banner</td>
+            <td>2024-05-18 05:00 PM</td>
+            <td>3.1 MB</td>
+        </tr>
+        <tr>
+            <td>Final Logo Assets.zip</td>
+            <td>Peter Parker</td>
+            <td>2024-05-19 04:00 PM</td>
+            <td>12.5 MB</td>
+        </tr>
+    </tbody>
+</table>
+
+--------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------
+
