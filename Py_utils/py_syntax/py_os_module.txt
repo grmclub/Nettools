@@ -1,0 +1,161 @@
+
+--------------------------------------------------------------------------------------
+##8 Practical Uses for the Python os Module
+
+##Handling Directory Operations
+import os
+
+# Create a folder for PDFs if it does not exist
+if not os.path.exists("pdfs"):
+   os.mkdir("pdfs")
+
+# Create a nested folder structure for images
+os.makedirs("images/2025/events", exist_ok=True)
+
+# List the contents of the current directory
+print("Current directory contents:", os.listdir("."))
+
+# Remove an empty directory
+os.rmdir("old_folder")  # only works if "old_folder" has no files inside
+
+--------------------------------------------------------------------------------------
+##Navigating the Filesystem
+import os
+
+# Show the starting directory
+print("Starting directory:", os.getcwd())
+
+# Navigate to the "logs" folder
+os.chdir("logs
+print("Now inside:", os.getcwd())
+
+# List files inside "logs"
+print("Log files:", os.listdir("."))
+
+# Go back to the original directory
+os.chdir("..")
+print("Back to:", os.getcwd())
+--------------------------------------------------------------------------------------
+##Managing File Paths
+import os
+
+# Build a path to a new report
+folder = "reports"
+filename = "summary.txt"
+path = os.path.join(folder, filename)
+print("Full path:", path)
+
+# Check if the folder exists
+if not os.path.exists(folder):
+   os.mkdir(folder)
+
+# Absolute path (so you know exactly where your file will go)
+print("Absolute path:", os.path.abspath(path))
+
+# Split a path into directory and filename
+directory, file = os.path.split(path)
+print("Directory:", directory)
+print("File:", file)
+
+# Get just the filename directly
+print("Basename:", os.path.basename(path))
+
+# Split a filename into name and extension
+name, ext = os.path.splitext(file)
+print("Name:", name)
+print("Extension:", ext)
+
+
+
+--------------------------------------------------------------------------------------
+##Managing File Permissions
+import os
+import stat
+
+file_path = "example.txt"
+
+# Check if the file is readable and writable
+if os.access(file_path, os.R_OK) and os.access(file_path, os.W_OK):
+   print(f"{file_path} is readable and writable")
+
+# Make the file read-only
+os.chmod(file_path, stat.S_IREAD)
+print(f"{file_path} is now read-only")
+
+# Make the file executable (useful for scripts or binaries)
+os.chmod(file_path, stat.S_IREAD | stat.S_IEXEC)
+print(f"{file_path} is now executable")
+
+
+--------------------------------------------------------------------------------------
+##Working with Environment Variables
+
+import os
+
+# Get an environment variable
+api_key = os.getenv("API_KEY")
+
+if api_key:
+   print("API key found:", api_key[:4] + "****")  # Masking for safety
+else:
+   print("API key not found. Please set it.")
+
+# Set an environment variable (for current session only)
+os.environ["MODE"] = "development"
+print("Running in mode:", os.environ["MODE"])	
+--------------------------------------------------------------------------------------
+##Running System Commands
+import os
+
+# Show the current date (works differently depending on OS)
+os.system("date")
+
+# Clear the terminal screen
+# "cls" is for Windows, "clear" is for Linux/macOS
+os.system("cls" if os.name == "nt" else "clear")
+
+import os
+
+# Remove all .tmp files in the "temp" folder
+if os.name == "nt":  # Windows
+   os.system("del temp\\*.tmp")
+else:  # Linux / macOS
+   os.system("rm temp/*.tmp")
+--------------------------------------------------------------------------------------
+##Getting System Information
+import os
+
+print("Operating system:", os.name)
+print("Current process ID:", os.getpid())
+print("Parent process ID:", os.getppid())
+print("Logged in as:", os.getlogin())
+print("Number of CPUs:", os.cpu_count())
+
+# Extra details (Unix only)
+if hasattr(os, "uname"):
+   print("System info:", os.uname())
+
+--------------------------------------------------------------------------------------
+##Traversing a Directory Tree
+import os
+
+search_dir = "project"
+target_ext = ".logs"
+
+for dirpath, dirnames, filenames in os.walk(search_dir):
+   for file in filenames:
+       if file.endswith(target_ext):
+           full_path = os.path.join(dirpath, file)
+           print("Found:", full_path)
+
+--------------------------------------------------------------------------------------	
+--------------------------------------------------------------------------------------	
+--------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------	
+
+
+
+
+
