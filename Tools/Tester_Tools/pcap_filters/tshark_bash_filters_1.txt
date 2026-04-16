@@ -1,0 +1,179 @@
+
+
+TShark Cheatsheet (BASH)
+https://snippets.bentasker.co.uk/posts/bash/tshark-cheatsheet.html
+--------------------------------------------------------------------------------------
+### General
+
+# Outputting multiple fields
+#
+# Just add an additional -e with the field:
+tshark -r $PCAP -T fields -e ip.dst -e tcp.dstport | sort | uniq -c
+
+# To add the time of the frame use -e frame.time_epoch
+# For tcp packet type, use tcp.flags (output is hex)
+# or if preferred:
+# -e tcp.flags.ack -e tcp.flags.push etc
+
+### IP
+
+# List out destinations observed 
+tshark -r $PCAP -T fields -e ip.dst | sort | uniq -c
+
+# List out dest ports observed
+tshark -r $PCAP -T fields -e tcp.dstport | sort | uniq -c
+tshark -r $PCAP -T fields -e udp.dstport | sort | uniq -c
+
+# List out destinations observed for a given dest port
+tshark -r $PCAP -Y "udp.dstport == 53" -T fields -e ip.dst | sort | uniq -c
+
+# List out destinations observed fro a given source port
+tshark -r $PCAP -Y "tcp.srcport == 80" -T fields -e ip.dst | sort | uniq -c
+
+### HTTP
+
+# Extract a list of HTTP host headers
+tshark -q -r $PCAP -Y "http.host" -T fields -e http.host | sort | uniq -c
+
+# Extract a list of HTTP requests made, with common headers
+tshark -q -r "$PCAP" -Y "http.host" -T fields -e frame.time_epoch -e ip.src -e ip.dst -e ipv6.src -e ipv6.dst \
+-e http.host -e http.request.method -e http.request.uri -e http.referer -e http.user_agent -e http.cookie -e http.authorization
+
+# Extract a list of HTTP Referer headers
+tshark -q -r $PCAP -Y "http.host" -T fields -e http.referer | sort | uniq -c
+
+# Extract a list of User-agents (to help identify devices)
+tshark -q -r $PCAP -Y "http.host" -T fields -e http.user_agent | sort | uniq -c
+
+# Other HTTP headers can all be dumped too, http.x_forwarded_for etc. Won't provide exhaustive list here
+
+# Output a list of observed HTTP status codes
+tshark -q -r $PCAP -Y "http.response" -T fields -e http.response.code | sort | uniq -c
+
+# Output a list of host headers observed in POST requests only
+tshark -q -r $PCAP -Y "http.request.method == POST" -T fields -e http.host | sort | uniq -c
+
+### SSL/TLS
+
+# Extract a list of SNI names
+tshark -q -r $PCAP -Y "ssl.handshake" -T fields -e ssl.handshake.extensions_server_name | sort | uniq -c
+
+# Extract supported ciphersuites from the handshake
+tshark -q -r "$PCAP" -Y "ssl.handshake" -T fields -e ssl.handshake.ciphersuite | sort | uniq -c
+
+# Extract observed cert Common Names
+tshark -q -r "$PCAP" -Y "ssl.handshake" -T fields -e x509sat.printableString | sort | uniq -c
+
+### DNS Lookups
+
+# DNS servers used
+tshark -q -r $PCAP -Y "dns" -T fields -e ip.dst | sort | uniq -c
+
+# Names queried
+tshark -q -r $PCAP -Y "dns" -T fields -e dns.qry.name | sort | uniq -c
+
+# Count responses per sec (change "1" for longer interval)
+tshark -q -r $PCAP -z "io,stat,1,COUNT(dns.flags.rcode)dns.flags.rcode"
+
+# Count SERVFAIL responses per sec
+tshark -q -r $PCAP -z "io,stat,1,COUNT(dns.flags.rcode)dns.flags.rcode == 2"
+
+# Count NXDOMAIN responses per sec
+tshark -q -r $PCAP -z "io,stat,1,COUNT(dns.flags.rcode)dns.flags.rcode == 3"
+
+# Count REFUSED responses per sec
+tshark -q -r $PCAP -z "io,stat,1,COUNT(dns.flags.rcode)dns.flags.rcode == 5"
+
+# Get the value of RCODE for your desired response filter from RFC1035, RFC2136, RFC2845 etc
+
+# Grab any EDNS Client Subnet (ECS) infomation
+tshark -q -r $PCAP -Y "dns" -T fields -e dns.opt.client.addr4 | sort | uniq -c
+
+### Communication Channels
+
+# List out XMPP servers communicated with
+tshark -q -r $PCAP -Y "tcp.dstport == 5222" -T fields -e ip.dst | sort | uniq -c 
+
+# OpenVPN servers observed
+tshark -q -r $PCAP -Y "openvpn" -T fields -e ip.dst | sort | uniq -c 
+
+# List out SMTP servers communicated with
+tshark -q -r $PCAP -Y "tcp.dstport == 25" -T fields -e ip.dst | sort | uniq -c 
+
+# List out TLS SMTP servers communicated with
+tshark -q -r $PCAP -Y "tcp.dstport == 465" -T fields -e ip.dst | sort | uniq -c 
+
+# List out IMAP servers communicated with
+tshark -q -r $PCAP -Y "tcp.dstport == 143" -T fields -e ip.dst | sort | uniq -c 
+
+# List out TLS IMAP servers communicated with
+tshark -q -r $PCAP -Y "tcp.dstport == 993" -T fields -e ip.dst | sort | uniq -c 
+
+# List out POP3 servers communicated with
+tshark -q -r $PCAP -Y "tcp.dstport == 110" -T fields -e ip.dst | sort | uniq -c 
+
+# List out TLS POP3 servers communicated with
+tshark -q -r $PCAP -Y "tcp.dstport == 995" -T fields -e ip.dst | sort | uniq -c 
+
+# Extract SMTP auth information (will only work on non TLS connections)
+tshark -q -r "$PCAP" -Y "smtp.req" -T fields -e smtp.auth.username -e smtp.auth.password | sort | uniq -c
+
+### SSH
+
+# SSH servers observed
+tshark -q -r $PCAP -Y "ssh" -T fields -e ip.dst | sort | uniq -c 
+
+# Verify what prime was used for the Diffie-Helman
+tshark -r $PCAP -q -Y "ssh.dh.p" -T fields -e ssh.dh.p
+
+### Connection Stats
+
+# Calculate bytes per second to an IP
+#
+# change stat,1 to stat,10 for per 10 seconds etc
+tshark -r $PCAP -z io,stat,1,ip.addr==$IP -q
+
+# Count number of retransmissions/dup acks per second
+tshark -q -r $PCAP -z "io,stat,1,COUNT(expert.message)expert.message"
+
+# Count just Dup acks
+tshark -q -r $PCAP -z "io,stat,1,COUNT(expert.message)expert.message matches \"Duplicate ACK .\""
+
+# Count reports of lost segments
+tshark -q -r $PCAP -z "io,stat,1,COUNT(expert.message)expert.message matches \"Previous segment lost .\""
+
+# Count instances of ACKing lost segments
+tshark -q -r $PCAP -z "io,stat,1,COUNT(expert.message)expert.message matches \"ACKed lost segment .\""
+
+# Count Re-Transmissions
+tshark -q -r $PCAP -z "io,stat,1,COUNT(expert.message)expert.message matches \". retransmission .\""
+
+# Track RTT
+tshark -q -r $PCAP -Y "tcp" -T fields -e "tcp.analysis.ack_rtt" | egrep -v -e '^$'
+
+# Calculate average RTT across entire pcap
+tshark -q -r $PCAP -Y "tcp" -T fields -e "tcp.analysis.ack_rtt" | egrep -v -e '^$' | awk '
+BEGIN {total=0;count=0;max=0;min=99} {if ($0 > max) max=$0 end; if ($0<min) min=$0 end; total+=$1; count+=1}
+END{mean=(total/count); printf "%.0f,%.8f,%.8f,%.8f\n", count,max,min,mean}'
+
+# Track TCP Window changes
+tshark -q -r $PCAP -z "io,stat,1,COUNT(expert.message)expert.message matches \".Window update.\""
+
+# Output 5 smallest observed TCP windows
+tshark -q -r $PCAP -Y "tcp" -T fields -e "tcp.window_size_value" | sort -n | uniq -c | head -n 5
+
+# Output 5 largest observed TCP windows
+tshark -q -r $PCAP -Y "tcp" -T fields -e "tcp.window_size_value" | sort -nr | uniq -c | head -n 5
+
+### IPv4 encapsulated IPv6 
+
+# Identifying IPv6 tunneled over IPv4 (https://projects.bentasker.co.uk/jira_projects/browse/PAS-10.html)
+tshark -q -r $PCAP -Y '((ip.version == 4 and ipv6.version != 6) or (ipv6.version == 6) and ip.version !=6)' -T fields -e frame.time_epoch -e ip.src -e ip.dst -e ipv6.src -e ipv6.dst
+
+--------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------
