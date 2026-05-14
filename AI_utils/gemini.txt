@@ -1,4 +1,26 @@
+
+The ULTIMATE Gemini 3 Prompting Guide – Master Google's Formula!
+https://www.youtube.com/watch?v=_ctHSSJ-WqE&t=475s
 --------------------------------------------------------------------------------------
+##gemini+common+prompts
+
+Effective Gemini prompts use a 4-part structure—Persona, Task, Context, and Format—to yield precise results. Key strategies include assigning a role (e.g., "Act as a marketing expert"), providing specific details to avoid ambiguity, using "@" to reference Drive files, and iterating through dialogue to refine outputs.
+
+Common & Effective Gemini Prompt Structures
+
+    Role-Based (Persona): "Act as a [role, e.g., senior copywriter, data analyst] and [task, e.g., write a project plan] for [context, e.g., a new eco-friendly product launch]".
+    Structured Output: "...Provide the output as a Markdown table with three columns: 'Key Finding', 'Business Implication', and 'Recommended Action'".
+    Summarization/Synthesis: "I will give you 3 URLs. Fetch each one. Summarize the key findings... then write a 500-word synthesis that identifies where they agree [and] where they conflict".
+    Iterative Refinement: "What questions do you have about this prompt?".
+    Content Generation: "Develop 5 viral content ideas for the [industry/niche] that use storytelling to create strong emotions".
+    Contextual (Workspace): "Draft a project update email based on the details in @[Document Name]"
+
+Tips for Better Prompts
+
+    Be Radically Specific: Avoid broad requests like "write about marketing." Instead, define the audience, tone, and goal.
+    Set Constraints: Define length, tone, and forbidden actions (e.g., "do not invent data," "max 300 words").
+    Use @ Mentions: In Google Workspace, use the @ symbol to ground responses in your own Docs or Drive files.
+    Break Down Tasks: For large projects, ask for a "step-by-step plan" before requesting the final deliverable
 --------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------
 

@@ -1,4 +1,44 @@
+
+https://www.reddit.com/r/PromptEngineering
+https://cloud.google.com/discover/what-is-prompt-engineering
+https://university.mindstudio.ai/1-core-building-principles/ai-prompt-engineering-basics
+
+Prompt Engineering for Beginners: Full Workshop
+https://www.youtube.com/watch?v=QnZYrD5ia7c&t=569
+
+Google's 9 Hour AI Prompt Engineering Course In 20 Minutes 
+https://www.youtube.com/watch?v=p09yRj47kNM&t=46
+
 --------------------------------------------------------------------------------------
+##prompt engineering basics
+
+Prompt engineering is the art of crafting precise, contextual, and structured instructions to guide AI models toward generating accurate, relevant, and high-quality outputs. Key techniques include providing clear instructions, defining a persona, setting context, specifying output formats, and using iterative refinement to improve results.
+
+Core Components of a Strong Prompt
+
+    Task: The direct action verb (e.g., "Summarize," "Write," "Analyze").
+    Context: Background info helping the AI understand the scenario.
+    Role/Persona: Setting a viewpoint (e.g., "Act as a senior marketer").
+    Format: Defining the output structure (e.g., markdown table, bullet points, email, JSON).
+    Constraints: Stating limitations (e.g., "under 100 words," "use simple language")
+
+Key Prompting Techniques
+
+    Few-Shot Prompting: Providing 1–3 examples of the input-output pair you want the AI to emulate.
+    Delimiters: Using triple quotes ("""), XML tags (<text></text>), or hashtags (###) to separate the instructions from the text to be processed.
+    Iterative Development: If the first response is subpar, refine the prompt by adding more context or specific constraints. 
+
+Examples
+
+    Bad: "Write about dogs."
+    Good: "Act as a veterinarian. Write a 200-word article about the best diet for senior Labrador retrievers, formatted with bullet points". 
+
+Tips for Success
+
+    Be Specific: Vague prompts produce vague answers.
+    Break Down Tasks: For complex tasks, ask the AI to break it into smaller subtasks.
+    Use Active Verbs: Start with direct commands like "Summarize" or "Draft".	
+	
 --------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------
 
