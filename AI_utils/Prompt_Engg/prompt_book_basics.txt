@@ -9,6 +9,8 @@ https://www.youtube.com/watch?v=QnZYrD5ia7c&t=569
 Google's 9 Hour AI Prompt Engineering Course In 20 Minutes 
 https://www.youtube.com/watch?v=p09yRj47kNM&t=46
 
+https://developers.openai.com/api/docs/guides/prompt-engineering
+
 --------------------------------------------------------------------------------------
 ##prompt engineering basics
 
