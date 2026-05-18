@@ -1,0 +1,209 @@
+-------------------------------------------------
+-------------------------------------------------
+The 20 SQL Patterns:
+
+01.DATE DIFF – Time between events
+02.SET DIFFERENCE – Missing records
+03.SESSIONIZATION – User sessions
+04.GROUP CONSISTENCY – Validate data
+05.CONSECUTIVE – Sequential patterns
+
+06.MoM GROWTH – Month trends
+07.SELF JOIN – Compare same table
+08.OVERLAP – Conflict detection
+09.ANTI-JOIN – Find exclusions
+10.CASE BUCKET – Group categories
+
+11.EXCLUSION AVG – Remove outliers
+12.RUNNING BAL – Cumulative totals
+13.PIVOT – Rows to columns
+14.GAPS & ISLANDS – Find sequences
+15.MEDIAN – Middle value
+
+16.SEQ GAP – Missing IDs
+17.RETENTION – User cohorts
+18.TIME DIFF – Duration calc
+19.PERCENT SHARE – Ratio analysis
+20.FLOOR MATH – Rounding logic
+
+𝐓𝐡𝐞 𝐛𝐫𝐮𝐭𝐚𝐥 𝐭𝐫𝐮𝐭𝐡:
+
+Learn the pattern once.
+Apply it EVERYWHERE.
+
+GAPS & ISLANDS solves:
+- Missing order IDs
+- Login streaks
+- IP ranges
+- Promo periods
+
+Same pattern. Different context.
+
+𝐖𝐡𝐲 𝐩𝐚𝐭𝐭𝐞𝐫𝐧𝐬 > 𝐦𝐞𝐦𝐨𝐫𝐢𝐳𝐚𝐭𝐢𝐨𝐧:
+
+Don't GRIND 1000 random questions.
+Master 20 patterns. Solve ANY problem.
+
+Interviews test pattern recognition.
+Not memorization.
+SQL interviews are not testing memory. They are testing whether you can see the shape of the problem.
+
+These 20 patterns solve:
+- E-commerce analytics
+- User behavior tracking
+- Financial calculations
+- Data quality checks
+- Performance metrics
+
+
+
+-------------------------------------------------
+mastering these building blocks:
+
+- Window Functions (LAG/LEAD for period-over-period)
+- Self Joins (Unlocking hierarchies and sequences)
+- NOT EXISTS (The secret to clean anti-joins)
+- Recursive CTEs (For the dreaded Org Chart questions)
+- CASE + aggregation (Mastering conditional logic)
+- DENSE_RANK (Handling ties without breaking the sequence)
+- COALESCE (The mark of production-ready code)
+
+
+-------------------------------------------------
+I analyzed 500 SQL interview questions.
+They all tested the same 10 query patterns.
+
+If you know these, you’re already ahead
+
+##The 10 SQL Patterns That Actually Matter
+
+01. Duplicates
+
+# GROUP BY + HAVING COUNT(*) > 1
+
+02.Top N Records
+
+# ORDER BY + LIMIT
+# DENSE_RANK()
+
+03.Missing Relationships
+
+# LEFT JOIN + IS NULL
+# NOT EXISTS
+
+04.Aggregation
+
+# SUM, AVG, COUNT with GROUP BY
+# Filtering with HAVING
+
+05.Latest Record per Group
+
+# MAX() + GROUP BY
+# ROW_NUMBER()
+
+06.Date Filtering
+
+# BETWEEN, YEAR(), DATE_TRUNC
+
+07.Set Operations
+
+# UNION, EXCEPT, INTERSECT
+
+08.Window Functions
+
+# ROW_NUMBER(), RANK()
+
+09.Conditional Aggregation
+
+# CASE WHEN + SUM()
+
+# Self Joins
+
+# Joining a table to itself
+
+# How Interviews Combine These Patterns
+
+# Duplicates + Dates
+“Find duplicate transactions this month”
+
+# Joins + Set Logic
+“Users who clicked ads but never purchased”
+
+# Top N + Aggregation
+“Top 10 revenue-generating stores by region”
+
+# Latest Record + Join
+“Each customer’s most recent support ticket”
+
+# Date Filters + Counts
+“Daily active users for the last 30 days”
+
+## Senior engineers don’t memorize SQL.
+They recognize patterns and combine them.
+
+-------------------------------------------------
+## underlying SQL logic repeats again and again
+
+01. Consecutive Login Days
+- LAG() with date comparison logic
+
+02. Second Highest Order per Customer
+- DENSE_RANK() and PARTITION BY
+
+03. Employees Joined in Last 30 Days
+- CURRENT_DATE with INTERVAL filtering
+
+04. Repeated Orders Same Day
+- GROUP BY and HAVING COUNT(*) > 1
+
+05. Max Sale Day per Month
+- ROW_NUMBER() with monthly partitions
+
+06. Inactive Customers Last 6 Months
+- LEFT JOIN with IS NULL condition
+
+07. Highest Salary in Company
+- MAX() with subqueries
+
+08. Running Total of Sales
+- SUM() OVER() window function
+
+09. First Order of Each Customer
+- ROW_NUMBER() for first/latest records
+
+10. Employees Earning Same Salary
+- GROUP BY + HAVING COUNT(*) logic
+
+
+-------------------------------------------------
+𝗣𝗿𝗼𝗯𝗹𝗲𝗺:
+Identify all missing integers within a non-continuous sequence of IDs from a table.
+
+𝗧𝗵𝗲 𝗚𝗲𝗻𝗲𝗿𝗮𝘁𝗲 & 𝗙𝗶𝗹𝘁𝗲𝗿 𝗣𝗮𝘁𝘁𝗲𝗿𝗻:
+01. 𝗜𝗱𝗲𝗻𝘁𝗶𝗳𝘆: Find the MIN (1) and MAX (10) boundaries from your table.
+02. 𝗚𝗲𝗻𝗲𝗿𝗮𝘁𝗲: Create a complete, gapless sequence of all numbers between those boundaries.
+03. 𝗙𝗶𝗹𝘁𝗲𝗿: Keep only the records that do NOT exist in the original table.
+
+This pattern is a "Swiss Army Knife" for auditing:
+- 𝗘𝗺𝗽𝗹𝗼𝘆𝗲𝗲 𝗜𝗗𝘀: Find skipped student or staff records.
+- 𝗠𝗶𝘀𝘀𝗶𝗻𝗴 𝗗𝗮𝘁𝗲𝘀: Identify gaps in time-series reports.
+- 𝗢𝗿𝗱𝗲𝗿 𝗔𝘂𝗱𝗶𝘁𝘀: Ensure no gaps in sequential order numbers.
+- 𝗦𝘆𝘀𝘁𝗲𝗺 𝗟𝗼𝗴𝘀: Detect gaps in sequential log entries.
+-------------------------------------------------
+-------------------------------------------------
+-------------------------------------------------
+-------------------------------------------------
+-------------------------------------------------
+-------------------------------------------------
+-------------------------------------------------
+-------------------------------------------------
+-------------------------------------------------
+
+
+
+
+
+
+
+
+

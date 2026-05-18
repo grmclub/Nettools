@@ -1,0 +1,800 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=shift_jis"/>
+	<title> Top SQL Patterns from FAANG Data Science Interviews (with Code) - KDnuggets</title>
+	<meta name="generator" content="LibreOffice 7.0.1.2 (Windows)"/>
+	<meta name="created" content="00:00:00"/>
+	<meta name="changed" content="2026-05-19T04:10:08.831000000"/>
+	<meta name="description" content="Here are the top 5 SQL patterns tested in FAANG data science interviews."/>
+	<meta name="" content="https://www.kdnuggets.com/top-sql-patterns-from-faang-data-science-interviews-with-code"/>
+	<meta name="google-adsense-account" content="ca-pub-3739583407805336"/>
+	<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"/>
+	<meta name="twitter:card" content="summary_large_image"/>
+	<meta name="twitter:creator" content="@kdnuggets"/>
+	<meta name="twitter:description" content="Here are the top 5 SQL patterns tested in FAANG data science interviews."/>
+	<meta name="twitter:image" content="https://www.kdnuggets.com/wp-content/uploads/Rosidi-Top-SQL-Patterns-from-FAANG-2.png"/>
+	<meta name="twitter:site" content="@kdnuggets"/>
+	<meta name="twitter:title" content="Top SQL Patterns from FAANG Data Science Interviews (with Code)"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1"/>
+	<style type="text/css">
+		td p { color: #111111; font-family: "Open Sans", "arial", "verdana"; font-size: 12pt }
+		h1 { color: #111111 }
+		h1.cjk { font-family: "Open Sans", "arial", "verdana" }
+		h1.ctl { font-family: "Open Sans", "arial", "verdana" }
+		p { color: #111111; font-family: "Open Sans", "arial", "verdana"; font-size: 12pt }
+		h2 { color: #111111 }
+		h2.cjk { font-family: "游明朝" }
+		h2.ctl { font-family: "Lucida Sans" }
+		pre { color: #111111 }
+		pre.cjk { font-family: "ＭＳ ゴシック", monospace }
+		th p { color: #111111; font-family: "Open Sans", "arial", "verdana"; font-size: 12pt }
+		h3 { color: #111111 }
+		h3.cjk { font-family: "游明朝" }
+		h3.ctl { font-family: "Lucida Sans" }
+		a:link { color: #211f1f; text-decoration: none }
+		a:visited { color: #211f1f; text-decoration: none }
+		code.cjk { font-family: "ＭＳ ゴシック", monospace }
+	</style>
+</head>
+<body lang="en-US" text="#111111" link="#211f1f" vlink="#211f1f" bgcolor="#fefefe" dir="ltr">
+<form action="" method="post">
+	<input type="hidden" name="Form Signup Location" value="popup_button">
+	<input type="hidden" name="_mc4wp_timestamp" value="1779130868">
+	<input type="hidden" name="_mc4wp_form_id" value="138095">
+	<input type="hidden" name="_mc4wp_form_element_id" value="mc4wp-form-3">
+</form>
+<form action="" method="post">
+	<input type="hidden" name="Form Signup Location" value="popup_button">
+	<input type="hidden" name="_mc4wp_timestamp" value="1779130869">
+	<input type="hidden" name="_mc4wp_form_id" value="77281">
+	<input type="hidden" name="_mc4wp_form_element_id" value="mc4wp-form-4">
+</form>
+<form action="" method="post">
+	<input type="hidden" name="Form Signup Location" value="popup_button">
+	<input type="hidden" name="_mc4wp_timestamp" value="1779130869">
+	<input type="hidden" name="_mc4wp_form_id" value="138213">
+	<input type="hidden" name="_mc4wp_form_element_id" value="mc4wp-form-5">
+</form>
+<form action="" method="post">
+	<input type="hidden" name="Form Signup Location" value="popup_button">
+	<input type="hidden" name="_mc4wp_timestamp" value="1779130869">
+	<input type="hidden" name="_mc4wp_form_id" value="138094">
+	<input type="hidden" name="_mc4wp_form_element_id" value="mc4wp-form-6">
+</form>
+<div id="wrapper" dir="ltr" style="background: #ffffff"><p style="margin-bottom: 0in">
+	<br/>
+
+	</p>
+	<div id="content_wrapper" dir="ltr">
+		<div id="content" dir="ltr">
+			<div id="post-header" dir="ltr"><h1 class="western" style="margin-top: 0in; margin-bottom: 0in">
+				Top SQL Patterns from FAANG Data Science Interviews (with Code)</h1>
+				<p style="margin-bottom: 0in">Here are the top 5 SQL patterns
+				tested in FAANG data science interviews. 
+				</p>
+				<p style="margin-bottom: 0in">By <strong><a href="https://www.kdnuggets.com/author/nate-rosidi">Nate
+				Rosidi</a></strong>, KDnuggets Market Trends &amp; SQL Content
+				Specialist on November 20, 2025 in <a href="https://www.kdnuggets.com/tag/sql">SQL</a></p>
+			</div>
+			<hr/>
+
+			<p style="margin-bottom: 0in"><br/>
+
+			</p>
+			<div id="post-" dir="ltr"><p style="margin-bottom: 0in"><br/>
+&nbsp;</p>
+				<h2 class="western" style="margin-top: 0in; margin-bottom: 0in"><font color="#f3ac35">#&nbsp;</font>Introduction</h2>
+				<p style="margin-bottom: 0in">&nbsp;<br/>
+The technical screening
+				for data science roles in FAANG companies is very thorough.
+				However, even they can&rsquo;t come up with an endless stream of
+				unique interview questions. Once you&rsquo;ve gone through the
+				grind enough times, you start to notice that some SQL patterns
+				keep showing up.</p>
+				<div id="kdnug-14e5c24948d8ffbf665e7fe120c4068d" dir="ltr"><p style="margin-bottom: 0in">
+					<br/>
+
+					</p>
+				</div>
+				<p style="margin-bottom: 0in">Here are the top 5, with examples
+				and code (PostgreSQL) for practice.</p>
+				<div id="kdnug-82629bdab71474d5aa1f1b3c3ede17b7" dir="ltr"><p style="margin-bottom: 0in">
+					<br/>
+
+					</p>
+				</div>
+				<p style="margin-bottom: 0in">&nbsp;<br/>
+&nbsp;</p>
+				<p style="margin-bottom: 0in">Master these and you&rsquo;ll be
+				ready for most SQL interviews.</p>
+				<p style="margin-bottom: 0in">&nbsp;</p>
+				<h2 class="western" style="margin-top: 0in; margin-bottom: 0in"><font color="#f3ac35">#&nbsp;</font>Pattern
+				#1: Aggregating Data with GROUP BY</h2>
+				<p style="margin-bottom: 0in">&nbsp;<br/>
+Using aggregate
+				functions with <code class="western"><span style="background: #f5f5f5">GROUP
+				BY</span></code> allows you to aggregate metrics across
+				categories.</p>
+				<p style="margin-bottom: 0in">This pattern is often combined with
+				data filtering, which means using one of the two clauses:</p>
+				<ul>
+					<li><p style="margin-bottom: 0in"><code class="western"><span style="background: #f5f5f5">WHERE</span></code>:
+					Filters data before the aggregation. 
+					</p>
+					<li><p style="margin-bottom: 0in"><code class="western"><span style="background: #f5f5f5">HAVING</span></code>:
+					Filters data after the aggregation. 
+					</p>
+				</ul>
+				<p style="margin-bottom: 0in">Example: This <strong><a href="https://platform.stratascratch.com/coding/2004-number-of-comments-per-user-in-past-30-days?code_type=1&amp;utm_source=blog&amp;utm_medium=click&amp;utm_campaign=kdn+sql+patterns+from+faang" target="_blank">Meta
+				interview question</a></strong> asks you to find the total number
+				of comments made 30 or fewer days before 2020-02-10 per user.
+				Users with no comments should be excluded from the output.</p>
+				<p style="margin-bottom: 0in">We use the <code class="western"><span style="background: #f5f5f5">SUM()</span></code>
+				function with a <code class="western"><span style="background: #f5f5f5">GROUP
+				BY</span></code> clause to sum the number of comments per user.
+				Outputting the comments only within the specified period is
+				achieved by filtering the data before aggregation, i.e., using
+				<code class="western"><span style="background: #f5f5f5">WHERE</span></code>.
+				There&rsquo;s no need to calculate which date is &ldquo;30 days
+				before 2020-02-10&rdquo;; we simply subtract 30 days from that
+				date using the <code class="western"><span style="background: #f5f5f5">INTERVAL</span></code>
+				date function.</p>
+				<pre class="western"><span style="display: inline-block; border: none; padding: 0in"><span style="background: #f5f5f5"><code class="western">SELECT user_id,</span></span></code>
+<span style="display: inline-block; border: none; padding: 0in"><span style="background: #f5f5f5"><code class="western">       </code><code class="western">SUM(number_of_comments) AS number_of_comments</span></span></code>
+<span style="display: inline-block; border: none; padding: 0in"><span style="background: #f5f5f5"><code class="western">FROM fb_comments_count</span></span></code>
+<span style="display: inline-block; border: none; padding: 0in"><span style="background: #f5f5f5"><code class="western">WHERE created_at BETWEEN '2020-02-10'::DATE - 30 * INTERVAL '1 day' AND '2020-02-10'::DATE</span></span></code>
+<span style="display: inline-block; border: none; padding: 0in"><span style="background: #f5f5f5"><code class="western">GROUP BY user_id;</span></span></code></pre><p style="margin-bottom: 0in">
+				&nbsp;</p>
+				<p style="margin-bottom: 0in">Here&rsquo;s the output.<br/>
+&nbsp;</p>
+				<table cellpadding="2" cellspacing="2">
+					<thead>
+						<tr bgcolor="#ffd29a" style="background: #ffd29a">
+							<th style="border: 1px solid #dddddd; padding: 0.13in"><p align="left">
+								user_id</p>
+							</th>
+							<th style="border: 1px solid #dddddd; padding: 0.13in"><p align="left">
+								number_of_comments</p>
+							</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td style="border: 1px solid #dddddd; padding: 0.13in"><p>5</p>
+							</td>
+							<td style="border: 1px solid #dddddd; padding: 0.13in"><p>1</p>
+							</td>
+						</tr>
+						<tr>
+							<td style="border: 1px solid #dddddd; padding: 0.13in"><p>8</p>
+							</td>
+							<td style="border: 1px solid #dddddd; padding: 0.13in"><p>4</p>
+							</td>
+						</tr>
+						<tr>
+							<td style="border: 1px solid #dddddd; padding: 0.13in"><p>9</p>
+							</td>
+							<td style="border: 1px solid #dddddd; padding: 0.13in"><p>2</p>
+							</td>
+						</tr>
+						<tr>
+							<td style="border: 1px solid #dddddd; padding: 0.13in"><p>...</p>
+							</td>
+							<td style="border: 1px solid #dddddd; padding: 0.13in"><p>...</p>
+							</td>
+						</tr>
+						<tr>
+							<td style="border: 1px solid #dddddd; padding: 0.13in"><p>99</p>
+							</td>
+							<td style="border: 1px solid #dddddd; padding: 0.13in"><p>2</p>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+				<p style="margin-bottom: 0in">&nbsp;</p>
+				<p style="margin-bottom: 0in">Business Use:</p>
+				<ul>
+					<li><p style="margin-bottom: 0in">User activity metrics: <strong><a href="https://www.adjust.com/glossary/daily-active-users" target="_blank">DAU
+					&amp; MAU</a></strong>, <strong><a href="https://www.salesforce.com/eu/sales/analytics/customer-churn" target="_blank">churn
+					rate</a></strong>. 
+					</p>
+					<li><p style="margin-bottom: 0in">Revenue metrics: revenue per
+					region/product/time period. 
+					</p>
+					<li><p style="margin-bottom: 0in">User engagement: average
+					session length, average clicks per user. 
+					</p>
+				</ul>
+				<p style="margin-bottom: 0in">&nbsp;</p>
+				<h2 class="western" style="margin-top: 0in; margin-bottom: 0in"><font color="#f3ac35">#&nbsp;</font>Pattern
+				#2: Filtering with Subqueries</h2>
+				<p style="margin-bottom: 0in">&nbsp;<br/>
+When using subqueries
+				for filtering, you create a data subset, then filter the main
+				query against it.</p>
+				<p style="margin-bottom: 0in">The two main subquery types are:</p>
+				<ul>
+					<li><p style="margin-bottom: 0in">Scalar subqueries: Return a
+					single value, e.g., maximum amount. 
+					</p>
+					<li><p style="margin-bottom: 0in">Correlated subqueries:
+					Reference and depend on the result of the outer query to return
+					the values. 
+					</p>
+				</ul>
+				<p style="margin-bottom: 0in">Example: This <strong><a href="https://platform.stratascratch.com/coding/2081-recommendation-system?code_type=1&amp;utm_source=blog&amp;utm_medium=click&amp;utm_campaign=kdn+sql+patterns+from+faang" target="_blank">interview
+				question from Meta</a></strong> asks you to create a
+				recommendation system for Facebook. For each user, you should
+				find pages that this user doesn&rsquo;t follow, but at least one
+				of their friends does. The output should consist of the user ID
+				and the ID of the page that should be recommended to this user.</p>
+				<p style="margin-bottom: 0in">The outer query returns all the
+				user-page pairs where the page is followed by at least one
+				friend.</p>
+				<p style="margin-bottom: 0in">Then, we use a subquery in the
+				<code class="western"><span style="background: #f5f5f5">WHERE</span></code>
+				clause to remove the pages that the user already follows. There
+				are two conditions in the subquery: one that only considers pages
+				followed by this specific user (checks for this user only), and
+				then checks if the page considered for recommendation is among
+				those followed by the user (checks for this page only).</p>
+				<p style="margin-bottom: 0in">As the subquery returns all the
+				pages followed by the user, using <code class="western"><span style="background: #f5f5f5">NOT
+				EXISTS</span></code> in <code class="western"><span style="background: #f5f5f5">WHERE</span></code>
+				excludes all those pages from the recommendation.</p>
+				<pre class="western"><span style="display: inline-block; border: none; padding: 0in"><span style="background: #f5f5f5"><code class="western">SELECT DISTINCT f.user_id,</span></span></code>
+<span style="display: inline-block; border: none; padding: 0in"><span style="background: #f5f5f5"><code class="western">                </code><code class="western">p.page_id</span></span></code>
+<span style="display: inline-block; border: none; padding: 0in"><span style="background: #f5f5f5"><code class="western">FROM users_friends f</span></span></code>
+<span style="display: inline-block; border: none; padding: 0in"><span style="background: #f5f5f5"><code class="western">JOIN users_pages p ON f.friend_id = p.user_id</span></span></code>
+<span style="display: inline-block; border: none; padding: 0in"><span style="background: #f5f5f5"><code class="western">WHERE NOT EXISTS</span></span></code>
+<span style="display: inline-block; border: none; padding: 0in"><span style="background: #f5f5f5"><code class="western">    </code><code class="western">(SELECT *</span></span></code>
+<span style="display: inline-block; border: none; padding: 0in"><span style="background: #f5f5f5"><code class="western">     </code><code class="western">FROM users_pages pg</span></span></code>
+<span style="display: inline-block; border: none; padding: 0in"><span style="background: #f5f5f5"><code class="western">     </code><code class="western">WHERE pg.user_id = f.user_id</span></span></code>
+<span style="display: inline-block; border: none; padding: 0in"><span style="background: #f5f5f5"><code class="western">       </code><code class="western">AND pg.page_id = p.page_id);</span></span></code></pre><p style="margin-bottom: 0in">
+				&nbsp;</p>
+				<p style="margin-bottom: 0in">Here&rsquo;s the output.<br/>
+&nbsp;</p>
+				<table cellpadding="2" cellspacing="2">
+					<thead>
+						<tr bgcolor="#ffd29a" style="background: #ffd29a">
+							<th style="border: 1px solid #dddddd; padding: 0.13in"><p align="left">
+								user_id</p>
+							</th>
+							<th style="border: 1px solid #dddddd; padding: 0.13in"><p align="left">
+								page_id</p>
+							</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td style="border: 1px solid #dddddd; padding: 0.13in"><p>1</p>
+							</td>
+							<td style="border: 1px solid #dddddd; padding: 0.13in"><p>23</p>
+							</td>
+						</tr>
+						<tr>
+							<td style="border: 1px solid #dddddd; padding: 0.13in"><p>1</p>
+							</td>
+							<td style="border: 1px solid #dddddd; padding: 0.13in"><p>24</p>
+							</td>
+						</tr>
+						<tr>
+							<td style="border: 1px solid #dddddd; padding: 0.13in"><p>1</p>
+							</td>
+							<td style="border: 1px solid #dddddd; padding: 0.13in"><p>28</p>
+							</td>
+						</tr>
+						<tr>
+							<td style="border: 1px solid #dddddd; padding: 0.13in"><p>...</p>
+							</td>
+							<td style="border: 1px solid #dddddd; padding: 0.13in"><p>...</p>
+							</td>
+						</tr>
+						<tr>
+							<td style="border: 1px solid #dddddd; padding: 0.13in"><p>5</p>
+							</td>
+							<td style="border: 1px solid #dddddd; padding: 0.13in"><p>25</p>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+				<p style="margin-bottom: 0in">&nbsp;</p>
+				<p style="margin-bottom: 0in">Business Use:</p>
+				<ul>
+					<li><p style="margin-bottom: 0in">Customer activity: most recent
+					login per user, latest subscription change. 
+					</p>
+					<li><p style="margin-bottom: 0in">Sales: highest order per
+					customer, top revenue order per region. 
+					</p>
+					<li><p style="margin-bottom: 0in">Product performance: most
+					purchased product in each category, highest-revenue product per
+					month. 
+					</p>
+					<li><p style="margin-bottom: 0in">User behaviour: Longest
+					session per user, first purchase per customer. 
+					</p>
+					<li><p style="margin-bottom: 0in">Reviews &amp; feedback: top
+					reviewer, latest review for each product. 
+					</p>
+					<li><p style="margin-bottom: 0in">Operations: Latest shipment
+					status per order, fastest delivery time per region. 
+					</p>
+				</ul>
+				<p style="margin-bottom: 0in">&nbsp;</p>
+				<h2 class="western" style="margin-top: 0in; margin-bottom: 0in"><font color="#f3ac35">#&nbsp;</font>Pattern
+				#3: Ranking with Window Functions</h2>
+				<p style="margin-bottom: 0in">&nbsp;<br/>
+Using window functions
+				such as <code class="western"><span style="background: #f5f5f5">ROW_NUMBER()</span></code>,
+				<code class="western"><span style="background: #f5f5f5">RANK()</span></code>,
+				and <code class="western"><span style="background: #f5f5f5">DENSE_RANK()</span></code>
+				allows you to order rows within data partitions, and then
+				identify the first, second, or <em>nth</em> record.</p>
+				<p style="margin-bottom: 0in">Here is what each of these ranking
+				window <strong><a href="https://www.sqlshack.com/overview-of-sql-rank-functions" target="_blank">functions</a></strong>
+				does:</p>
+				<ul>
+					<li><p style="margin-bottom: 0in"><code class="western"><span style="background: #f5f5f5">ROW_NUMBER()</span></code>:
+					Assigns a unique sequential number within each partition; tied
+					values get different row numbers. 
+					</p>
+					<li><p style="margin-bottom: 0in"><code class="western"><span style="background: #f5f5f5">RANK()</span></code>:
+					Assigns the same rank to tied values and skips the next ranks
+					for the next non-tied value. 
+					</p>
+					<li><p style="margin-bottom: 0in"><code class="western"><span style="background: #f5f5f5">DENSE_RANK()</span></code>:
+					Same as <code class="western"><span style="background: #f5f5f5">RANK()</span></code>,
+					only it doesn&rsquo;t skip rank after ties. 
+					</p>
+				</ul>
+				<p style="margin-bottom: 0in">Example: In an <strong><a href="https://platform.stratascratch.com/coding/9915-highest-cost-orders?code_type=1&amp;utm_source=blog&amp;utm_medium=click&amp;utm_campaign=kdn+sql+patterns+from+faang" target="_blank">Amazon
+				interview question</a></strong>, we need to find the highest
+				daily order cost between 2019-02-01 and 2019-05-01. If a customer
+				has more than one order on a certain day, sum the order costs on
+				a daily basis. The output should contain the customer&rsquo;s
+				first name, the total cost of their order(s), and the date of the
+				order.</p>
+				<p style="margin-bottom: 0in">In the first common table
+				expression (CTE), we find the orders between the specified dates
+				and sum the customer's daily totals for each date.</p>
+				<p style="margin-bottom: 0in">In the second CTE, we use <code class="western"><span style="background: #f5f5f5">RANK()</span></code>
+				to rank customers by order cost descendingly for each date.</p>
+				<p style="margin-bottom: 0in">Now, we join two CTEs to output the
+				required columns and filter only the orders with the first rank
+				assigned to them, i.e., the highest order.</p>
+				<pre class="western"><span style="display: inline-block; border: none; padding: 0in"><span style="background: #f5f5f5"><code class="western">WITH customer_daily_totals AS (</span></span></code>
+<span style="display: inline-block; border: none; padding: 0in"><span style="background: #f5f5f5"><code class="western">  </code><code class="western">SELECT o.cust_id,</span></span></code>
+<span style="display: inline-block; border: none; padding: 0in"><span style="background: #f5f5f5"><code class="western">         </code><code class="western">o.order_date,</span></span></code>
+<span style="display: inline-block; border: none; padding: 0in"><span style="background: #f5f5f5"><code class="western">         </code><code class="western">SUM(o.total_order_cost) AS total_daily_cost</span></span></code>
+<span style="display: inline-block; border: none; padding: 0in"><span style="background: #f5f5f5"><code class="western">  </code><code class="western">FROM orders o</span></span></code>
+<span style="display: inline-block; border: none; padding: 0in"><span style="background: #f5f5f5"><code class="western">  </code><code class="western">WHERE o.order_date BETWEEN '2019-02-01' AND '2019-05-01'</span></span></code>
+<span style="display: inline-block; border: none; padding: 0in"><span style="background: #f5f5f5"><code class="western">  </code><code class="western">GROUP BY o.cust_id, o.order_date</span></span></code>
+<span style="display: inline-block; border: none; padding: 0in"><span style="background: #f5f5f5"><code class="western">),</span></span></code>
+
+<span style="display: inline-block; border: none; padding: 0in"><span style="background: #f5f5f5"><code class="western">ranked_daily_totals AS (</span></span></code>
+<span style="display: inline-block; border: none; padding: 0in"><span style="background: #f5f5f5"><code class="western">  </code><code class="western">SELECT cust_id,</span></span></code>
+<span style="display: inline-block; border: none; padding: 0in"><span style="background: #f5f5f5"><code class="western">         </code><code class="western">order_date,</span></span></code>
+<span style="display: inline-block; border: none; padding: 0in"><span style="background: #f5f5f5"><code class="western">         </code><code class="western">total_daily_cost,</span></span></code>
+<span style="display: inline-block; border: none; padding: 0in"><span style="background: #f5f5f5"><code class="western">         </code><code class="western">RANK() OVER (PARTITION BY order_date ORDER BY total_daily_cost DESC) AS rnk</span></span></code>
+<span style="display: inline-block; border: none; padding: 0in"><span style="background: #f5f5f5"><code class="western">  </code><code class="western">FROM customer_daily_totals</span></span></code>
+<span style="display: inline-block; border: none; padding: 0in"><span style="background: #f5f5f5"><code class="western">)</span></span></code>
+
+<span style="display: inline-block; border: none; padding: 0in"><span style="background: #f5f5f5"><code class="western">SELECT c.first_name,</span></span></code>
+<span style="display: inline-block; border: none; padding: 0in"><span style="background: #f5f5f5"><code class="western">       </code><code class="western">rdt.order_date,</span></span></code>
+<span style="display: inline-block; border: none; padding: 0in"><span style="background: #f5f5f5"><code class="western">       </code><code class="western">rdt.total_daily_cost AS max_cost</span></span></code>
+<span style="display: inline-block; border: none; padding: 0in"><span style="background: #f5f5f5"><code class="western">FROM ranked_daily_totals rdt</span></span></code>
+<span style="display: inline-block; border: none; padding: 0in"><span style="background: #f5f5f5"><code class="western">JOIN customers c ON rdt.cust_id = c.id</span></span></code>
+<span style="display: inline-block; border: none; padding: 0in"><span style="background: #f5f5f5"><code class="western">WHERE rdt.rnk = 1</span></span></code>
+<span style="display: inline-block; border: none; padding: 0in"><span style="background: #f5f5f5"><code class="western">ORDER BY rdt.order_date;</span></span></code></pre><p style="margin-bottom: 0in">
+				&nbsp;</p>
+				<p style="margin-bottom: 0in">Here&rsquo;s the output.<br/>
+&nbsp;</p>
+				<table cellpadding="2" cellspacing="2">
+					<thead>
+						<tr bgcolor="#ffd29a" style="background: #ffd29a">
+							<th style="border: 1px solid #dddddd; padding: 0.13in"><p align="left">
+								first_name</p>
+							</th>
+							<th style="border: 1px solid #dddddd; padding: 0.13in"><p align="left">
+								order_date</p>
+							</th>
+							<th style="border: 1px solid #dddddd; padding: 0.13in"><p align="left">
+								max_cost</p>
+							</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td style="border: 1px solid #dddddd; padding: 0.13in"><p>Mia</p>
+							</td>
+							<td style="border: 1px solid #dddddd; padding: 0.13in"><p>2019-02-01</p>
+							</td>
+							<td style="border: 1px solid #dddddd; padding: 0.13in"><p>100</p>
+							</td>
+						</tr>
+						<tr>
+							<td style="border: 1px solid #dddddd; padding: 0.13in"><p>Farida</p>
+							</td>
+							<td style="border: 1px solid #dddddd; padding: 0.13in"><p>2019-03-01</p>
+							</td>
+							<td style="border: 1px solid #dddddd; padding: 0.13in"><p>80</p>
+							</td>
+						</tr>
+						<tr>
+							<td style="border: 1px solid #dddddd; padding: 0.13in"><p>Mia</p>
+							</td>
+							<td style="border: 1px solid #dddddd; padding: 0.13in"><p>2019-03-01</p>
+							</td>
+							<td style="border: 1px solid #dddddd; padding: 0.13in"><p>80</p>
+							</td>
+						</tr>
+						<tr>
+							<td style="border: 1px solid #dddddd; padding: 0.13in"><p>...</p>
+							</td>
+							<td style="border: 1px solid #dddddd; padding: 0.13in"><p>...</p>
+							</td>
+							<td style="border: 1px solid #dddddd; padding: 0.13in"><p>...</p>
+							</td>
+						</tr>
+						<tr>
+							<td style="border: 1px solid #dddddd; padding: 0.13in"><p>Farida</p>
+							</td>
+							<td style="border: 1px solid #dddddd; padding: 0.13in"><p>2019-04-23</p>
+							</td>
+							<td style="border: 1px solid #dddddd; padding: 0.13in"><p>120</p>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+				<p style="margin-bottom: 0in">&nbsp;</p>
+				<p style="margin-bottom: 0in">Business Use:</p>
+				<ul>
+					<li><p style="margin-bottom: 0in">User activity: &ldquo;Top 5
+					most active users last month&rdquo;. 
+					</p>
+					<li><p style="margin-bottom: 0in">Revenue: &ldquo;The
+					second-highest revenue region&rdquo;. 
+					</p>
+					<li><p style="margin-bottom: 0in">Product popularity: &ldquo;Top
+					10 best-selling products&rdquo;. 
+					</p>
+					<li><p style="margin-bottom: 0in">Purchases &ldquo;The first
+					purchase of each customer&rdquo;. 
+					</p>
+				</ul>
+				<p style="margin-bottom: 0in">&nbsp;</p>
+				<h2 class="western" style="margin-top: 0in; margin-bottom: 0in"><font color="#f3ac35">#&nbsp;</font>Pattern
+				#4: Calculating Moving Averages &amp; Cumulative Sums</h2>
+				<p style="margin-bottom: 0in">&nbsp;<br/>
+The moving (rolling)
+				average calculates the average over the last <em>N</em> rows,
+				typically months or days. It&rsquo;s calculated using the <code class="western"><span style="background: #f5f5f5">AVG()</span></code>
+				window function and defining the window as <code class="western"><span style="background: #f5f5f5">ROWS
+				BETWEEN N PRECEDING AND CURRENT ROW</span></code>.</p>
+				<p style="margin-bottom: 0in">The cumulative sum (running total)
+				is the sum from the first row up to the current row, which is
+				reflected in defining the window as <code class="western"><span style="background: #f5f5f5">ROWS
+				BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW</span></code> in the
+				<code class="western"><span style="background: #f5f5f5">SUM()</span></code>
+				window function.</p>
+				<p style="margin-bottom: 0in">Example: The <strong><a href="https://platform.stratascratch.com/coding/10314-revenue-over-time?code_type=1&amp;utm_source=blog&amp;utm_medium=click&amp;utm_campaign=kdn+sql+patterns+from+faang" target="_blank">interview
+				question from Amazon</a></strong> wants us to find the 3-month
+				rolling average of total revenue from purchases. We should output
+				the year-month (YYYY-MM) and the 3-month rolling average, sorted
+				from the earliest to the latest month.</p>
+				<p style="margin-bottom: 0in">Also, the returns (negative
+				purchase values) should not be included.</p>
+				<p style="margin-bottom: 0in">We use a subquery to calculate
+				monthly revenue using <code class="western"><span style="background: #f5f5f5">SUM()</span></code>
+				and convert the purchase date to a YYYY-MM format with the
+				<code class="western"><span style="background: #f5f5f5">TO_CHAR()</span></code>
+				function.</p>
+				<p style="margin-bottom: 0in">Then, we use <code class="western"><span style="background: #f5f5f5">AVG()</span></code>
+				to calculate the moving average. In the <code class="western"><span style="background: #f5f5f5">OVER()</span></code>
+				clause, we order the data in partition by month and define the
+				window as <code class="western"><span style="background: #f5f5f5">ROWS
+				BETWEEN 2 PRECEDING AND CURRENT ROW</span></code>; we calculate
+				the 3-month moving average, which takes into account the current
+				and the previous two months.</p>
+				<pre class="western"><span style="display: inline-block; border: none; padding: 0in"><span style="background: #f5f5f5"><code class="western">SELECT t.month,</span></span></code>
+<span style="display: inline-block; border: none; padding: 0in"><span style="background: #f5f5f5"><code class="western">       </code><code class="western">AVG(t.monthly_revenue) OVER(ORDER BY t.month ROWS BETWEEN 2 PRECEDING AND CURRENT ROW) AS avg_revenue</span></span></code>
+<span style="display: inline-block; border: none; padding: 0in"><span style="background: #f5f5f5"><code class="western">FROM</span></span></code>
+<span style="display: inline-block; border: none; padding: 0in"><span style="background: #f5f5f5"><code class="western">  </code><code class="western">(SELECT TO_CHAR(created_at::DATE, 'YYYY-MM') AS month,</span></span></code>
+<span style="display: inline-block; border: none; padding: 0in"><span style="background: #f5f5f5"><code class="western">          </code><code class="western">SUM(purchase_amt) AS monthly_revenue</span></span></code>
+<span style="display: inline-block; border: none; padding: 0in"><span style="background: #f5f5f5"><code class="western">   </code><code class="western">FROM amazon_purchases</span></span></code>
+<span style="display: inline-block; border: none; padding: 0in"><span style="background: #f5f5f5"><code class="western">   </code><code class="western">WHERE purchase_amt &gt; 0</span></span></code>
+<span style="display: inline-block; border: none; padding: 0in"><span style="background: #f5f5f5"><code class="western">   </code><code class="western">GROUP BY 1</span></span></code>
+<span style="display: inline-block; border: none; padding: 0in"><span style="background: #f5f5f5"><code class="western">   </code><code class="western">ORDER BY 1) AS t</span></span></code>
+<span style="display: inline-block; border: none; padding: 0in"><span style="background: #f5f5f5"><code class="western">ORDER BY t.month ASC;</span></span></code></pre><p style="margin-bottom: 0in">
+				&nbsp;</p>
+				<p style="margin-bottom: 0in">Here&rsquo;s the output.<br/>
+&nbsp;</p>
+				<table cellpadding="2" cellspacing="2">
+					<thead>
+						<tr bgcolor="#ffd29a" style="background: #ffd29a">
+							<th style="border: 1px solid #dddddd; padding: 0.13in"><p align="left">
+								month</p>
+							</th>
+							<th style="border: 1px solid #dddddd; padding: 0.13in"><p align="left">
+								avg_revenue</p>
+							</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td style="border: 1px solid #dddddd; padding: 0.13in"><p>2020-01</p>
+							</td>
+							<td style="border: 1px solid #dddddd; padding: 0.13in"><p>26292</p>
+							</td>
+						</tr>
+						<tr>
+							<td style="border: 1px solid #dddddd; padding: 0.13in"><p>2020-02</p>
+							</td>
+							<td style="border: 1px solid #dddddd; padding: 0.13in"><p>23493.5</p>
+							</td>
+						</tr>
+						<tr>
+							<td style="border: 1px solid #dddddd; padding: 0.13in"><p>2020-03</p>
+							</td>
+							<td style="border: 1px solid #dddddd; padding: 0.13in"><p>25535.666666666668</p>
+							</td>
+						</tr>
+						<tr>
+							<td style="border: 1px solid #dddddd; padding: 0.13in"><p>...</p>
+							</td>
+							<td style="border: 1px solid #dddddd; padding: 0.13in"><p>...</p>
+							</td>
+						</tr>
+						<tr>
+							<td style="border: 1px solid #dddddd; padding: 0.13in"><p>2020-10</p>
+							</td>
+							<td style="border: 1px solid #dddddd; padding: 0.13in"><p>21211</p>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+				<p style="margin-bottom: 0in">&nbsp;</p>
+				<p style="margin-bottom: 0in">To calculate a cumulative sum, we&rsquo;d
+				do it like this.</p>
+				<pre class="western"><span style="display: inline-block; border: none; padding: 0in"><span style="background: #f5f5f5"><code class="western">SELECT t.month,</span></span></code>
+<span style="display: inline-block; border: none; padding: 0in"><span style="background: #f5f5f5"><code class="western">       </code><code class="western">SUM(t.monthly_revenue) OVER(ORDER BY t.month ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS cum_sum</span></span></code>
+<span style="display: inline-block; border: none; padding: 0in"><span style="background: #f5f5f5"><code class="western">FROM</span></span></code>
+<span style="display: inline-block; border: none; padding: 0in"><span style="background: #f5f5f5"><code class="western">  </code><code class="western">(SELECT TO_CHAR(created_at::DATE, 'YYYY-MM') AS month,</span></span></code>
+<span style="display: inline-block; border: none; padding: 0in"><span style="background: #f5f5f5"><code class="western">          </code><code class="western">SUM(purchase_amt) AS monthly_revenue</span></span></code>
+<span style="display: inline-block; border: none; padding: 0in"><span style="background: #f5f5f5"><code class="western">   </code><code class="western">FROM amazon_purchases</span></span></code>
+<span style="display: inline-block; border: none; padding: 0in"><span style="background: #f5f5f5"><code class="western">   </code><code class="western">WHERE purchase_amt &gt; 0</span></span></code>
+<span style="display: inline-block; border: none; padding: 0in"><span style="background: #f5f5f5"><code class="western">   </code><code class="western">GROUP BY 1</span></span></code>
+<span style="display: inline-block; border: none; padding: 0in"><span style="background: #f5f5f5"><code class="western">   </code><code class="western">ORDER BY 1) AS t</span></span></code>
+<span style="display: inline-block; border: none; padding: 0in"><span style="background: #f5f5f5"><code class="western">ORDER BY t.month ASC;</span></span></code></pre><p style="margin-bottom: 0in">
+				&nbsp;</p>
+				<p style="margin-bottom: 0in">Here&rsquo;s the output.<br/>
+&nbsp;</p>
+				<table cellpadding="2" cellspacing="2">
+					<thead>
+						<tr bgcolor="#ffd29a" style="background: #ffd29a">
+							<th style="border: 1px solid #dddddd; padding: 0.13in"><p align="left">
+								month</p>
+							</th>
+							<th style="border: 1px solid #dddddd; padding: 0.13in"><p align="left">
+								cum_sum</p>
+							</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td style="border: 1px solid #dddddd; padding: 0.13in"><p>2020-01</p>
+							</td>
+							<td style="border: 1px solid #dddddd; padding: 0.13in"><p>26292</p>
+							</td>
+						</tr>
+						<tr>
+							<td style="border: 1px solid #dddddd; padding: 0.13in"><p>2020-02</p>
+							</td>
+							<td style="border: 1px solid #dddddd; padding: 0.13in"><p>46987</p>
+							</td>
+						</tr>
+						<tr>
+							<td style="border: 1px solid #dddddd; padding: 0.13in"><p>2020-03</p>
+							</td>
+							<td style="border: 1px solid #dddddd; padding: 0.13in"><p>76607</p>
+							</td>
+						</tr>
+						<tr>
+							<td style="border: 1px solid #dddddd; padding: 0.13in"><p>...</p>
+							</td>
+							<td style="border: 1px solid #dddddd; padding: 0.13in"><p>...</p>
+							</td>
+						</tr>
+						<tr>
+							<td style="border: 1px solid #dddddd; padding: 0.13in"><p>2020-10</p>
+							</td>
+							<td style="border: 1px solid #dddddd; padding: 0.13in"><p>239869</p>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+				<p style="margin-bottom: 0in">&nbsp;</p>
+				<p style="margin-bottom: 0in">Business Use:</p>
+				<ul>
+					<li><p style="margin-bottom: 0in">Engagement metrics: 7-day
+					moving average of DAU or messages sent, cumulative
+					cancellations. 
+					</p>
+					<li><p style="margin-bottom: 0in">Financial KPIs: 30-day moving
+					average of costs/conversions/stock prices, revenue reporting
+					(cumulative YTD). 
+					</p>
+					<li><p style="margin-bottom: 0in">Product performance: logins
+					per user moving average, cumulative app installs. 
+					</p>
+					<li><p style="margin-bottom: 0in">Operations: cumulative orders
+					shipped, tickets resolved, bugs closed. 
+					</p>
+				</ul>
+				<p style="margin-bottom: 0in">&nbsp;</p>
+				<h2 class="western" style="margin-top: 0in; margin-bottom: 0in"><font color="#f3ac35">#&nbsp;</font>Pattern
+				#5: Applying Conditional Aggregations</h2>
+				<p style="margin-bottom: 0in">&nbsp;<br/>
+Conditional aggregation
+				lets you compute multiple segmented metrics in one pass by
+				putting the <strong><a href="https://www.stratascratch.com/blog/a-comprehensive-guide-to-case-when-statements-in-sql/?utm_source=blog&amp;utm_medium=click&amp;utm_campaign=kdn+sql+patterns+from+faang" target="_blank">CASE
+				WHEN statement</a></strong> inside aggregate functions.</p>
+				<p style="margin-bottom: 0in">Example: A <strong><a href="https://platform.stratascratch.com/coding/10322-finding-user-purchases?code_type=1&amp;utm_source=blog&amp;utm_medium=click&amp;utm_campaign=kdn+sql+patterns+from+faang" target="_blank">question
+				from an Amazon interview</a></strong> asks you to identify
+				returning active users by finding users who made a second
+				purchase within 1 to 7 days after their first purchase. The
+				output should consist only of these users&rsquo; IDs. The
+				same-day purchases should be ignored.</p>
+				<p style="margin-bottom: 0in">The first CTE identifies the users
+				and the dates of their purchases, excluding same-day purchases by
+				using the <code class="western"><span style="background: #f5f5f5">DISTINCT</span></code>
+				keyword.</p>
+				<p style="margin-bottom: 0in">The second CTE ranks each user's
+				purchase dates from the oldest to the newest.</p>
+				<p style="margin-bottom: 0in">The last CTE finds the first and
+				second purchases for each user by using conditional aggregation.
+				We use <code class="western"><span style="background: #f5f5f5">MAX()</span></code>
+				to pick the single non-NULL value for the first and second
+				purchase dates.</p>
+				<p style="margin-bottom: 0in">Finally, we use the result of the
+				last CTE and retain only users who made a second purchase
+				(non-NULL) within 7 days of their first purchase.</p>
+				<pre class="western"><span style="display: inline-block; border: none; padding: 0in"><span style="background: #f5f5f5"><code class="western">WITH daily AS (</span></span></code>
+<span style="display: inline-block; border: none; padding: 0in"><span style="background: #f5f5f5"><code class="western">  </code><code class="western">SELECT DISTINCT user_id,</span></span></code>
+<span style="display: inline-block; border: none; padding: 0in"><span style="background: #f5f5f5"><code class="western">         </code><code class="western">created_at::DATE AS purchase_date</span></span></code>
+<span style="display: inline-block; border: none; padding: 0in"><span style="background: #f5f5f5"><code class="western">  </code><code class="western">FROM amazon_transactions</span></span></code>
+<span style="display: inline-block; border: none; padding: 0in"><span style="background: #f5f5f5"><code class="western">),</span></span></code>
+
+<span style="display: inline-block; border: none; padding: 0in"><span style="background: #f5f5f5"><code class="western">ranked AS (</span></span></code>
+<span style="display: inline-block; border: none; padding: 0in"><span style="background: #f5f5f5"><code class="western">  </code><code class="western">SELECT user_id,</span></span></code>
+<span style="display: inline-block; border: none; padding: 0in"><span style="background: #f5f5f5"><code class="western">         </code><code class="western">purchase_date,</span></span></code>
+<span style="display: inline-block; border: none; padding: 0in"><span style="background: #f5f5f5"><code class="western">         </code><code class="western">ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY purchase_date) AS rn</span></span></code>
+<span style="display: inline-block; border: none; padding: 0in"><span style="background: #f5f5f5"><code class="western">  </code><code class="western">FROM daily</span></span></code>
+<span style="display: inline-block; border: none; padding: 0in"><span style="background: #f5f5f5"><code class="western">),</span></span></code>
+
+<span style="display: inline-block; border: none; padding: 0in"><span style="background: #f5f5f5"><code class="western">first_two AS (</span></span></code>
+<span style="display: inline-block; border: none; padding: 0in"><span style="background: #f5f5f5"><code class="western">  </code><code class="western">SELECT user_id,</span></span></code>
+<span style="display: inline-block; border: none; padding: 0in"><span style="background: #f5f5f5"><code class="western">         </code><code class="western">MAX(CASE WHEN rn = 1 THEN purchase_date END) AS first_date,</span></span></code>
+<span style="display: inline-block; border: none; padding: 0in"><span style="background: #f5f5f5"><code class="western">         </code><code class="western">MAX(CASE WHEN rn = 2 THEN purchase_date END) AS second_date</span></span></code>
+<span style="display: inline-block; border: none; padding: 0in"><span style="background: #f5f5f5"><code class="western">  </code><code class="western">FROM ranked</span></span></code>
+<span style="display: inline-block; border: none; padding: 0in"><span style="background: #f5f5f5"><code class="western">  </code><code class="western">WHERE rn &lt;= 2</span></span></code>
+<span style="display: inline-block; border: none; padding: 0in"><span style="background: #f5f5f5"><code class="western">  </code><code class="western">GROUP BY user_id</span></span></code>
+<span style="display: inline-block; border: none; padding: 0in"><span style="background: #f5f5f5"><code class="western">)</span></span></code>
+
+<span style="display: inline-block; border: none; padding: 0in"><span style="background: #f5f5f5"><code class="western">SELECT user_id</span></span></code>
+<span style="display: inline-block; border: none; padding: 0in"><span style="background: #f5f5f5"><code class="western">FROM first_two</span></span></code>
+<span style="display: inline-block; border: none; padding: 0in"><span style="background: #f5f5f5"><code class="western">WHERE second_date IS NOT NULL AND (second_date - first_date) BETWEEN 1 AND 7</span></span></code>
+<span style="display: inline-block; border: none; padding: 0in"><span style="background: #f5f5f5"><code class="western">ORDER BY user_id;</span></span></code></pre><p style="margin-bottom: 0in">
+				&nbsp;</p>
+				<p style="margin-bottom: 0in">Here&rsquo;s the output.<br/>
+&nbsp;</p>
+				<table cellpadding="2" cellspacing="2">
+					<thead>
+						<tr bgcolor="#ffd29a" style="background: #ffd29a">
+							<th style="border: 1px solid #dddddd; padding: 0.13in"><p align="left">
+								user_id</p>
+							</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td style="border: 1px solid #dddddd; padding: 0.13in"><p>100</p>
+							</td>
+						</tr>
+						<tr>
+							<td style="border: 1px solid #dddddd; padding: 0.13in"><p>103</p>
+							</td>
+						</tr>
+						<tr>
+							<td style="border: 1px solid #dddddd; padding: 0.13in"><p>105</p>
+							</td>
+						</tr>
+						<tr>
+							<td style="border: 1px solid #dddddd; padding: 0.13in"><p>...</p>
+							</td>
+						</tr>
+						<tr>
+							<td style="border: 1px solid #dddddd; padding: 0.13in"><p>143</p>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+				<p style="margin-bottom: 0in">&nbsp;</p>
+				<p style="margin-bottom: 0in">Business Use:</p>
+				<ul>
+					<li><p style="margin-bottom: 0in">Subscription reporting: paid
+					vs. free users, active vs. churned users by plan tier. 
+					</p>
+					<li><p style="margin-bottom: 0in">Marketing funnel dashboards:
+					signed up vs. purchased users by traffic source, emails opened
+					vs. clicked vs. converted. 
+					</p>
+					<li><p style="margin-bottom: 0in">E-commerce: completed vs.
+					refunded vs. cancelled orders by region, new vs. returning
+					buyers. 
+					</p>
+					<li><p style="margin-bottom: 0in">Product analysis: iOS vs.
+					Android vs. Web usage, feature adopted vs. not adopted counts
+					per cohort. 
+					</p>
+					<li><p style="margin-bottom: 0in">Finance: revenue from new vs.
+					existing customers, gross vs. net revenue. 
+					</p>
+					<li><p style="margin-bottom: 0in">A/B testing &amp; experiments:
+					control vs. treatment metrics. 
+					</p>
+				</ul>
+				<p style="margin-bottom: 0in">&nbsp;</p>
+				<h2 class="western" style="margin-top: 0in; margin-bottom: 0in"><font color="#f3ac35">#&nbsp;</font>Conclusion</h2>
+				<p style="margin-bottom: 0in">&nbsp;<br/>
+If you want a job at
+				FAANG (and others, too) companies, focus on those five SQL
+				patterns for the interviews. Of course, they&rsquo;re not the
+				only SQL concepts tested. But they are most commonly tested. By
+				focusing on them, you ensure that your interview preparation is
+				as efficient as possible for most SQL interviews at FAANG
+				companies.<br/>
+&nbsp;<br/>
+&nbsp;</p>
+				<p style="margin-bottom: 0in"><strong><a href="https://twitter.com/StrataScratch" target="_blank"><b>Nate
+				Rosidi</b></a></strong> is a data scientist and in product
+				strategy. He's also an adjunct professor teaching analytics, and
+				is the founder of StrataScratch, a platform helping data
+				scientists prepare for their interviews with real interview
+				questions from top companies. Nate writes on the latest trends in
+				the career market, gives interview advice, shares data science
+				projects, and covers everything SQL.</p>
+				<p style="margin-bottom: 0in"><br/>
+
+				</p>
+				<h3 class="western" style="margin-top: 0in; margin-bottom: 0in">More
+				On This Topic</h3>
+				<ul>
+					<li><p style="margin-bottom: 0in"><a href="https://www.kdnuggets.com/the-most-common-statistical-traps-in-faang-interviews">The
+					Most Common Statistical Traps in FAANG Interviews</a></p>
+					<li><p style="margin-bottom: 0in"><a href="https://www.kdnuggets.com/how-to-land-a-faang-internship-in-3-months-summer-prep-guide">How
+					to Land a FAANG Internship in 3 Months: Summer Prep Guide</a></p>
+					<li><p style="margin-bottom: 0in"><a href="https://www.kdnuggets.com/most-candidates-fail-these-sql-concepts-in-data-interviews">Most
+					Candidates Fail These SQL Concepts in Data Interviews</a></p>
+					<li><p style="margin-bottom: 0in"><a href="https://www.kdnuggets.com/tips-for-successfully-navigating-beginner-data-science-job-interviews">Tips
+					for Successfully Navigating Beginner Data Science Job Interviews</a></p>
+					<li><p style="margin-bottom: 0in"><a href="https://www.kdnuggets.com/more-tips-for-successfully-navigating-beginner-data-science-job-interviews">More
+					Tips for Successfully Navigating Beginner Data Science Job
+					Interviews</a></p>
+					<li><p style="margin-bottom: 0in"><a href="https://www.kdnuggets.com/the-hidden-curriculum-of-data-science-interviews-what-companies-really-test">The
+					Hidden Curriculum of Data Science Interviews: What Companies&hellip;</a></p>
+				</ul>
+			</div>
+			<p style="margin-bottom: 0in"><br/>
+
+			</p>
+			<p style="margin-bottom: 0in"><br/>
+
+			</p>
+		</div>
+	</div>
+</div>
+</body>
+</html>
