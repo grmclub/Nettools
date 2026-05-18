@@ -1,9 +1,3 @@
-Six SQL patterns I use to catch transaction fraud
-
-[analytics.fixelsmith.com](/)
-
-[Home](/) [RSS](/rss.xml) [fixelsmith.com](https://fixelsmith.com)
-
 # Six SQL patterns I use to catch transaction fraud
 
 May 12, 2026
