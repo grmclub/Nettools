@@ -1,4 +1,4 @@
-# Six SQL patterns I use to catch transaction fraud
+# Six SQL patterns used to catch transaction fraud
 
 May 12, 2026
 
