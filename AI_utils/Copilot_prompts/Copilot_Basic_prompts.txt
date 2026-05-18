@@ -5,6 +5,23 @@ https://github.com/zakirullin/files.md
 https://medium.com/@AlexTheSmartExplorer/microsoft-copilot-prompts-10-examples-that-get-better-results-in-2025-30369b8d86a6
 https://github.com/pnp/copilot-prompts
 
+https://docs.github.com/en/copilot/tutorials/refactor-code
+
+##prompt gallery
+https://github.com/kesslernity/awesome-microsoft-copilot-prompts
+https://github.com/pnp/copilot-prompts
+
+##Key Prompt Examples by App
+Word: "Summarize this document and draft a follow-up email."
+Excel: "Analyze this table and highlight trends in a new sheet."
+Teams: "Recap the last meeting I missed and list action items."
+Outlook: "Draft a polite response to this email refusing the meeting invitation." 
+
+##Best Practices for Building Collections
+Focus on Structure: Use the Goal-Context-Source-Expectation structure.
+Use Promptbooks: In Microsoft Purview, you can chain prompts together to run in sequence, known as a promptbook.
+Save & Share: Use the "save" feature to store frequently used prompts in the gallery, and share them with teammates via link. 
+
 
 --------------------------------------------------------------------------------------
 ##coding prompts
@@ -136,9 +153,10 @@ Slash Commands: Use /optimize (in some versions) or prompts like "Refactor this 
 Unit Test Generation: Use the /tests command to create test cases for your functions, ensuring that optimizations don't break existing functionality. 
 
 Quick Tips for Better Results
-Use Specific Context: In Copilot Chat, use the # symbol to reference specific files or code selections (e.g., "Explain how #selection works").
-Iterative Prompting: If the first suggestion isn't perfect, treat Copilot Chat like a tutor and ask follow-up questions to refine the result.
-Verify Outputs: Always review and test AI-generated code; while powerful, Copilot can sometimes suggest suboptimal or incorrect logic that requires developer oversight. 
+
+-Use Specific Context: In Copilot Chat, use the # symbol to reference specific files or code selections (e.g., "Explain how #selection works").
+-Iterative Prompting: If the first suggestion isn't perfect, treat Copilot Chat like a tutor and ask follow-up questions to refine the result.
+-Verify Outputs: Always review and test AI-generated code; while powerful, Copilot can sometimes suggest suboptimal or incorrect logic that requires developer oversight. 
 --------------------------------------------------------------------------------------
 
 --------------------------------------------------------------------------------------
