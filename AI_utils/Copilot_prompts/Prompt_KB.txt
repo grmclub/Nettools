@@ -1,0 +1,67 @@
+
+
+--------------------------------------------------------------------------------------
+copilot+prompts+for+timeseries+visualization
+
+1. Basic Exploration & Formatting
+Get Copilot to aggregate and display raw data correctly over time. 
+
+    "Visualize total [Revenue] by month using a line chart to highlight the overall trend."
+    "Plot [Sales] over time. Add a rolling 7-day average trend line to smooth out daily fluctuations."
+    "Can you resample this dataset and visualize [Profit] by quarter instead of by month using a bar chart?
+	
+2. Pattern & Seasonality Identification
+Ask Copilot to highlight recurring trends or anomalies in your time series. 
+
+    "Analyze my weekly sales figures for the past three years and look for recurring seasonal patterns or recurring spikes."
+    "Generate a seasonal decomposition plot using Python code to isolate the trend, seasonality, and residual noise in my data."
+    "Highlight and label any major outliers or anomalies on the monthly user-growth chart	
+
+3. Forecasting & Predictive Visualization
+Instruct Copilot to project future data and visualize the confidence intervals. 
+
+    "Using the historical data, build an ARIMA predictive model for the next 12 months and plot the forecast with a 95% confidence interval."
+    "What is the projected [Metric] for Q3 based on the last 2 years of data? Visualize it as a continuation of my current line chart.
+
+4. Advanced Power BI / Python Copilot Prompts
+Use these for deeper data science, faceting, and multi-variable comparison. 
+
+    "Create a small multiples/facet grid to plot the daily [Temperature] over time, split by each [City]. Give each city's line a unique color."
+    "Write a Python script to perform a stationarity test (ADF test) on my time series, print the results, and plot the rolling mean and standard deviation.
+
+
+--------------------------------------------------------------------------------------
+10 Copilot Prompts That Will Transform Your Data Stories 
+https://www.youtube.com/watch?v=7e_t3QsVs8M
+
+
+how to leverage Microsoft Copilot to transform raw data into compelling and actionable business narratives. The core message is that effective data storytelling requires moving beyond generic prompts toward a structured, strategic approach.
+The Core Framework
+
+To get high-quality outputs, the video suggests using a Context, Task, and Constraint framework (1:13):
+
+    Context: Define your role and your audience.
+    Task: Clearly state what the AI needs to achieve.
+    Constraint: Set specific boundaries for format, length, or structure.
+
+Top 10 Copilot Prompts for Data Storytelling
+
+The video highlights 10 specific use cases to improve your workflow:
+
+    1.Executive Summary Slide (1:34): Use a specific persona (e.g., Senior Business Analyst) to identify revenue drivers and outliers.
+    2.Data Visualization (1:52): Move beyond simple charts by defining variables and highlighting ROI.
+    3.Year-over-Year Performance (2:13): Analyze trends to understand why changes occurred.
+    4.Team-Specific Insights (2:20): Tailor data for departments (like retention) to show business impact.
+    5.Long-Term Trend Analysis (2:31): Identify seasonality and prepare for predictable dips (e.g., Q3 slowdowns).
+    6.Actionable Recommendations (3:10): Force the AI to prioritize next steps rather than just describing data.
+    7.Forecasting (3:19): Use historical patterns to predict future trends.
+    8.KPI Clarity (3:29): Highlight the "Big Three" metrics using minimal text and bold visuals.
+    9.Storytelling Structure (3:44): Use the Situation-Complication-Resolution (SCR) framework to guide the narrative.
+    10.Closing with a Clear Ask (4:00): End presentations by summarizing risks and proposing a specific, confident action (like a budget increase).
+
+
+--------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------
