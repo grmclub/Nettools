@@ -24,13 +24,63 @@ https://github.com/AnthonyCalandra/modern-cpp-features
 https://github.com/gibsjose/cpp-cheat-sheet/blob/master/Data%20Structures%20and%20Algorithms.md
 https://github.com/datawookie/awesome-public-datasets
 
+-------------------------------------------------------------
+##supported standards
+https://stackoverflow.com/questions/34836775/compiler-standards-support-c11-c14-c17
+https://en.cppreference.com/cpp/compiler_support
+https://www3.ntu.edu.sg/home/ehchua/programming/cpp/gcc_make.html
+https://home.cs.colorado.edu/~main/cs1300/doc/gnu/g++FAQ_5.html
+
+
+gcc -v --help 2> /dev/null | sed -n '/^ *-std=\([^<][^ ]\+\).*/ {s//\1/p}'
+
+##If you want to list just non-deprecated C++:
+gcc -v --help 2> /dev/null | grep -iv deprecated | grep "C++" | sed -n '/^ *-std=\([^<][^ ]\+\).*/ {s//\1/p}'
+g++ -x c++  -E -dM -< /dev/null | grep __cplusplus
+
+
+--------------------------------------------------------------------------------------
+##Compile and Link Separately
+
+The above command compile the source file into object file and link with other object files and system libraries into executable in one step. You may separate compile and link in two steps as follows:
+
+// Compile-only with -c option
+> g++ -c -Wall -g Hello.cpp
+// Link object file(s) into an executable
+> g++ -g -o Hello.exe Hello.o
+
+The options are:
+
+    -c: Compile into object file "Hello.o". By default, the object file has the same name as the source file with extension of ".o" (there is no need to specify -o option). No linking with other object files or libraries.
+    Linking is performed when the input file are object files ".o" (instead of source file ".cpp" or ".c"). GCC uses a separate linker program (called ld.exe) to perform the linking.
+
+##Compile and Link Multiple Source Files
+
+Suppose that your program has two source files: file1.cpp, file2.cpp. You could compile all of them in a single command:
+
+> g++ -o myprog.exe file1.cpp file2.cpp 
+
+However, we usually compile each of the source files separately into object file, and link them together in the later stage. In this case, changes in one file does not require re-compilation of the other files.
+
+> g++ -c file1.cpp
+> g++ -c file2.cpp
+> g++ -o myprog.exe file1.o file2.o
 
 
 
 
+--------------------------------------------------------------------------------------
+##GCC Environment Variables
 
--------------------------------------------------------------
--------------------------------------------------------------
--------------------------------------------------------------
--------------------------------------------------------------
--------------------------------------------------------------
+GCC uses the following environment variables:
+
+    PATH: For searching the executables and run-time shared libraries (.dll, .so).
+    CPATH: For searching the include-paths for headers. It is searched after paths specified in -I<dir> options. C_INCLUDE_PATH and CPLUS_INCLUDE_PATH can be used to specify C and C++ headers if the particular language was indicated in pre-processing.
+    LIBRARY_PATH: For searching library-paths for link libraries. It is searched after paths specified in -L<dir> options.
+
+
+
+--------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------
