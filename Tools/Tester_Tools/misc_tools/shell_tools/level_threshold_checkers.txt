@@ -1,0 +1,65 @@
+
+/generate a bash script that runs a command and checks against a threshold count and outputs check as green or red
+
+bash:
+--------------------------------------------------------------------------------------------------
+
+#!/bin/bash
+
+# ==========================================
+# Configuration
+# ==========================================
+# The command you want to run
+CMD="echo 'sample output line 1' && echo 'sample output line 2'"
+
+# The threshold count
+THRESHOLD=2
+
+# ==========================================
+# Script Execution
+# ==========================================
+
+# Run the command and count the number of output lines
+COUNT=$(eval "$CMD" | wc -l)
+
+# Define color codes
+GREEN='\033[0;32m'
+RED='\033[0;31m'
+NC='\033[0m' # No Color
+
+echo "Command: $CMD"
+echo "Counted: $COUNT | Threshold: $THRESHOLD"
+
+# Compare and output status
+if [ "$COUNT" -ge "$THRESHOLD" ]; then
+    echo -e "Status: [${GREEN}PASS${NC}] - Count is $\geq$ Threshold"
+else
+    echo -e "Status: [${RED}FAIL${NC}] - Count is $<$ Threshold"
+fi
+
+=================
+#!/bin/bash
+
+# Configuration
+CMD="ls -l"
+THRESHOLD=5
+
+# Colors
+GREEN='\033[0;32m'
+RED='\033[0;31m'
+NC='\033[0m'
+
+# Run command and count lines directly
+COUNT=$($CMD | wc -l)
+
+# Check threshold and output result
+if [ "$COUNT" -ge "$THRESHOLD" ]; then
+    echo -e "${GREEN}✔ PASS:${NC} Count ($COUNT) is >= $THRESHOLD"
+else
+    echo -e "${RED}✘ FAIL:${NC} Count ($COUNT) is < $THRESHOLD"
+fi
+=================
+
+--------------------------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------------------------
