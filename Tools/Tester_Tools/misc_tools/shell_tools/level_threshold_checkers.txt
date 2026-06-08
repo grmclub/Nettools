@@ -61,5 +61,36 @@ fi
 =================
 
 --------------------------------------------------------------------------------------------------
+/check for plus minus 10% of threshold
+
+#!/bin/bash
+
+# Configuration
+CMD="ls -l"
+THRESHOLD=100
+
+# Colors
+GREEN='\033[0;32m'
+RED='\033[0;31m'
+NC='\033[0m'
+
+# Run command and count lines
+COUNT=$($CMD | wc -l)
+
+# Calculate 10% tolerance (integer math)
+VARIANCE=$(( THRESHOLD / 10 ))
+MIN=$(( THRESHOLD - VARIANCE ))
+MAX=$(( THRESHOLD + VARIANCE ))
+
+# Check if count is within the +/- 10% range
+if [ "$COUNT" -ge "$MIN" ] && [ "$COUNT" -le "$MAX" ]; then
+    echo -e "${GREEN}✔ PASS:${NC} Count ($COUNT) is within 10% of $THRESHOLD ($MIN to $MAX)"
+else
+    echo -e "${RED}✘ FAIL:${NC} Count ($COUNT) is outside 10% of $THRESHOLD ($MIN to $MAX)"
+fi
+
+
+
+
 
 --------------------------------------------------------------------------------------------------
