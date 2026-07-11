@@ -1,0 +1,178 @@
+
+https://www.baeldung.com/linux/iperf-measure-network-performance
+https://www.baeldung.com/linux/network-speed-testing
+-------------------------------------------------
+1. Run iperf as a server and client
+Run one machine as the Server (listens for traffic)
+iperf3 -s
+
+Run the second machine as the Client (generates and sends traffic to the server)
+iperf3 -c <server_ip_address>
+
+2. Common iPerf Parameters
+
+Measure both directions (Bidirectional): Use the -R flag to test the reverse path (server to client, or download bandwidth):
+iperf3 -c <server_ip_address> -R
+
+Test specific protocols: Add -u for UDP traffic testing (which allows packet loss and jitter analysis), or leave blank for the default TCP test.
+    • Parallel streams: Use -P <number> to simulate multiple clients saturating high-bandwidth (e.g., 10Gbps+) links.
+    • Test duration: Adjust test length with -t <seconds> (default is 10).
+    • Reporting interval: Use -i <seconds> to see periodic bandwidth updates while the test is running.
+    • Target UDP bandwidth: When using UDP, specify the target speed with -b <bandwidth> (e.g., -b 5M for 5Mbps). 
+
+-------------------------------------------------
+## initiate server to listen to tcp port:
+
+# iperf -s 
+------------------------------------------------------------
+Server listening on TCP port 5001
+TCP window size: 85.3 KByte (default)
+------------------------------------------------------------
+
+The server is now listening on TCP port 5001. By default, iPerf uses TCP and will listen on port 5001.
+
+Optional flags that we can include:
+
+    -u will make the server use UDP rather than TCP
+    -p will change the default port
+
+
+## make the server use UDP and listen on port 5003:
+
+# iperf -s -u -p 5003
+------------------------------------------------------------
+Server listening on UDP port 5003
+Receiving 1470 byte datagrams
+UDP buffer size:  208 KByte (default)
+------------------------------------------------------------
+
+
+-------------------------------------------------
+========================
+##Client
+##Connecting to the Server From the Client using tcp
+
+Optional flags that we can include:
+
+    -i specifies the interval time in seconds. 10 is the default
+    -t specifies the time to run the test in seconds
+    -p specifies the port. 5001 is the default
+    -w specifies the TCP window size. 85 KB is the default
+
+Let’s use some of the optional flags:
+
+ iperf -c 5.182.18.49 -i 5 -t 15 -w 416K -p 5003
+ 
+##Using UDP
+
+Alternatively, we can use UDP instead of TCP. Certainly, the server needs to be using UDP as well.
+
+$ iperf -c 5.182.18.49 -u
+------------------------------------------------------------
+Client connecting to 5.182.18.49, UDP port 5001
+Sending 1470 byte datagrams, IPG target: 11215.21 us (kalman adjust)
+UDP buffer size:  208 KByte (default)
+------------------------------------------------------------
+[  3] local 192.168.1.24 port 45640 connected with 5.182.18.49 port 5001
+[  3] WARNING: did not receive ack of last datagram after 10 tries.
+[ ID] Interval       Transfer     Bandwidth
+[  3]  0.0-10.0 sec  1.25 MBytes  1.05 Mbits/sec
+[  3] Sent 892 datagrams
+
+We notice that the bandwidth is much lower than TCP. The reason is that iPerf limits the bandwidth for UDP to 1Mbits/sec by default. However, we can replace the limit by adding the -b flag:
+
+$ iperf -c 5.182.18.49 -u -b 1000M
+------------------------------------------------------------
+Client connecting to 5.182.18.49, UDP port 5001
+Sending 1470 byte datagrams, IPG target: 11.22 us (kalman adjust)
+UDP buffer size:  208 KByte (default)
+------------------------------------------------------------
+[  3] local 192.168.1.24 port 56981 connected with 5.182.18.49 port 5001
+[  3] WARNING: did not receive ack of last datagram after 10 tries.
+[ ID] Interval       Transfer     Bandwidth
+[  3]  0.0-10.0 sec   180 MBytes   151 Mbits/sec
+[  3] Sent 128140 datagrams
+
+========================
+-------------------------------------------------
+##Basic testing
+
+# Server
+$ iperf -s -p 8080
+
+# Client
+$ iperf -c 10.211.55.5 -p 8080
+
+##UDP Bandwidth Testing
+
+iperf also supports UDP testing:
+
+# Server
+$ iperf -s -u
+
+# Client
+$ iperf -c 10.211.55.4 -u
+
+
+
+-------------------------------------------------
+Using nc and dd
+
+========================
+Once it’s installed, we start nc in listening mode on the server where we want to receive data:
+
+$ nc -vvlnp 5001 > /dev/null
+Ncat: Version 7.93 ( https://nmap.org/ncat )
+Ncat: Listening on :::5001
+Ncat: Listening on 0.0.0.0:5001
+Ncat: Connection from 10.211.55.5.
+
+========================
+$ dd if=/dev/zero bs=1M count=1K | nc -vvn 10.211.55.4 5001
+Connection to 10.211.55.4 5001 port [tcp/*] succeeded!
+1024+0 records in
+1024+0 records out
+1073741824 bytes (1.1 GB, 1.0 GiB) copied, 5.40932 s, 198 MB/s
+
+if=/dev/zero specifies the input file as /dev/zero, producing an endless stream of null bytes
+bs=1M sets the block size to 1 MB
+count=1000 specifies the number of blocks to copy, creating a 1-GB file
+========================
+
+-------------------------------------------------
+## Using SSH and dd
+
+Of course, SSH can provide a secure channel for data transmission, and dd enables measurement of the data transfer rate.
+
+Let’s see how we can test network speed:
+
+$ dd if=/dev/zero bs=1M count=1000 | ssh amir@10.211.55.4 'dd of=/dev/null'
+1000+0 records in
+1000+0 records out
+1048576000 bytes transferred in 4.441908 secs (236064322 bytes/sec)
+2048000+0 records in
+2048000+0 records out
+1048576000 bytes (1.0 GB, 1000 MiB) copied, 4.52663 s, 232 MB/s
+
+Let’s understand each part before the pipe:
+
+    if=/dev/zero specifies the input file as /dev/zero, which generates an endless stream of zeros
+    bs=1M sets the block size to 1 megabyte
+    count=1000 specifies the number of blocks to be transferred, creating a 1GB file
+
+We pipe the results through and SSH tunnel after a pipe with ssh amir@10.211.55.4. Critically, dd of=/dev/null on the remote server writes the incoming data to /dev/null, effectively discarding it.
+
+The results indicate the network speed between the local and remote servers. In this case, the average speed is approximately 232 MB/s, providing insights into the performance of the network connection for data transfer between these two Linux servers.
+
+-------------------------------------------------
+-------------------------------------------------
+-------------------------------------------------
+------------------------------------------------- 
+
+
+
+
+
+
+
+
