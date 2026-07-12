@@ -1,0 +1,110 @@
+
+
+
+-------------------------------------------------
+https://www.badprog.com/c-pointers-some-examples
+
+#include <stdio.h>
+
+int     main()
+{
+  char  *myString;
+  int   myInt;
+  int   *p_myInt;
+
+  printf("\nLet's start!\n");
+
+  printf("\nDeclaration of myInt, p_myInt and myString.\n\n");
+
+  printf("Value of p_myInt = %d.\n", p_myInt);
+  printf("Value of *p_myInt = %d.\n", *p_myInt);
+  printf("Value of myString = %s.\n", myString);
+
+  printf("\nAddress of p_myInt = %p.\n", p_myInt);
+  printf("Address of *p_myInt = %p.\n", *p_myInt);
+  printf("Address of myString = %p.\n", myString);
+
+  printf("\nInitialisation of myInt, p_myInt and myString.\n\n");
+  myInt = 53;
+  p_myInt = &myInt;
+  myString = "Hello World Pointers!";
+
+  printf("Value of myInt = %d.\n", myInt);
+  printf("Value of *p_myInt = %d.\n", *p_myInt);
+  printf("Value of *(&myInt) = %d.\n", *(&myInt));
+  printf("Value of p_myInt = %d.\n", p_myInt);
+
+  printf("\nAddress of &myInt = %p.\n", &myInt);
+  printf("Address of p_myInt = %p.\n", p_myInt);
+  printf("Address of *p_myInt = %p.\n\n", *p_myInt);
+
+  printf("Value of myString = %s.\n\n", myString);
+
+  printf("Character myString[0] = %c.\n", myString[0]);
+  printf("Character *myString = %c.\n", *myString);
+  printf("Character myString = %c.\n", myString);
+  printf("Character &myString[0] = %c.\n", &myString[0]);
+  printf("Character *(&myString[0]) = %c.\n", *(&myString[0]));
+  printf("Character myString[1] = %c.\n", myString[1]);
+  printf("Character *(myString + 1) = %c.\n", *(myString + 1));
+  printf("Character *(&myString[1]) = %c.\n\n", *(&myString[1]));
+
+  printf("Address of myString[0] = %p.\n", myString[0]);
+  printf("Address of *myString = %p.\n", *myString);
+  printf("Address of myString = %p.\n", myString);
+  printf("Address of &myString[0] = %p.\n", &myString[0]);
+  printf("Address of myString + 1 = %p.\n", myString + 1);
+  printf("Address of &myString[1] = %p.\n", &myString[1]);
+  printf("Address of &myString = %p.\n\n", &myString);
+  return (0);
+}
+
+Result:
+
+Declaration of myInt, p_myInt and myString.
+
+Value of p_myInt = 4382708.
+Value of *p_myInt = 4382076.
+Value of myString = �Õ.
+
+Address of p_myInt = 0x42dff4.
+Address of *p_myInt = 0x42dd7c.
+Address of myString = 0x804870b.
+
+Initialisation of myInt, p_myInt and myString.
+
+Value of myInt = 53.
+Value of *p_myInt = 53.
+Value of *(&myInt) = 53.
+Value of p_myInt = -1078787292.
+
+Address of &myInt = 0xbfb30324.
+Address of p_myInt = 0xbfb30324.
+Address of *p_myInt = 0x35.
+
+Value of myString = Hello World Pointers!.
+
+Character myString[0] = H.
+Character *myString = H.
+Character myString = �.
+Character &myString[0] = �.
+Character *(&myString[0]) = H.
+Character myString[1] = e.
+Character *(myString + 1) = e.
+Character *(&myString[1]) = e.
+
+Address of myString[0] = 0x48.
+Address of *myString = 0x48.
+Address of myString = 0x80488c1.
+Address of &myString[0] = 0x80488c1.
+Address of myString + 1 = 0x80488c2.
+Address of &myString[1] = 0x80488c2.
+Address of &myString = 0xbfb30328.
+
+
+
+------------------------------------------------- 
+-------------------------------------------------
+------------------------------------------------- 
+-------------------------------------------------
+------------------------------------------------- 
