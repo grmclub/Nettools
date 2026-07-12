@@ -165,6 +165,14 @@ We pipe the results through and SSH tunnel after a pipe with ssh amir@10.211.55.
 The results indicate the network speed between the local and remote servers. In this case, the average speed is approximately 232 MB/s, providing insights into the performance of the network connection for data transfer between these two Linux servers.
 
 -------------------------------------------------
+##server
+iperf -s -i 5 -e -w 512K -p <port>
+
+##client
+iperf -c <server_ip> -t60 -b 100M -i5 -e -r -w 512K -p <port>
+
+
+
 -------------------------------------------------
 -------------------------------------------------
 ------------------------------------------------- 
