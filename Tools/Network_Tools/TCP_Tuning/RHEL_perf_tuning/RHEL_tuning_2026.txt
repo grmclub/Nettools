@@ -1,0 +1,41 @@
+
+-------------------------------------------------------------
+https://github.com/myllynen/rhel-performance-guide
+https://docs.redhat.com/en/documentation/red_hat_enterprise_linux_for_real_time/9/html/optimizing_rhel_9_for_real_time_for_low_latency_operation/index
+
+
+https://www.psc.edu/research/networking/tcp-tune/
+https://www.psc.edu/research/networking/
+https://linux.web.cern.ch/mrg/2/Realtime_Tuning_Guide/#sect-Realtime_Tuning_Guide-Realtime_Specific_Tuning-Setting_Scheduler_Priorities
+
+-------------------------------------------------------------
+📋 High-Level Low-Latency Checklist
+The core methodologies outlined in the official RHEL documentation and AMD Tuning Guidelines split tuning into four distinct layers: 
+1. Hardware & BIOS Configuration
+    • Power Management: Disable CPU power-saving states by setting the system to Maximum Performance.
+    • C-States & P-States: Disable deep sleep states (C-states) to completely avoid wake-up latency penalties.
+    • Hyper-Threading (SMT): Disable logical processors/SMT if your application requires 100% deterministic execution on raw physical cores.
+
+2. Kernel Command-Line Parameters (/etc/default/grub)
+    • isolcpus=<cpu-list>: Isolates designated CPU cores from the generic OS scheduler.
+    • nohz_full=<cpu-list>: Enforces a tickless kernel on isolated cores, dropping the periodic timer interrupt.
+    • rcunocbs=<cpu-list>: Offloads RCU callbacks from isolated low-latency execution cores.
+    • processor.max_cstate=0 intel_idle.max_cstate=0: Locks the CPU into operational C0 states.
+    • tsc=reliable or clocksource=tsc: Uses the high-resolution Time Stamp Counter for low-overhead clock checks.
+    • audit=0 and selinux=0: Reduces standard operating system overhead if system security policies permit.
+	
+3. Interrupt Handling & Process Binding
+    • Disable Irqbalance: Stop the system from dynamically shifting hardware interrupts across cores using systemctl disable irqbalance.
+    • IRQ Affinity: Explicitly map high-throughput hardware interrupts (like your network interface card) to specific non-isolated cores.
+    • Process Affinity: Pin your execution workloads to specified isolated cores using taskset or numactl.
+	
+4. Memory & NUMA Optimization
+    • Disable Transparent Huge Pages (THP): Prevents background runtime allocation stutters.
+    • Disable Automatic NUMA Balancing: Disable background task migration across distant memory sockets.
+    • Static Allocation: Allocate memory locally to the CPU node physically wired to the corresponding PCIe slots using tools like lstopo and numastat. 
+
+
+
+-------------------------------------------------------------
+-------------------------------------------------------------
+-------------------------------------------------------------
