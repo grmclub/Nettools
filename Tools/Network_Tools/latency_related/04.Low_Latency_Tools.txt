@@ -1,0 +1,195 @@
+1. Optimize App for low Latency
+   - Data St
+   - Language Constructs
+   - Multithreading
+
+2. Optimize OS & HW for LL
+   - tune socket buffers
+
+3. measure & profile Latency charecteristics
+
+
+------------------------------------------------------------------------------------
+http://stackoverflow.com/questions/8723937/low-latency-high-performance-network-ethernet-messaging?rq=1
+
+
+
+------------------------------------------------------------------------------------
+Latency can occur in packet switched networks due to
+
+1. delay in intermediate nodes (routers check for transmission/reception errors)
+2. queueing delays (microbursts can cause this)
+3. processing delays (check order ack times)
+
+4. transport protocol level - (check tcp stream errors)
+
+5. compare client side timestamp & delay figures with server ( identify discrepency)
+
+
+
+------------------------------------------------------------------------------------
+1. taskset  is  used  to  set  or retrieve the CPU affinity of a running process
+
+    In an SMP-based machine, try using the taskset command to bind the
+    processes to CPUs to ensure that processes are not hopping between
+    processors, causing cache flushes.
+
+Linux taskset to retrieve or set a processess CPU affinity
+==========================================================
+http://littledaemons.wordpress.com/category/performance/
+
+1.
+    To retrieve the CPU affinity of an existing task:
+    # taskset -p 12345
+
+2.
+    Set CPU affinity Eg.  taskset –c 2,6 –p <pid>
+    #taskset -c -p 1 31777
+
+    pid 31777′s current affinity list: 0
+    pid 31777′s new affinity list: 1
+
+----------------
+##Set affinity to core list
+#taskset -pc 5,7 2180
+
+
+###Tie process to cpu
+taskset –c 2,6 –p <pid>
+
+#taskset -c 0 fixtool -I DDXX -i DD11178B -f1 -s memory -r2:10 -O 6773:sell:100:s=231/5% -P snapshot,tradecnt -R yes -c inet-fixtool.cfg
+#sudo taskset -c 5 ping -f -i 0 -w 5 pdouch21e
+#taskset -c 9 OuchLatency B 1711 DAY 1319000 100 ipxs.ini,test1 100000 18 0 100
+
+
+
+---------------
+    #diffmddd -f /etc/XX/diffmdd/diffmdd.conf -p /var/run/mdd/diffmddd.pid -l local0 -t6 -c1,3,5,7,9,11,
+    #diffmddd -f /etc/XX/diffmdd-dayx/diffmdd.conf -p /var/run/mdd-dayx/diffmddd.pid -l local0 -t6 -c2,4
+
+       diffmddd -h
+       diffmddd -V
+
+-d    debug [0]
+-D    do not run as a daemon
+-f    configuration filename [diffmdd.conf]
+-l    syslog facility name [LOG_LOCAL0]
+-p    pid filename [diffmddd.pid]
+
+-c    CPU list for thread affinity (length must equal number of task queues plus one)
+-t    number of task queues (1-128) [1]
+-u    transmission unit size (0 = no restriction) [10]
+
+-------------------------
+On the Intel Clovertown and Harpertown Xeon processors, the L2 cache is not shared across all cores.
+Within a single processor there are 4 L1 caches, 1 per core and 2 L2 caches, shared between a pair of cores.
+
+The scheduler bounces processes between multiple processors each time they are scheduled and rescheduled.
+It should be noted that Red Hat back-ported the O(1) scheduler into RHEL3
+
+The first benefit of CPU affinity is optimizing cache performance.
+
+But the real performance penalty comes into play when processes bounce between processors as they constantly cause cache
+invalidations, and the data they want is never in the cache when they need it. Thus, cache miss rates grow very large.
+CPU affinity protects against this and improves cache performance.
+
+-------------------------
+A second benefit of CPU affinity is if multiple threads are accessing the same data, it can make sense to bind them all
+to the same processor. Doing so guarantees that the threads do not contend over data and cause cache misses. This does
+diminish the performance gained from multithreading on SMP, however if the threads are inherently serialized,
+however, the improved cache hit rate can negate this.
+
+=> Threads do not contend over data causing cache misses.
+
+Implementing CPU Affinity under Linux
+
+There are 2 methods to implement cpu affinity, within the source code of the application itself
+using the sched_getaffinity system call or by use of the command line tool taskset.
+
+
+
+------------------------------------------------------------------------------------
+** Set Affinity for a process
+
+# taskset -c 9 OuchLatency B 1711 DAY 1319000 100 ipxs.ini,test1 100000 18 0 100
+#taskset -c 0 fixtool -I DDXX -i DD11178B -f1 -s memory -r2:10 -O 6773:sell:100:s=231/5% -P snapshot,tradecnt -R yes -c inet-fixtool.cfg
+
+#sudo taskset -c 5 ping -f -i 0 -w 5 pdouch21e
+
+
+------------------------------------------------------------------------------------
+** Process profiling
+
+## thread profiling
+
+$ ps -U $USER -LP | egrep 'chromi|PID' | head -4
+mpstat -I ALL 1 | less -SR
+
+watch -n 1 mpstat -A
+
+##Shows cpu statistics
+/proc/stat
+
+
+##Show CPU usage for a process
+ps -e -o %mem,%cpu,command | egrep 'httpd|MEM'
+
+
+
+## Memory usage with high precision
+
+Look into the proc filesystem
+
+/proc/[pid]/status,  => give details
+/proc/[pid]/statm,
+/proc/[pid]/smaps.
+
+To get fully detailed memory map /proc/[pid]/maps
+
+------------
+cat /proc/1234/smaps
+
+It will tell you exactly how much memory it is using at that time. More importantly,
+it will divide the memory into private and shared, so you can tell how much memory your
+instance of the program is using, without including memory shared between multiple instances of the program.
+
+------------
+man getloadavg
+man 5 proc
+
+/proc/loadavg
+
+0.55 0.47 0.43 1/210 12437
+
+ averaged over the last 1, 5, and 15 minutes.
+processes that are currently scheduled to run rather than being blocked in a system call - and the total number of processes on the system. The final entry is the process ID of the process that most recently ran.
+------------
+##Analyzing thread CPU usage on Linux
+
+http://publib.boulder.ibm.com/infocenter/javasdk/tools/index.jsp?topic=%2Fcom.ibm.java.doc.igaa%2F_1vg0001475cb4a-1190e2e0f74-8000_1007.html
+
+
+------------
+To show the total number of cores, you need to look at both "physical id" and "core id".   "core id" is the identifier for each core on a CPU socket.    If we run this command:
+
+ $ cat /proc/cpuinfo | egrep "core id|physical id"
+
+
+------------
+
+
+
+
+------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,17 @@
+
+---------------------------------------------------- ---------
+* Microbursts are short spikes in network traffic.
+
+In addition, a sudden spike in network traffic can result in queueing of packets. That increases jitter in the traffic and that has a ripple 
+effect through other elements of the network. 
+
+Jitter due to Microbursts
+“Jitter” is the variance in switching latency for packets in a data stream.
+
+Cut-through switches do not store the packets in most cases and can forward them in less than a microsecond.
+
+A microburst is a short spike of packets, arriving at a network system at a rate exceeding its processing speeds. Packets are queued in a buffer and, if the buffer fills up, are lost. A microburst typically arises when high-speed traffic sources feed slower speed links. 
+
+---------------------------------------------------- ---------
+---------------------------------------------------- ---------
+---------------------------------------------------- ---------

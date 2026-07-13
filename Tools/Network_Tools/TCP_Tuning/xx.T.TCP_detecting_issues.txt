@@ -1,0 +1,147 @@
+
+
+------------ -------------- ----------- ------------ -------------- -----------
+* Troubleshooting Common Networking Problems
+
+0. Connection establishment concerns
+
+1. TCP Retransmissions
+
+    1. Are the retransmissions real retransmissions, as shown by the IP Identification field changing?
+    2. Are the retransmissions statistically significant, for either the entire capture, or for any given remote host?
+
+    tcp.analysis.retransmission
+
+
+2. tcp zero window
+
+3. Latency issue identification
+
+
+------------ -------------- ----------- ------------ -------------- -----------
+* Application protocols under tcp
+
+    SMTP (Email), FTP, HTTP
+    Normal behavior of ARP, DNS, IP, TCP, UDP, ICMP, and HTTP/HTTPS
+
+
+------------ -------------- ----------- ------------ -------------- -----------
+* The Top 10 Issues - SHARKFEST ‘11  |  Stanford University
+
+1. Packet loss
+2. Client, server and wire latency
+3. Window scaling issues (RFC 1323)
+
+4. Service response issues and application behavior
+5. Network design issues (wired/wireless)
+
+6. Path issues (such as QoS)
+7. Itty Bitty Stinking Packets (Low MSS Value)
+
+8. Fragmentation
+9. Timing problems
+10. Interconnecting devices
+
+------------ -------------- ----------- ------------ -------------- -----------
+
+1. Remote Host Detection
+    Using ping as a Troubleshooting Tool
+    The ping utility sends ICMP echo request packets to the target host or hosts.
+
+    1.1 Remote port listener confirmation
+        - telnet, nc
+
+    1.2 Send test data to application & confirm msg
+
+2. Interface status
+    The ifconfig utility is useful to display an interface's current status including the settings for the following:
+    MTU
+    Address family
+    IP address
+    Netmask
+    Broadcast address
+    Ethernet address (MAC address)
+
+3. Ethernet issues
+    The arp utility can be useful when attempting to locate network problems related to duplicate IP address usage
+
+
+* TCP/IP Introduction
+  http://www.cisco.com/en/US/docs/internetworking/troubleshooting/guide/tr1907.html
+
+ •Tools for Troubleshooting IP Problems
+
+ •General IP Troubleshooting Theory and Suggestions
+
+ •Troubleshooting Basic IP Connectivity
+
+ •Troubleshooting Physical Connectivity Problems
+
+ •Troubleshooting Layer 3 Problems
+
+ •Troubleshooting Hot Standby Router Protocol (HSRP)
+
+
+4. TCP Flag filtering
+   tcp.flags.syn == 1
+
+
+   tcp.flags.fin == 1
+
+
+--------------- -----------------
+* Isolating TCP conversations
+
+- Filter on the conversation, e.g.
+    (ip.addr==10.0.0.1 and
+    tcp.port==1025) and
+    (ip.addr==10.0.0.2 and tcp.port==80
+
+
+If possible: isolate initial SYN packet
+- tcp.flags==2
+
+NAT, Proxy, Loadbalancer: Your troubles start here...
+Load balancers distribute connections to multiple identical servers
+    - Allows scaling the available capacity
+
+
+NAT = Network Address Translation
+    - Basically replaces network addresses found in packets back and forth
+    - Usually relevant to layer 3, which means routers
+
+    *  Typical NAT activity
+    - Source NAT
+    - Destination NAT
+
+Proxy servers separate different network and security zones
+    - Client requests are sent to the proxy
+    - The proxy fetches the requested content and delivers it to the client
+
+Transparent Proxies
+   - Intercept client communication without the need to configure the client to use the proxy
+
+
+------------ -------------- ----------- ------------ -------------- -----------
+* Network performance management
+
+    Laura Chappell’s Best Wireshark Tips and Tricks, Part 2
+
+    1. Proactively create a baseline: Act, don’t react
+    2. Pinpointing where is half the battle
+
+    3. The number-one performance problem: Packet loss
+    4. Latency: That network performance scourge
+
+
+
+------------ -------------- ----------- ------------ -------------- -----------
+
+
+
+
+------------ -------------- ----------- ------------ -------------- -----------
+
+
+
+

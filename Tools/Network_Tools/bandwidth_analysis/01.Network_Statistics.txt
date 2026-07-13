@@ -1,0 +1,166 @@
+
+---------------------------------------------------------------------------------------------------
+1. tcpstat
+   =======
+
+tcpstat reports certain network interface statistics much like vmstat does for system statistics. tcpstat gets its information by either monitoring a specific interface, or by reading previously saved tcpdump data from a file.
+
+Some of the statistics tcpstat calculates:
+bandwidth
+number of packets
+packets per second
+average packet size
+standard deviation of packet size
+interface load
+more...
+
+
+-----------
+Creating the data files
+=======================
+
+ First, I gathered the data with tcpdump, and wrote it to a file:
+	tcpdump -i xl0 -w traffic.dmp
+
+Then, I let tcpstat run over the data and output the data into different files. tcpstat is actually flexible enough to do this in one run (and even collect the data from the interface itself) but I'm doing it in separate steps for you for tutorial purposes:
+	tcpstat -r traffic.dmp -o "%R\t%A\n" 60 > arp.data
+	tcpstat -r traffic.dmp -o "%R\t%C\n" 60 > icmp.data
+	tcpstat -r traffic.dmp -o "%R\t%T\n" 60 > tcp.data
+	tcpstat -r traffic.dmp -o "%R\t%U\n" 60 > udp.data
+
+Now that I have all the data in different files, it is time to produce the graphics.
+
+Gnuplot script
+==============
+
+ All you need to do is tell gnuplot where to get it's data, and how to display it. This is usually done with a special gnuplot script file. This is the one I used (called "gnuplot.script"):
+	set term png small color
+	set data style lines
+	set grid
+	set yrange [ -10 :  ]
+	set title "Protocol breakdown in the last hour"
+	set xlabel "seconds"
+	set ylabel "packets/s"
+	plot	"arp.data" using 1:($2/60) smooth csplines title "ARP" \
+		,"icmp.data" using 1:($2/60) smooth csplines title "ICMP" \
+		,"tcp.data" using 1:($2/60) smooth csplines title "TCP" \
+		,"udp.data" using 1:($2/60) smooth csplines title "UDP"
+
+ So, all that was left to do was to call gnuplot and output the data into a PNG (Portable Network Graphic) formated file:
+	gnuplot gnuplot.script > plot1.png
+
+
+
+---------------------------------------------------------------------------------------------------
+2. netstat statistics
+   ==================
+
+2.1 Display Summary Statistics for Each Protocol
+
+    Simply use netstat -s:
+    # netstat -s | less
+    # netstat -t -s | less
+    # netstat -u -s | less
+    # netstat -w -s | less
+    # netstat -s
+
+2.2 Display Interface Table
+    You can easily display dropped and total transmitted packets with netstat for eth0:
+    # netstat --interfaces eth0
+
+
+---------------------------------------------------------------------------------------------------
+3. vnstat - check network statistics
+
+http://linuxaria.com/recensioni/monitot-your-bandwidth-on-linux-with-vnstat?lang=en
+
+
+---------------------------------------------------------------------------------------------------
+4. Working with IP and network card
+
+1  ip link
+
+    With link we can work with the network cards, some example are:
+
+     ip link show Display status of all network cards (up/down) and also their Mac address
+
+     ip link set eth0 down|up  Change the status of network card eth0
+
+2  ip address
+
+    With address we work with the IP addresses set (or to be set) on the network adapters.
+
+     ip address show Display ip addresses of all network cards.
+
+     ip addr add 192.168.0.23/24 brd + dev eth1  Add to eth1 the address 192.168.0.23, after that command i had on my eth1:
+
+     ip a l eth1
+
+    7: eth1: mtu 1500 qdisc pfifo_fast state UP qlen 1000
+
+    link/ether 00:02:8a:9f:21:34 brd ff:ff:ff:ff:ff:ff
+
+    inet 192.168.0.10/24 brd 192.168.0.255 scope global eth1
+
+    inet 192.168.0.23/24 brd 192.168.0.255 scope global secondary eth1
+
+    So the command add a secondary address on the network card.
+
+3 ip route
+
+    With route we can see and manipulate routing tables.
+    ip route show Show the default routing table.
+
+
+---------------------------------------------------------------------------------------------------
+5. misc Commands
+
+5.1 lsof Command
+
+    You can use the lsof command follows to list more information about open ports:
+    # lsof -i :portNumber
+    # lsof -i tcp:portNumber
+    # lsof -i udp:portNumber
+    # lsof -i :80 | grep LISTEN
+
+    ## Check process using port
+    # lsof -i -n -P
+
+
+
+    The tcptrack command displays the status of TCP connections that it sees on a given network interface. tcptrack monitors their state and displays information such as state, source/destination addresses and bandwidth usage in a sorted, updated list very much like the top command.
+    # tcptrack -i eth0
+
+5.2 iftop command
+
+    The iftop command listens to network traffic on a given network interface such as eth0, and displays a table of
+    current bandwidth usage by pairs of hosts:
+    # iftop -i eth1
+
+     It can display or analyses packet flowing in and out of the 192.168.1.0/24 network:
+    # iftop -F 192.168.1.0/24
+
+
+5.3 Display All TCP Sockets
+
+    Type the ss command as follows:
+    # ss -t -a
+
+     Or use the netstat command as follows:
+    # netstat -nat
+    Display All UDP Sockets
+
+    Type the ss command as follows:
+    # ss -u -a
+
+     Or use the netstat command as follows:
+    # netstat -nau
+
+-------------------------------------------------------------
+-------------------------------------------------------------
+-------------------------------------------------------------
+-------------------------------------------------------------
+-------------------------------------------------------------
+
+
+

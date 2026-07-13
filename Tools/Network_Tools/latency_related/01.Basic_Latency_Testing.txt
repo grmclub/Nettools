@@ -1,0 +1,27 @@
+
+-------------- ------------- --------------------
+* ENV Test RTT delay from seq to primary to secondary
+
+mat@xxseq01:~$ sudo ping -f xxouch01b
+mat@xxseq01:~$ sudo ping -f xxouch02b
+
+mat@xxseq01:~$ sudo ping -f xxcog01b
+mat@xxseq01:~$ sudo ping -f xxcog02b
+
+mat@xxseq01:~$ sudo ping -f xxitcht01b
+mat@xxseq01:~$ sudo ping -f xxitcht02b
+
+mat@xxseq01:~$ sudo ping -f xxitchu01b
+mat@xxseq01:~$ sudo ping -f xxitchu02b
+
+mat@xxseq01:~$ sudo ping -f xxsnap01b
+mat@xxseq01:~$ sudo ping -f xxsnap02b
+
+mat@xxseq01:~$ sudo ping -f xxtsmr01b
+mat@xxseq01:~$ sudo ping -f xxtsmr02b
+
+-------------- ------------- --------------------
+-------------- ------------- --------------------
+-------------- ------------- --------------------
+-------------- ------------- --------------------
+

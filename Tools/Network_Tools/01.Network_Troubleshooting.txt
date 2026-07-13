@@ -1,0 +1,333 @@
+
+
+---------------------------------------------------------------------------------------------------
+
+============================================================
+1. Test Connectivity & ports
+   -telnet, nc
+   - nmap
+
+2. Troubleshoot process & ports
+   -netstat, ss, lsof
+
+   #netstat -ntap
+   #lsof -i -P -n
+
+   ##multicast group subscription
+   #netstat -g
+
+3. Connection stream problems, bandwidth problem, latency problem
+   -netstat, ss, ipref summary
+   -tcpdump, tshark
+
+    ##Showing Statistics by Protocol
+    #netstat -s
+
+    ##Print a summary of socket status
+    #ss -s
+
+    ##Lists all listening ports together with the PID of the associated process
+    ##The PID will only be printed if you’re holding a root equivalent ID.
+    # ss -tlnp
+
+4. Check network routes, firewall settings
+
+============================================================
+
+1. UDP troubleshooting tools
+
+    1. Showing Statistics by Protocol
+        # netstat -s
+
+    2. Showing statistics of only TCP protocol by using option
+        # netstat -st.
+
+    3. Showing Statistics by UDP Protocol
+        # netstat -su
+
+    4. Displaying Service name with PID
+        # netstat -tp
+
+    5. Displaying Promiscuous Mode
+
+       Displaying Promiscuous mode with -ac switch, netstat print the selected information or refresh screen every five second.
+       Default screen refresh in every second.
+
+       # netstat -ac 5 | grep tcp
+                        *:*                         LISTEN
+    6. Displaying Kernel IP routing
+
+       Display Kernel IP routing table with netstat and route command.
+       # netstat -r
+
+    7. Showing Network Interface Transactions
+
+    8. Showing network interface packet transactions including both transferring and receiving packets with MTU size.
+       # netstat -i
+
+    9. Kernel Interface table
+        Iface       MTU Met    RX-OK RX-ERR RX-DRP RX-OVR    TX-OK TX-ERR TX-DRP TX-OVR Flg
+        eth0       1500   0     4459      0      0      0     4057      0      0      0 BMRU
+        lo        16436   0        8      0      0      0        8      0      0      0 LRU
+
+    10. Showing Kernel Interface Table
+
+    11. Showing Kernel interface table, similar to ifconfig command.
+        # netstat -ie
+
+    12. Displaying IPv4 and IPv6 Information
+
+    13. Displays multicast group membership information for both IPv4 and IPv6.
+        # netstat -g
+
+    14. IPv6/IPv4 Group Memberships
+        Interface       RefCnt Group
+        --------------- ------ ---------------------
+        lo              1      all-systems.mcast.net
+        eth0            1      224.0.0.251
+        eth0            1      all-systems.mcast.net
+        lo              1      ff02::1
+        eth0            1      ff02::202
+        eth0            1      ff02::1:ffb4:da21
+        eth0            1      ff02::1
+
+    15. Print Netstat Information Continuously
+
+        To get netstat information every few second, then use the following command, it will print
+        netstat information continuously, say every few seconds.
+        # netstat -c
+
+    16. Finding non supportive Address
+
+        Finding un-configured address families with some useful information.
+        # netstat --verbose
+
+        netstat: no support for `AF IPX' on this system.
+        netstat: no support for `AF AX25' on this system.
+        netstat: no support for `AF X25' on this system.
+        netstat: no support for `AF NETROM' on this system.
+
+    17. Finding Listening Programs
+
+        Find out how many listening programs running on a port.
+        # netstat -ap | grep http
+
+    18. Displaying RAW Network Statistics
+        # netstat --statistics --raw
+
+        Ip:
+            62175683 total packets received
+            52970 with invalid addresses
+            0 forwarded
+        Icmp:
+            875519 ICMP messages received
+                destination unreachable: 901671
+                echo request: 8
+                echo replies: 16253
+        IcmpMsg:
+                InType0: 83
+        IpExt:
+            InMcastPkts: 117
+
+---------------------------------------------------------------------------------------------------
+2. What to troubleshoot
+
+UDP is unreliable communication, period. If packet loss is a problem for you, you should either
+implement your own retransmission/error control algorithm or not using UDP in the first place.
+Drop it entirely in favor of TCP, or perhaps something more advanced like SCTP or even DCCP.
+
+UDP is datagram-based, socket buffers should be bigger than the maximum length
+of an UDP datagram that your application may receive, up to 64kiB. If your application
+may transmit datagrams larger than this, then it is another reason you should not be
+using UDP. And it really doesn't matter how big is the buffer, you still may lose
+packets if your application can't read the socket faster than packets arrive.
+
+You say that you want to know how full the UDP buffer is. This is the sort of thing
+that doesn't really matter. Just read everything that is waiting on the buffer and
+you can be sure that when it blocks the buffer will be empty.
+
+If you still want to know how full the buffer is, read the file /proc/net/udp,
+column rx_queue. But if you see any value different than zero in that column,
+it just means that your application is not reading the socket fast enough.
+
+
+---------------------------------------------------------------------------------------------------
+3. Using the nc command you can scan a port or a range of ports to verify whether a UDP port is open and able to receive traffic.
+
+    This first command will scan all of the UDP ports from 1 to 65535 and add the results to a text file:
+
+        $ nc -vnzu server.ip.address.here 1-65535 > udp-scan-results.txt
+
+    This merely tells you that the UDP ports are open and receive traffic.
+    Perhaps a more revealing test would be to actually transfer a file using UDP.
+
+    You can accomplish this by setting a UDP listener on the remote machine:
+    First, create a small textfile on your local machine:
+
+        $ echo 'UDP Test File' > udp-text-file.txt
+
+    And then set your remote to listen on a specific UDP port: (In this example I am using port 6871)
+
+        $ nc -luv 6871 > scan-file.txt
+
+    The -l flag instructs netcat to listen, the -u specifies to specifically use UDP and the -v is for verbose output.
+
+    Now on your local machine:
+
+        $ nc -vu 23.21.123.30 6871 < udp-text-file.txt
+
+    If the connection succedes, you should see something like this on your local machine:
+
+    Connection to server.ip.address.here 6871 port [udp/*] succeeded!
+
+    and on the remote machine:
+
+    Connection from your.ip.address.here port 6871 [udp/*] accepted
+
+    You can even start a basic UDP chat session where the text from one terminal can be echoed to the remote terminal:
+
+    On the remote machine start netcat:
+
+        $ nc -luv 6871
+
+    Now in a separate window, start netcat locally:
+
+        $ nc -vu server.ip.address.here 6871
+
+    Any text that is entered on one screen is echoed to the other screen over the UDP port specified.
+
+    Be careful with this though, because as you can probably tell there isn't any encryption or
+    authentication between the client and server.
+
+
+** Check server ports
+    #nc -zv -w 2 ddapps01 20000-30000
+
+** Create UDP listening port
+    #nc -klu 20000
+
+
+---------------------------------------------------------------------------------------------------
+4. iperf, which provides basic information on throughput, packet loss, and jitter to help you troubleshoot UDP and TCP issues.
+
+In general, if the application requires error free in-order delivery of packets, then TCP is best.
+If the application can tolerate some packet loss, then UDP will probably fit the requirements.
+
+Install it on a server and a client, then
+- run iperf -s on the server and
+- iperf -c <IP address of server> on the client.
+
+- The -i option defines the interval in seconds that iperf reports the metrics.
+  The default time that the iperf client will run is 10 seconds, but this can be changed using the -t option.
+
+- By default, the iperf server listens on port 5001, but this can be changed if required.
+
+------------------------
+## Example of testing a single TCP connection between two nodes
+iperf -s -i 1
+iperf -c <server IP address> -i 1 -t 60
+
+# ./iperf -s -p 45678
+# ./iperf -c 10.12.240.32 -p 45678 -t 30
+
+---------
+## testing 8 parallel TCP connections between two nodes
+
+# ./iperf -s -p 45678
+# ./iperf -c 10.12.240.32 -p 45678 -t 30 -P 8
+
+--------
+
+
+## Testing UDP.
+iperf -su -i 1
+iperf -c <server IP address> -b 36M -i 1 -t 20
+
+Note that the -b option will automatically cause iperf to use UDP. If -b is not specified, then you need to use -u to indicate UDP is the transport protocol.  In this case, we are specifying that the transmission rate should be 36MBits/second.
+
+-----------------------
+# ./iperf -s -u -p 12345
+
+On the client node, run Iperf in client mode:
+# ./iperf -c 10.12.240.32 -u -p 12345 -t 30 -b 250M
+-----------------------
+
+
+---------------------------------------------------------------------------------------------------
+And now some practical use of the command ss:
+
+1)  ss -l
+ Show all listening sockets
+
+2)  ss -o state established '( dport = :ssh or sport = :ssh )'
+
+Display all established ssh connections.
+
+3)  ss -ant | awk '{print $NF}' | grep -v '[a-z]' | sort | uniq -c
+
+List the number and type of active network connections
+
+4)  ss -x src /tmp/.X11-unix/*
+ Find all local processes connected to X server.
+
+5)  ss -s
+ Print a summary of socket status
+
+6)  ss -tlnp
+ Lists all listening ports together with the PID of the associated process
+ The PID will only be printed if you’re holding a root equivalent ID.
+
+
+-------------------------------------------------------
+* Display Routing table
+
+1. route
+
+    $ sudo route -n
+    Kernel IP routing table
+    Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+    192.168.0.0     0.0.0.0         255.255.255.0   U     0      0        0 eth0
+    0.0.0.0         192.168.0.1     0.0.0.0         UG    0      0        0 eth0
+
+
+2. netstat
+
+    $ netstat -rn
+    Kernel IP routing table
+    Destination     Gateway         Genmask         Flags   MSS Window  irtt Iface
+    192.168.0.0     0.0.0.0         255.255.255.0   U         0 0          0 eth0
+    0.0.0.0         192.168.0.1     0.0.0.0         UG        0 0          0 eth0
+
+    The -r option specifies that you want the routing table. The -n option is similar to that of the route command.
+
+3. ip
+
+    $ ip route list
+    192.168.0.0/24 dev eth0  proto kernel  scope link  src 192.168.0.103
+    default via 192.168.0.1 dev eth0
+
+--------- ------------
+    - Show route to particular IP
+    #ip route get 10.66.0.74
+    #ip r get 10.66.0.74
+
+
+
+-------------------------------------------------------
+* Show Local Firewall Filters
+
+#test
+#sudo iptables -t filter -L nvx
+
+##Check connections quickly
+sudo tcpdump -i nic3 -vvv -U -n port 80
+
+
+
+-------------------------------------------------------
+
+
+
+
+
+

@@ -1,0 +1,382 @@
+
+http://www.tcpipguide.com/free/t_TheTCPIPGuideIntroductionandGuideToTheGuide.htm
+
+http://www.protomatics.com/wireshark_dissector.html
+http://wsgd.free.fr/fdesc_format.html
+
+
+
+-------------------------------------------------------------------------------------
+* tcp latency problems
+
+1. Check tcp stream for problems
+    - retransmission
+    - window resizing
+    - duplicate pkts
+
+2. Filter & check
+   - filter traffic by port & use tshark with dissector to check protocol semantics
+
+* tcp connectivity probes
+    - check IP with ping
+    - check ip/port with telnet
+
+    - check interfaces with ifconfig, ip addr
+    - clear arp cache ( IP to MAC address resolution)
+    - check routing tables , default gateway
+    - check Firewall policy -iptable
+    - dns, dhcp check
+
+-------------------------------------------------------------------------------------
+* Wireshark
+
+Edit pref :
+
+xx_itch.soupbintcp.port: 15000-19999
+xx_itch.udp.port: 11002,11003
+
+
+xx_ouch.soupbintcp.port: 20000-25000
+
+soupbintcp.tcp_ports  15000-25000
+
+
+-------------------------------------------------------------------------------------
+UAT Troubleshooting
+-------------------
+1. Merge Dump
+
+    # ssh tdqa01
+    #time tcpslice *.pcap -w full.pcap
+    #tcpslice /var/db/sniffer/*.tcpdump -w ~/full.pcap
+
+2. Client Filter
+#tcpdump -r /var/db/sniffer/*.tcpdump "port 21406 or (vlan and port 21406)" -w xx.pcap
+
+3. Filter in tshark/ wireshark
+
+wireshark expression : xx_ouch.buy_sell
+
+
+tshark \
+    -r xx.pcap \
+    -d tcp.port==21406,soupbintcp \
+    -d soupbintcp.port==21406,xx_ouch \
+    -td xx_ouch -ta
+
+##show entire packet
+tshark \
+    -r xx.pcap \
+    -d tcp.port==21406,soupbintcp \
+    -d soupbintcp.port==21406,xx_ouch \
+    -td xx_ouch -ta -V
+
+
+tshark \
+    -r xx.pcap \
+    -d tcp.port==21406,soupbintcp \
+    -d soupbintcp.port==21406,xx_ouch \
+    -td xx_ouch -ta \
+    -Tfields -e frame.time_epoch -e soupbintcp.packet_type -e xx-ouch.message_type \
+    -e xx-ouch.order_token -e xx-ouch.replacement_order_token -e xx-ouch.previous_order_token
+
+
+
+-------------------------------------------------------------------------------------
+Prod Validation
+===============
+1. Dump Selection : Identify the data you are interested in. (scope by time)
+
+    FOR PRODUCTION XF Colo
+        --> https://pcsnif01.xx/dump/
+
+        napa0 --> Order Entry Colo Primary Dump.
+        napa1 --> Market Data Colo Primary Dump.
+        nic10 --> Order Entry Colo Secondary Dump.
+        nic11 --> Market Data Colo Secondary Dump.
+
+    FOR PRODUCTION YF IP-VPN
+
+        --> https://pdqa01m.xx/dump/
+        Identify the data you are interested in.
+        nic1 --> Market Data IP-VPN Primary Dump(Bypass firewall).
+        nic2 --> Market Data IP-VPN Secondary Dump(Bypass firewall).
+
+2. Filter by port or portrange
+
+    #tcpdump -r dump-napa0-2013-06-03-14.35.05.tcpdump "port 16101 or (vlan and port 16101)" -w d1.pcap
+
+    #tshark -r ~/dump-napa0-2013-04-18-14.34.47.tcpdump \
+        -R "tcp.port >= 21301 and tcp.port <=21320" \
+        -w barcap.pcap
+
+    ##Filter by PortRange
+    tcpdump portrange 21-23
+
+    rfile="dump-napa0-2013-06-03-14.35.05.tcpdump"
+    wfile='itch.pcap'
+    tcpdump -r $rfile \
+        "portrange 2001-20010 or (vlan and portrange 2001-20010)" \
+        -w $wfile
+
+
+tcpdump "portrange 2001-20010 or (vlan and portrange 20501-20518)" -w d2.pcap
+
+-------------------------
+2.1 Filter by IP
+
+    #tshark -r ~/dump-napa0-2013-04-18-14.34.47.tcpdump \
+             -R "(ip.src==10.65.2.13 or ip.dst==10.65.2.13) and tcp.port >= 21301 and tcp.port <=21320" \
+             -w ~/filter-newedge_2013-04-18.pcap
+
+    ## tat's Filter
+    #tshark -r dump-napa0-2013-01-08-10.49.41.tcpdump \
+        -R "(ip.src==10.65.0.123 and ip.dst==10.69.22.84) or (ip.src==10.69.22.84 and ip.dst==10.65.0.123)" \
+        -w ~/filter-newedge_2013-04-18.pcap
+
+
+3. Dissect Protocol
+
+    -OUCH
+------------------------------------------------------
+    tshark \
+        -r xx.pcap \
+        -d tcp.port==21406,soupbintcp \
+        -d soupbintcp.port==21406,xx_ouch \
+        -td xx_ouch -ta
+
+    ##show entire packet
+    tshark \
+        -r xx.pcap \
+        -d tcp.port==21406,soupbintcp \
+        -d soupbintcp.port==21406,xx_ouch \
+        -td xx_ouch -ta -V
+
+
+    tshark \
+        -r xx.pcap \
+        -d tcp.port==21406,soupbintcp \
+        -d soupbintcp.port==21406,xx_ouch \
+        -td xx_ouch -ta \
+        -Tfields -e frame.time_epoch -e soupbintcp.packet_type
+        -e xx-ouch.message_type \
+        -e xx-ouch.order_token  \
+        -e xx-ouch.replacement_order_token \
+        -e xx-ouch.previous_order_token
+
+------------------------------------------------------
+4. Process Dissected messages
+
+    ####Working
+    port=21913
+    tshark \
+        -r ~/dump-napa0-2013-06-04-14.35.05.tcpdump \
+        -d tcp.port==$port,soupbintcp \
+        -d soupbintcp.port==$port,xx_ouch \
+        -td xx_ouch -ta > ../orders_x_$port-2.txt
+
+
+    ##Script tester-Working
+    for ((i=21909; i< 21914; i++)) ;do
+    echo "Checking for port :$i";
+    tshark \
+        -r ~/dump-napa0-2013-06-04-14.35.05.tcpdump \
+        -d tcp.port==$i,soupbintcp \
+        -d soupbintcp.port==$i,xx_ouch \
+        -td xx_ouch -ta > orders_x_$i-2.txt
+    done
+
+    ##Count orders
+    #cat orders_ML_219{09..14}.txt | grep 14:44:08.160 | grep "Enter Order" | wc -l
+
+----------------------------
+4.1
+
+    ##Test Rerequest ??
+    tshark \
+        -r ~/dump-napa0-2013-06-04-14.35.05.tcpdump \
+        -d udp.port==11002,moldudp64 \
+        -td moldudp64 -ta
+
+4.2  Index & Classify
+     - group by (Firm), (Session), (Time 1,10,100)
+     - Find order Chain(s) in order, trade
+
+     - Co-relate (orderid, matchNo) with ITCH data for HR timestamp
+
+
+-----------------------------------------------------
+Wireshark Filter
+
+(ip.src==10.65.0.123 and ip.dst==10.69.22.84) or (ip.src==10.69.22.84 and ip.dst==10.65.0.123)
+ip.addr == 10.69.36.85
+
+moldudp64
+
+ip.addr ==10.65.84.14
+
+-------------------------------------------------------------------------------------
+
+
+-------------------------------------------------------------------------------------
+
+tcpslice dump-nic11-2013-09-12* | tshark -nr - \
+-R "(ip.addr== 232.65.2.1)" -td moldudp64 -x -V | \
+grep -in -B 20 '1b f6 de f0 00'
+
+----------
+itch primary mcast = 10.65.16.27
+itch secondary mcast = 10.65.16.131
+
+----------
+* Print Ouch Fields
+
+    tshark \
+        -r xx_tot.pcap \
+        -R "xx_ouch.reason != 'U'" \
+        -td xx_ouch -ta \
+        -Tfields -e frame.time_epoch -e soupbintcp.packet_type \
+        -e xx-ouch.message_type \
+        -e xx-ouch.order_token  \
+        -e xx-ouch.replacement_order_token \
+        -e xx-ouch.previous_order_token \
+        -e xx_ouch.reason
+
+    tshark \
+        -r x_4062_ReJ.pcap \
+        -td xx_ouch -ta \
+        -Tfields -e frame.time_epoch -e soupbintcp.packet_type \
+        -e xx-ouch.message_type \
+        -e xx-ouch.order_token  \
+        -e xx-ouch.replacement_order_token \
+        -e xx-ouch.previous_order_token \
+        -e xx_ouch.reason
+
+* Print Description for TCP connection troubleshooting
+
+http://www.wireshark.org/docs/dfref/f/frame.html
+
+tshark  \
+-r xx.pcap  \
+-Tfields  \
+-E header=y  \
+-E separator='|' \
+-e frame.time_epoch \
+-e ip.src \
+-e ip.dst \
+-e frame.protocols \
+-e col.Info
+
+$ tshark -r Copylmt_04.pcap -T fields -e frame.number -e frame.time_delta
+-e frame.time_relative -E header=y | head
+frame.number    frame.time_delta        frame.time_relative
+
+
+tshark  \
+-r xx.pcap  \
+-Tfields  \
+-E header=y  \
+-E separator='|' \
+-e frame.number \
+-e frame.time_delta \
+-e frame.time_epoch \
+-e ip.src \
+-e ip.dst \
+-e frame.protocols \
+-e col.Info
+--------------------------------------------
+cat s.sh
+#!/bin/sh
+
+TSHARK=./tshark
+
+tcpdump -nnr - "port $2 or (vlan and port $2)" -r $1 -w - | \
+$TSHARK -r - \
+	-d tcp.port==$2,soupbintcp -d soupbintcp.port==$2,xx_ouch \
+	-td xx_ouch \
+	-Tfields \
+		-e frame.time_epoch \
+		-e soupbintcp.packet_type \
+		-e xx-ouch.message_type \
+		-e xx-ouch.order_token \
+		-e xx-ouch.replacement_order_token \
+		-e xx-ouch.previous_order_token
+
+--------------------------------------------
+
+
+
+--------------------------------------------
+* Splunk Regex Check
+
+##Re-requests
+syslog_facility_text="local2" "request for messages" xditcht04m | rex field=_raw "by (?<client_ip>[0-9.]+):(?<client_port>[0-9]+)" | timechart count by client_ip
+
+
+#Show Re-requests
+"request for messages" | rex field=_raw "by (?<client_ip>[0-9.]+):(?<client_port>[0-9]+)" | chart count by client_ip
+
+
+--------------------------------------------
+* Quick Slice
+
+range="28126"
+nic="napa0"
+tcpslice /var/db/sniffer/dump-$nic-$(date -I)* | tcpdump -r - "portrange $range or (vlan and portrange $range)" -w CS.pcap
+
+ip="232.65.1.1"
+nic="napa0"
+tcpslice  /var/db/sniffer/dump-$nic-$(date -I)*.tcpdump |tcpdump -r - "host $ip  or (vlan and host $ip)"  -w xx.pcap
+
+$FNAME=xx.pcap
+#tshark -r $FNAME \
+-Tfields  \-E header=y  -E separator='|' \
+-e frame.time \
+-e ip.src  \
+-e ip.dst \
+-e frame.protocols  \
+-e col.Info > xx_mold_pri.txt
+
+#awk -F'|' '{print $2}'
+
+--------------------------------------------
+frame.len
+
+taskset -c 2,4 tshark -r $FNAME -Tfields  \-E header=y  -E separator='|' -e frame.time_epoch -e frame.len -e ip.src  -e ip.dst -e frame.protocols  -e col.Info
+
+
+taskset -c 2,4 tshark -r $FNAME -Tfields  \-E header=y  -E separator='|' -e frame.time_epoch -e frame.len -e ip.src  -e ip.dst -e frame.protocols  -e col.Info > itch_pri_bytes.txt
+
+
+--------------------------------------------
+accumulate length over 1 sec
+
+
+perl -ane '$h{ $F[0] } += $F[1]; END { for ( sort keys %h ) { printf qq[%s %d\n], $_, $h{ $_ } } }' sorted.txt
+
+awk '{A[$1]+=$2;next}END{for(i in A){print i,A[i]}}'
+
+
+--------------------------------------------
+tshark -r xx.pcap \
+-R "ip.src == 10.69.38.245" \
+-Tfields  \-E header=y  -E separator='|' -e frame.time -e ip.src  -e ip.dst -e frame.protocols
+
+
+
+--------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

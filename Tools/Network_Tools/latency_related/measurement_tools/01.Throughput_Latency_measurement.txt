@@ -1,0 +1,121 @@
+
+Tuning Tools
+============
+1. iperf
+2. sockpref
+3. ethtool for inte
+
+
+
+----------------------------------------------------- -------------------
+* iperf : Network throughput measurement tool
+
+Iperf is a commonly used network testing tool that can create TCP and UDP data streams and measure the throughput of a network. Iperf allows the user to set various parameters that can be used for testing a network, or alternately for optimizing or tuning a network.
+
+1. Server side : To start iperf as “server” service, use the “-s” flag.
+
+    [root@location1 ~]# iperf  -s
+    —————————————
+    Server listening on TCP port 5001
+    TCP window size: 85.3 KByte (default)
+    —————————————
+
+    To stop the server, send Ctrl+C.
+
+
+2. Client Side
+
+    2.1 Client side: For client side, iperf has to be initiated with “-c” option. There are lot of other options, which performs
+        different kind of testing. Few examples are explained below.
+
+    1) Measuring throughput using default iperf option. This connects to the iperf server mentioned and finds out the network throughput.
+
+    [root@location2 ~]# iperf -c location1
+    —————————————
+    Client connecting to location1, TCP port 5001
+    TCP window size: 16.0 KByte (default)
+    —————————————
+    [  3] local 201.87.4.3 port 41505 connected with 131.15.17.19 port 5001
+    [ ID] Interval       Transfer     Bandwidth
+    [  3]  0.0-10.1 sec  27.4 MBytes  22.8 Mbits/sec
+    [root@location2 ~]#
+
+    2) Measuring bidirectional throughput usind -d option.
+
+    [root@location2 ~]# iperf  -c location1 -d
+    —————————————
+    Server listening on TCP port 5001
+    TCP window size: 85.3 KByte (default)
+    —————————————
+    Client connecting to location1, TCP port 5001
+    TCP window size: 16.0 KByte (default)
+    —————————————
+    [  5] local 201.87.4.3 port 41518 connected with 131.15.17.19 port 5001
+    [  4] local 201.87.4.3 port 5001 connected with 131.15.17.19 port 59284
+    [ ID] Interval       Transfer     Bandwidth
+    [  5]  0.0-10.1 sec  27.2 MBytes  22.7 Mbits/sec
+    [  4]  0.0-10.0 sec  25.2 MBytes  21.1 Mbits/sec
+    [root@location2 ~]#
+
+
+3) Measuring multi-thread throughput. Use -P option to specify the number of parallel threads to be started.
+
+[root@location2 ~]# iperf  -c location1 -P 3
+—————————————
+Client connecting to location1, TCP port 5001
+TCP window size: 16.0 KByte (default)
+—————————————
+[  5] local 201.87.4.3 port 41523 connected with 131.15.17.19 port 5001
+[  4] local 201.87.4.3 port 41522 connected with 131.15.17.19 port 5001
+[  3] local 201.87.4.3 port 41521 connected with 131.15.17.19 port 5001
+[ ID] Interval       Transfer     Bandwidth
+[  5]  0.0-10.1 sec  27.9 MBytes  23.3 Mbits/sec
+[  4]  0.0-10.1 sec  27.9 MBytes  23.2 Mbits/sec
+[  3]  0.0-10.1 sec  27.8 MBytes  23.1 Mbits/sec
+[SUM]  0.0-10.1 sec  83.6 MBytes  69.5 Mbits/sec
+[root@location2 ~]#
+
+3) Measuring throughput by disabling Nagle’s Algorithm.
+
+Nagle’s algorithm, named after John Nagle, is a means of improving the efficiency of TCP/IP networks by reducing the number of packets that need to be sent over the network. [ http://en.wikipedia.org/wiki/Nagle%27s_algorithm ]
+
+[root@location2 ~]# iperf  -c location1 -P 3 -N
+—————————————
+Client connecting to location1, TCP port 5001
+TCP window size: 16.0 KByte (default)
+—————————————
+[  3] local 201.87.4.3 port 41527 connected with 131.15.17.19 port 5001
+[  4] local 201.87.4.3 port 41528 connected with 131.15.17.19 port 5001
+[  5] local 201.87.4.3 port 41529 connected with 131.15.17.19 port 5001
+[ ID] Interval       Transfer     Bandwidth
+[  3]  0.0-10.1 sec  27.8 MBytes  23.1 Mbits/sec
+[  4]  0.0-10.1 sec  27.9 MBytes  23.2 Mbits/sec
+[  5]  0.0-10.1 sec  28.0 MBytes  23.2 Mbits/sec
+[SUM]  0.0-10.1 sec  83.7 MBytes  69.6 Mbits/sec
+[root@location2 ~]#
+
+
+----------------------------------------------------- -------------------
+
+
+
+
+----------------------------------------------------- -------------------
+
+
+
+----------------------------------------------------- -------------------
+
+
+
+
+
+
+----------------------------------------------------- -------------------
+
+
+
+
+
+
+----------------------------------------------------- -------------------

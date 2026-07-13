@@ -1,0 +1,98 @@
+
+* Enabling High Performance Data Transfers, Pittsburgh Supercomputing Center
+http://www.psc.edu/networking/projects/tcptune/
+
+
+http://en.wikipedia.org/wiki/Interrupt_latency
+http://en.wikipedia.org/wiki/Memory_latency
+
+
+------------------------------------------------------------------------------------
+Network Latency Measurement Tools
+=================================
+
+1. I installed some benchmarking tools from openonload.org - sfnettest and sysjitter. (for Solarflare testing)
+2. sockpref
+
+Network performance : refers to measures of service quality of a telecommunications product as seen by the customer.
+===================
+The following measures are often considered important:
+
+1. Bandwidth commonly measured in bits/second is the maximum rate that information can be transferred [maximum possible throughput]
+
+2. Throughput the actual rate that information is transferred [number of messages successfully delivered per unit time]
+
+3. Latency the delay between the sender and the receiver decoding it, this is mainly a function of the
+           signals travel time, and processing   time at any nodes the information traverses
+
+    t = s/ c_m
+    where s is the distance and c_m is the speed of light in the medium
+    Other delays also occur in intermediate nodes. In packet switched networks delays can occur due to queueing.
+
+
+4. Jitter variation in the time of arrival at the receiver of the information
+          [undesired deviation from true periodicity of an assumed periodic signal]
+
+5. Error rate the number of corrupted bits expressed as a percentage or fraction of the total sent
+
+A common misunderstanding is that having greater throughput means a "faster" connection. However, throughput, latency, the type of information transmitted, and the way that information is applied all affect the perceived speed of a connection.
+
+
+------------------------------------------------------------------------------------
+Algorithms and protocols
+
+For some systems, latency and throughput are coupled entities.
+
+In TCP/IP, latency can also directly affect throughput.
+
+In TCP connections, the large bandwidth-delay product of high latency connections, combined with relatively small TCP window sizes on many devices, effectively causes the throughput of a high latency connection to drop sharply with latency.
+
+This can be remedied with various techniques, such as increasing the TCP congestion window size, or more drastic solutions, such as packet coalescing, TCP acceleration, and forward error correction, all of which are commonly used for high latency satellite links.
+
+TCP acceleration converts the TCP packets into a stream that is similar to UDP. Because of this, the TCP acceleration software must provide its own mechanisms to ensure the reliability of the link, taking the latency and bandwidth of the link into account, and both ends of the high latency link must support the method used.
+
+In Media access control (MAC) layer, performance issues such as throughput and end-to-end delay are also addressed. Different performance models have been developed and applied for performance analysis
+
+-----------------------------
+- large bdp with small window size causes throughput to drop.
+
+
+
+---------------------------
+* bandwidth-delay product(BDP) refers to the product of a data link's capacity (in bits per second) and its end-to-end delay (in seconds).
+                               Sometimes it is calculated as the data link's capacity multiplied by its round trip time.
+
+
+High-speed terrestrial network: 1 Gbit/s, 1 ms RTT
+B×D = 10^9 b/s × 10^-3 s = 10^6 b, or 1 Mb, or 125 KiB.
+
+Mobile broadband (HSDPA): 6 Mbit/s, 100 ms RTT
+B×D = 6×10^6 b/s × 10^-1 s = 6×10^5 b, or 600 kb, or 75 KiB.
+
+
+TCP protocol can only achieve optimum throughput if a sender sends a sufficiently large quantity of data
+before being required to stop and wait until, the receiver successfully acknowledges receipt of that data.
+
+If the quantity of data sent is insufficient compared with the bandwidth-delay product,
+then the link is not being kept busy and the protocol is operating below peak efficiency for the link.
+
+The TCP window scale option may be used to solve this problem caused by insufficient window size,
+which is limited to 65535 bytes without scaling.
+
+----------------
+
+
+------------------------------------------------------------------------------------
+
+
+------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+

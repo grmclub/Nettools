@@ -1,0 +1,129 @@
+
+
+--------------------------------------------------------------
+=============================================
+* Network Message Delay Calculations
+=============================================
+
+As an example here is the count of the number of messages created with the same timestamp :
+
+                    -------------------------------
+                    count              msg per sec
+                    -------------------------------
+                    250 - 500           551
+                    500 - 1000          188
+                    1000- 1500          35
+                    -------------------------------
+                    total               774
+                    -------------------------------
+
+Below is a table showing the latency between the first message and last message in a burst due to the network.
+
+                    #msgs   Latency between first and last msg
+                    -------------------------------------------
+                    500     112 ms
+                    1000    224 ms
+                    1500    336 ms
+                    -------------------------------------------
+
+(10 Mbps line (max throughput less tcp overhead is ~8.5 Mps)
+(Latency is calculated using (#msgs x 250 bytes) / 8.5 Mbps)
+(Average message size is 250 bytes)
+
+If the matching engine creates 1000 messages with the same timestamp,
+the last message to go out on the wire will be 224 ms delayed compared to the first message.
+
+In Google : 1000*250bytes/8.5 megabits/sec
+
+-----------------------------------------------------------
+=======================
+* Bandwidth Estimation
+=======================
+
+http://coderstoolbox.net/network/bandwidth.php
+
+var currentBandwidth     = 2048;
+var currentBandwidthUnit = 1000;
+var currentSize          = 100;
+var currentSizeUnit      = 1048576;
+
+var seconds = (currentSize * currentSizeUnit) / (currentBandwidth * currentBandwidthUnit / 8);
+
+------------ -----------
+1. Max messages possible with given bw
+
+    250 bytes     = 1 msg
+    Line Capacity = 8.5 Mbps
+
+    Max messages  = (8.5 * 1000 * 1000)/(250 * 8)  
+
+---------- ---------------
+2. Bandwidth requirement to handle message throughput
+
+    1. Max Throughput of Itch = 120,000 msg /sec
+    2. Avg. size of an Itch message = 70 bytes
+    3. Bandwidth required at peak rate = (120000 *70 *8 ) /(1000*1000) ~ 67 Mbps / session
+
+-----------------------------------------------------------
+* Time required to send total data
+
+    Total data size = 5 GB   = (5*1024*1024*1024*8) bits
+    Line Capacity   = 10Mbps ~  (8.5* 1000 *1000) bits/sec
+
+
+    (5*1024*1024*1024*8)/(8.5* 1000 *1000 *60 *60) = 1.4 hrs
+
+-----------------------------------------------------------
+3. Maximum bandwith required to send ITCH data
+
+Av size of (Itch Msg + TCP/IP headers) = 150 bytes = 150 *8 = 1200 bits
+
+--100 Mbps line = 100 * 1000 * 1000 bps 
+max messages/sec  = (100 * 1000 * 1000) / 1200  = 83,333 msg/sec
+                     
+
+--1 Gbps Line =  1 * 1000 * 1000 * 1000 bps
+max messages/sec  = (1 * 1000 * 1000 * 1000)/ 1200  =  833,333 msg/sec
+
+
+--v1 max system capacity = 80,000 msg/sec
+ (100 * 8 * 80000) / (1000 *1000) = 64 Mbps
+
+
+--Before v2  max system capacity = 100,000 msg/sec
+ (100 * 8 * 100000) / (1000 *1000) = 80 Mbps
+
+
+--After v2 max system capacity = 200,000 msg/sec
+ (100 * 8 * 200000) / (1000 *1000) = 160 Mbps
+
+
+-----------------------------------------------------------
+
+-----------------------------------------------------------
+
+
+-----------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

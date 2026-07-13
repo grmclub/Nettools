@@ -1,0 +1,140 @@
+
+search keywords
+===============
+Percentile Reports
+Transaction Percentile report
+System performance using percentiles
+
+-------------------------------------  ------------------
+* Percentiles
+So typically the way we will accurately represent system performance is using percentiles.
+The idea behind percentiles is pretty straight forward - what percentages of users had a particular experience?
+
+Imagine, for example, that we ran a test 10 times and the latencies we got back were 1, 2, 1, 4, 50, 30, 1, 3, 2 & 1 ms.
+The first thing we would do is order the latencies from smallest to largest - 1, 1, 1, 1, 2, 2, 3, 4, 30, 50.
+
+
+The median or 50th percentile is the best latency that 50% of the requests experienced.
+In this case we would count 1/2 the results or 10/2 = 5 results and that is the median. In this case it's 2 ms.
+So this means that 50% of the requests had a latency of 2ms or better.
+
+ The 90th percentile is the best latency seen by 90% of the requests. In this case that's the
+9th result (0.9 * 10 = 9) which is 30 ms.
+
+Typically the results will show a graph from 1 percentile through 90% in increments of 1%
+followed by 99.9% or higher if appropriate. In most cases the results have to be shown on a
+logarithmic scale to be easily viewable.
+
+Throughput is measured in a similar way. The big difference is that for throughput one is
+measuring the number of requests completed over some window of time. 1 second is a pretty typical window.
+I usually just measure how many requests completed during a particular window.
+
+-------------------------
+
+For the 90th percentile bar, 90% of all users achieved the indicated response time or better.
+And for the 95% percentile bar, 95% of all users achieved the indicated response time or better.
+
+The 85%, 90%, and 95% pages show the response-time percentiles of the 10 slowest pages in the run.
+
+
+-------------------------
+- a percentile is a number between 1 and 100
+- In a set of numbers, the percentile for a given value indicates the percentage of numbers that are less than or equal to that value.
+
+For example, if a student scores 85% in a test and is in the 90th percentile, this means that 90% of students had scores
+that were less than or equal to 85%.
+
+A more conservative view is to report a percentile of latency like 90%, 99%, 99.9% or even 99.99% latency. This is calculated by sorting the individual latencies and taking the highest 10%, 1%, 0.1% or 0.01%. As this represents the latency you will get most of the time, it is a better figure to work with.
+
+The typical latency is actually the 50% percentile.
+
+ If the typical and average latencies are within 10%, I consider this to be fairly flat. Must higher than this indicates opportunities to optimise your performance. In a well performing system I look for about a factor of 2x in latency between the 90%, 99% and 99.9%.
+
+The distribution of Latencies often have what is called "fat tails". Every so often you will have values which are much larger than all the other values. These can be 10 - 1000x higher. This is what looking at the average or percentile latencies more important as these are the one which will cause you trouble. The typical latency is more useful for determining if the system can be optimised.
+
+-------------------------------------  ------------------
+* How to calculate the latency and bandwidth of a network
+
+In the ideal case where latency and bandwidth are fully constant, it's just a linear problem:
+delay = packetsize / bandwidth + latency
+
+-------------------------------------  ------------------
+* Types of measurement
+
+1. order to ack
+
+2. order to tick
+
+3. mdd timestamp to receiver time
+
+* Ways of measurement
+    -Active measurement / Passive measurement
+
+4. Bandwidth Estimation
+
+
+-------------------------------------  ------------------
+--Terminology--
+
+* Propagation Delay
+* Processing and Serialization Delay
+* Queuing Delay
+
+* Transport Layer and the TCP/IP Stack
+* Server/OS Architecture
+* Application Architecture
+
+* microbursts: short lived surges, which can temporarily saturate a trading network 
+* Low latency networks for distributed applications
+
+* Latency
+variability needs to be monitored with the same diligence that traders monitor changing market prices, correlations, and
+trends. Otherwise, the variability in network performance could drown out the sophistication of the trading algorithms.
+
+--Common parameters to measure--
+bandwidth:
+throughput:
+latency:
+jitter: Can often expose congestion
+
+Edge device:
+Boundry device:
+
+-------------------------------------  ------------------
+* Latency is determined by two factors
+
+1. Physical length of path (limited by the speed of light)
+2. Queuing delays along the path
+
+
+-------------------------------------  ------------------
+* Units of measure
+
+exa     E    1000^6   10^18   1,000,000,000,000,000,000  quintillion     trillion           1975
+peta    P    1000^5   10^15   1,000,000,000,000,000      quadrillion     thousand billion   1975
+tera    T    1000^4   10^12   1,000,000,000,000          trillion        billion            1960
+giga    G    1000^3   10^9    1,000,000,000              billion         thousand million   1960
+mega    M    1000^2   10^6    1,000,000                  million                            1960 (1873)
+kilo    k    1000^1   10^3    1000                       thousand                           1960 (1795)
+
+milli   m    1000^1  10^3     0.001                      thousandth                         1960 (1795)
+micro   μ    1000^2  10^6     0.000001                   millionth                          1960 (1873)
+nano    n    1000^3  10^9     0.000000001                billionth                          thousand millionth 1960
+
+Eg:
+* megapixel - 1 million pixels in a digital camera
+* one megatonne (of TNT), equivalent to approx. 4 Petajoules; is the approximate energy released on 
+  igniting one million tonnes of TNT, and is a unit often used in measuring the explosive power of nuclear weapons.
+* megahertz — frequency of electromagnetic radiation for radio and television broadcasting, GSM, etc. 1 MHz = 1,000,000 Hz.
+
+
+-------------------------------------------------
+-------------------------------------------------
+-------------------------------------------------
+-------------------------------------------------
+-------------------------------------------------
+-------------------------------------------------
+
+
+
+

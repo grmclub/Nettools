@@ -1,0 +1,108 @@
+
+------------------------------------------------------------
+* Performance Measurement
+Service-oriented indicators are "availability and response time"; they measure how well (or not)
+an application is providing a service to the end users. 
+
+Efficiency-oriented indicators are "throughput and utilization;" they measure how well (or not) an application makes use of the
+application landscape. 
+
+    - Availability
+    - Response time
+    - Throughput
+    - Utilization
+
+* Load Consideration
+    - How many end users will actually use the application?
+    - How many of these users will use it concurrently?
+    - How will the end users connect to the application?
+    - How many additional end users will require access to the application over time?
+
+* Deployment Consideration
+    - Available bandwidth
+    - Network latency
+    - Modify transaction replay
+    - Load injection from a WAN location
+
+* Environment Checklist
+    - Number of servers
+        The number of physical or virtual servers for this tier.
+    - Load balancing strategy
+        The type of load balancing mechanism in use (if relevant).
+    - Hardware inventory
+        Number and type of CPUs, amount of RAM, number and type of NICs.
+    - Software inventory
+        Standard build software inventory excluding components of application to be performance tested.
+    - Application component inventory
+        Description of application components to be deployed on this server tier.
+    - External Links
+        links to other internal or third-party systems.
+
+* Key Performance Targets
+
+    service-oriented performance indicators:
+
+    - Application Utilization
+        - Availability or uptime
+        - Concurrency, scalability, and throughput
+        - Response time
+
+    To these can be added the following, which are as much a measure of capacity as of performance:
+
+    - Network utilization
+        - Data volume
+        - Data throughput  
+        - Data error rate
+
+
+    -  Server utilization
+        - CPU utilization
+        - Memory utilization
+        - Disk input/output
+        - Disk space
+
+
+* Automated Performance Testing
+
+    - Scripting module
+    - Test management module
+    - Load injector(s)
+    - Analysis module
+
+* testing
+  Baseline test
+  Load test
+  Stress test
+  Soak or stability test - examine for a period of time
+  Smoke test             - Focus on what has changed
+  Isolation test
+
+
+I/O, and some visibility of the network terms of errors):
+• Processor utilization percentage
+• Top 10 processes
+• Available memory in bytes
+• Memory pages/second
+• Processor queue length
+• Context switches per second
+• Physical disk: average disk queue length
+• Physical disk: % Disk Time
+• Network interface: Packets Received Errors
+• Network interface: Packets Outbound Err
+
+
+The Proof of Concept (POC)
+Provides an opportunity for a technical evaluation of the performance testing tool against the target application
+Identifies scripting data requirements
+Allows assessment of scripting effort
+Demonstrates the capabilities of the performance testing solution versus the target application
+
+Checklist
+Prerequisites
+Process
+Deliverables
+
+------------------------------------------------------------
+------------------------------------------------------------
+------------------------------------------------------------
+

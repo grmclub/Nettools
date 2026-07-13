@@ -1,0 +1,126 @@
+
+----------------------------------------------------- ----------------
+* Sockperf
+
+
+sockpref
+========
+
+gjj@xouch27:~$ taskset -c 5 sockperf ping-pong -i xouch21e -p 20100 --tcp -m 60 --mps 100 -t 30
+
+=== FROM 9F ===
+gjj@pcsnif01:~$ taskset -c 5 sockperf pp -i xouch21e -p 20100 --tcp -m 60 --mps 100 -t 30
+
+sudo taskset -c 5 ping -f -i 0 -w 5 xouch21e
+
+PING xouch21e (10.65.2.20) 56(84) bytes of data.
+--- xouch21e ping statistics
+--- 262297 packets transmitted, 262297 received, 0%
+packet loss, time 5000ms
+rtt min/avg/max/mdev = 0.014/0.015/0.058/0.002 ms,
+ipg/ewma 0.019/0.015 ms
+
+
+
+--Erdo
+--server
+taskset -c 1 onload -p latency sockperf server --tcp
+
+--client
+taskset -c 1 onload -p latency sockperf pp -i 10.68.74.50 -t 10 --pps=max --tcp
+
+----------------------------------------------------- ----------------
+** OUCH Latency measurement using sockperf
+
+http://code.google.com/p/sockperf/
+Sockperf seems to be in active development.
+Latest version is 2.5.208.
+---------------------
+How about running sockperf with the following scenarios.
+
+1. pdqa01 <--> xouch01e
+2. pcsnif01 <--> xouch01e
+3. xouch01e <--> xouch02e
+
+This will help us identify the latency figures the 9F switch and cabling introduced into the system.
+
+
+-------------------
+gjj@pcsnif01:~$ sudo taskset -c 5 ping -f -i 0 -w 5 xouch21e
+PING xouch21e (10.65.2.20) 56(84) bytes of data.
+
+--- xouch21e ping statistics ---
+262297 packets transmitted, 262297 received, 0% packet loss, time 5000ms
+rtt min/avg/max/mdev = 0.014/0.015/0.058/0.002 ms, ipg/ewma 0.019/0.015 ms
+
+Show quoted text
+PRODUCTION DAYgjj@xouch27:~$ sudo taskset -c 5 ping -f -i 0 -w 5 xouch21e
+PING xouch21e (10.65.2.20) 56(84) bytes of data.
+
+-------------------
+
+***
+gjj@pcsnif01:~$ taskset -c 5 sockperf pp -i xouch21e -p 20100  --tcp
+sockperf:  == version #2.5.156 ==
+sockperf[CLIENT] send on:sockperf: using recvfrom() to block on socket(s)
+
+[ 0] IP = 10.65.2.20      PORT = 20100 # TCP
+sockperf: Warmup stage (sending a few dummy messages)...
+sockperf: Starting test...
+sockperf: Test end (interrupted by timer)
+sockperf: Test ended
+sockperf: [Total Run] RunTime=1.100 sec; SentMessages=53795; ReceivedMessages=53794
+sockperf: ========= Printing statistics for Server No: 0
+sockperf: [Valid Duration] RunTime=1.000 sec; SentMessages=48941; ReceivedMessages=48941
+sockperf: ====> avg-lat= 10.190 (std-dev=0.239)
+sockperf: # dropped messages = 0; # duplicated messages = 0; # out-of-order messages = 0
+sockperf: Summary: Latency is 10.190 usec
+sockperf: Total 48941 observations; each percentile contains 489.41 observations
+sockperf: ---> <MAX> observation =   17.427
+sockperf: ---> percentile  99.99 =   15.561
+sockperf: ---> percentile  99.90 =   11.793
+sockperf: ---> percentile  99.50 =   11.370
+sockperf: ---> percentile  99.00 =   11.183
+sockperf: ---> percentile  95.00 =   10.537
+sockperf: ---> percentile  90.00 =   10.405
+sockperf: ---> percentile  75.00 =   10.244
+sockperf: ---> percentile  50.00 =   10.134
+sockperf: ---> percentile  25.00 =   10.063
+sockperf: ---> <MIN> observation =    9.742
+
+
+gjj@xouch27:~$ taskset -c 5 sockperf ping-pong -i xouch21e -p 20100 --tcp
+sockperf:  == version #2.5.156 ==
+sockperf[CLIENT] send on:sockperf: using recvfrom() to block on socket(s)
+
+[ 0] IP = 10.65.2.20      PORT = 20100 # TCP
+sockperf: Warmup stage (sending a few dummy messages)...
+sockperf: Starting test...
+sockperf: Test end (interrupted by timer)
+sockperf: Test ended
+sockperf: [Total Run] RunTime=1.100 sec; SentMessages=70310; ReceivedMessages=70309
+sockperf: ========= Printing statistics for Server No: 0
+sockperf: [Valid Duration] RunTime=1.000 sec; SentMessages=63948; ReceivedMessages=63948
+sockperf: ====> avg-lat=  7.788 (std-dev=0.175)
+sockperf: # dropped messages = 0; # duplicated messages = 0; # out-of-order messages = 0
+sockperf: Summary: Latency is 7.788 usec
+sockperf: Total 63948 observations; each percentile contains 639.48 observations
+sockperf: ---> <MAX> observation =   14.795
+sockperf: ---> percentile  99.99 =   10.328
+sockperf: ---> percentile  99.90 =    9.130
+sockperf: ---> percentile  99.50 =    8.824
+sockperf: ---> percentile  99.00 =    8.434
+sockperf: ---> percentile  95.00 =    8.062
+sockperf: ---> percentile  90.00 =    7.966
+sockperf: ---> percentile  75.00 =    7.844
+sockperf: ---> percentile  50.00 =    7.757
+sockperf: ---> percentile  25.00 =    7.688
+sockperf: ---> <MIN> observation =    7.354
+
+------------------------------------------------------------------------
+
+
+
+----------------------------------------------------- ----------------
+----------------------------------------------------- ----------------
+
