@@ -41,9 +41,78 @@ When inspecting the output, keep an eye on these specific columns:
     • %util: Percentage of time the disk was actively handling requests. Near $100\%$ means the drive is working at capacity (though fast NVMe SSDs or RAID arrays can handle parallel queues even at high %util).
 
 -------------------------------------------------
+##linux tools to trace application delays retrospectively 
+
+sysstat runs in the background as a system daemon and collects system-wide counters at regular intervals (typically every 1–10 minutes) stored in binary logs (/var/log/sysstat/saDD).
+
+    What it catches retrospectively:
+    System-wide CPU load spikes, 
+	context switch storms (sar -w), 
+	memory swapping (sar -r), disk 
+	IOPS/saturation (sar -d), and 
+	network bandwidth bounds (sar -n DEV).
+
+Example Retrospective Query:
+
+# Check system-wide context switches and run-queue saturation between 14:00 and 14:30 today
+sar -q -w -s 14:00:00 -e 14:30:00
 -------------------------------------------------
+## linux tools to trace application delays retrospectively
+
+trace which process was blocking system resources 
+can IO delays be caused due to context switching 
+
+computer performance design, evaluation, analysis, and tuning.
+tools, methodologies, and visualizations for performance analysis,
+
 -------------------------------------------------
+##does the JVM manage thread scheduling of java processes or does the os manage scheduling 
+
+How Java Interacts with OS Scheduling
+
+While the JVM delegates scheduling to the kernel, it provides mechanisms to interface with the OS scheduler:
+
+    Thread Priorities (Thread.setPriority()):
+
+        Java thread priorities (1 through 10) act as hints to the OS scheduler.
+
+        On Linux, the JVM maps these Java priorities to Linux nice values. However, how strongly these hints are respected depends entirely on the OS policy (and root/capability permissions).
+
+    Voluntary Yielding (Thread.yield()):
+
+        Calling yield() informs the OS scheduler that the current thread is willing to give up its CPU time slice, prompting a voluntary context switch (cswch).
+
+What About Java 21+ Virtual Threads (Project Loom)?
+
+With Java 21 and Virtual Threads, the story gets a two-layer dynamic:
+
+[ Virtual Threads ]   --> Managed by JVM (M:N mapping)
+        |
+        v
+[ Carrier Threads ]   --> Standard Platform Threads (1:1 with OS)
+        |
+        v
+[ OS Kernel Threads ] --> Managed by OS Scheduler
+
+    Virtual Threads (JVM-managed): The JVM manages these lightweight threads at the application level. When a virtual thread performs a blocking I/O operation (or enters a wait state), the JVM unmounts it from its underlying OS thread without triggering an expensive OS context switch.
+
+    Carrier / Platform Threads (OS-managed): The underlying pool of worker threads ("carrier threads") that actually execute virtual threads are standard platform threads—and those carrier threads are still scheduled and preempted by the OS kernel.
+
 -------------------------------------------------
+1. How High Context Switching Causes I/O Delays
+When context switching spikes excessively (a "context switch storm"), it creates severe system overhead that degrades I/O performance in two main ways:
+    • CPU Cache Trashing (L1/L2/L3 Caches): When the kernel rapidly switches execution between many different threads, CPU caches and Translation Lookaside Buffers (TLB) are constantly invalidated and flushed. When a thread finally gets CPU time to process I/O data (e.g., handling incoming disk/network buffer data), it suffers massive cache misses. This slows down the CPU's ability to process I/O submission/completion queues, inflating overall await times.
+    • Kernel & Lock Contention: Context switches aren't free—they execute kernel code (the scheduler). High context switching burns CPU cycles in system mode (%sys). If threads are constantly switching while holding or requesting file-system locks, block layer locks, or device driver locks, other threads waiting to perform I/O get blocked, directly causing elevated iodelay.
+
+2. How I/O Causes Context Switching (The Reversal)
+More commonly, high voluntary context switches are a symptom of an application waiting on slow I/O:
+    • Blocking I/O Calls: When a thread issues a synchronous read or write to a disk or network socket, it cannot proceed until the data is ready. The kernel puts the thread into a sleeping/waiting state ($D$ state for disk, $S$ state for network) and performs a voluntary context switch (cswch) to give the CPU core to another runnable thread.
+    • High-Frequency Small I/O Operations: If an application performs thousands of unbuffered, tiny reads/writes per second, every single request causes the thread to yield the CPU, wait for the storage controller, and wake back up—causing context switch rates and I/O latency to spike together.
+
+
+
+
+
 -------------------------------------------------
 -------------------------------------------------
 -------------------------------------------------
