@@ -1,0 +1,182 @@
+
+-------------------------------------------------
+Brendan Gregg’s performance engineering framework centers on methodology-first troubleshooting: 
+starting with specific diagnostic questions and selecting the right Linux tools to answer them.
+
+Below are the primary methodologies introduced or popularized by Brendan Gregg, along with the standard Linux utilities used to execute each one.
+
+1. Linux Performance Analysis in 60 Seconds (The First 10 Commands)
+
+When an issue occurs in production, Gregg recommends running this exact 10-command sequence first to get a complete high-level overview of the system in under one minute:
+
+==========================================================================================================================================
+Command           | Primary Metric to Check                      | Diagnostic Purpose
+==========================================================================================================================================
+uptime            | 1, 5, 15-min load averages                   | Checks if overall resource demand is increasing or decreasing.
+dmesg -T | tail   | Kernel buffer logs with timestamps           | Looks for OOM killer invocations, hardware failures, or driver errors.
+vmstat 1          | r (runnable), free, si/so                    | Checks system-wide CPU run queue, memory swapping, and IO delay.
+mpstat -P ALL 1   | Per-core CPU utilization (%usr, %sys, %idle) | Identifies single-core CPU bottlenecks or un-balanced thread loads.
+pidstat 1         | %usr, %system, PID                           | Pinpoints which specific processes/PIDs are consuming CPU.
+iostat -xz 1      | %util, avgqu-sz, await                       | Identifies disk saturation and latency bottlenecks.
+free -m           | Available RAM vs Buffer/Cache                | Verifies memory allocation status and headroom.
+sar -n DEV 1      | rxkB/s, txkB/s                               | Measures network interface throughput against bandwidth limits.
+sar -n TCP,ETCP 1 | Active/passive open rates, retrans/s         | Checks for TCP connection churn or packet drop retransmissions.
+top (or htop)     | Overall process list and state summary       | Verifies overall system state and checks for runaway processes.
+
+==========================================================================================================================================
+
+2. The USE Method (Utilization, Saturation, Errors)
+
+For hardware and physical resource bottleneck analysis, check Utilization, Saturation, and Errors for every component:
+
++-----------------------------------------------------------------+
+|                       Target Resource                           |
+|       (CPU, Memory, Storage I/O, Network, File Descriptors)     |
++-----------------------------------------------------------------+
+          |                               |                             |
+          v                               v                             v
+  [ Utilization ]                 [ Saturation ]                   [ Errors ]
+  Time resource was busy      Queue length or backed-up      Failed/denied request
+  or capacity in use    work waiting for resource     counts/rates
+  
+  
+Resource Mapping Checklist
+    CPU
+        Utilization: vmstat 1 (%us + %sy), mpstat -P ALL 1, pidstat 1.
+        Saturation: vmstat 1 (r column > CPU count), sar -q (runq-sz).
+        Errors: Hardware error counters or thermal throttling (dmesg, mcelog).
+    Memory Capacity
+        Utilization: free -m, sar -r (%memused).
+        Saturation: vmstat 1 (si/so swap in/out rates), dmesg | grep -i oom.
+        Errors: Failed allocation errors (ENOMEM), physical ECC RAM errors.
+    Storage Device I/O
+        Utilization: iostat -xz 1 (%util), pidstat -d.
+        Saturation: iostat -xz 1 (avgqu-sz > 1 or elevated await).
+        Errors: Device errors in /sys/devices/.../ioerr_cnt, smartctl.
+    Network Interfaces
+        Utilization: sar -n DEV 1 (rxkB/s, txkB/s relative to capacity), ip -s link.
+        Saturation: ifconfig / ip -s link (dropped/fifo packets), sar -n EDEV.
+        Errors: netstat -i (RX-ERR/TX-ERR), sar -n EDEV (rxerr/s).  
+-------------------------------------------------
+3. Thread State & Off-CPU Analysis
+When CPU usage is surprisingly low but application response latency is high, threads are spending time blocked off-CPU.
+    • On-CPU Execution Profiling:
+        ◦ Tool: perf + Flame Graphs (invented by Gregg)
+        ◦ Command: perf record -F 99 -a -g -- sleep 10 $\rightarrow$ perf script $\rightarrow$ flamegraph.pl
+    • Off-CPU / Wait Profiling:
+        ◦ Tool: eBPF / BCC tools
+        ◦ Commands:
+            ▪ offcputime: Measures stack trace times spent sleeping or blocked on locks/I/O.
+            ▪ biolatency: Displays block device I/O latency as a histogram.
+            ▪ ext4slower / xysslower: Traces file system operations slower than a given threshold.
+
+4. Advanced Observability (eBPF / BCC Tools)
+For deep kernel and application tracing without source code modifications, Gregg recommends utilizing eBPF (Extended Berkeley Packet Filter) tools:
+    • Process Execution: execsnoop (tracks new processes created).
+    • File Operations: opensnoop (traces file opens and missing file errors).
+    • Network Tracing: tcpretrans (traces TCP retransmissions with packet details).
+    • Lock Contention: syscount (counts system calls by process or type).
+
+
+-------------------------------------------------
+This excerpt covers Thread State Analysis (specifically the Clue-Based Analysis variant) from Brendan Gregg's performance methodology framework.
+When an application is running slowly, the goal of thread state analysis is to figure out where threads are spending their time. Threads generally cycle through various states (executing user code, waiting on CPU, waiting for disk/network I/O, waiting on locks, or sleeping).
+
+Summary of Thread States & OS Tools
+Here is a breakdown of the thread states and the corresponding Linux CLI tools used to inspect them:
+
+=========================================================================================================================================================================
+Thread State    | Target Metric / Tool          | Scope                    | What It Measures
+=========================================================================================================================================================================
+User            | pidstat -u (%usr)             | Per-process / Per-thread | Time spent executing application/user-space code.
+Kernel          | pidstat -u (%system)          | Per-process / Per-thread | Time spent executing kernel system calls (e.g., memory allocation, file operations).
+Runnable        | vmstat (r)                    | System-wide              | Threads that are ready to run but waiting in the CPU run-queue for an available CPU core.
+Swapping        | vmstat (si / so)              | System-wide              | Time lost due to swapping memory pages in (si) or out (so) to disk.
+Disk I/O        | pidstat -d (iodelay)          | Per-process              | Clock ticks spent waiting for block I/O (disks/swap) to complete.
+Network I/O     | sar -n DEV (rxkB/s, txkB/s)   | System-wide              | Throughput activity across network interfaces indicating network wait/transfer.
+Lock            | perf top                      | System-wide              | Time spent spinning or contending on user-space or kernel locks.
+Sleeping / Idle | Not easily available directly | N/A                      | Off-CPU waiting state (e.g., waiting for timers, user input, or remote service responses).  
+                                                                           | Requires dynamic tracing tools like eBPF/offcputime.
+=========================================================================================================================================================================
+
+Practical Diagnostic Workflow
+    1. Start System-Wide: Use system-wide metrics (vmstat, sar) to check for macro bottlenecks like CPU run-queue saturation (r > CPU count) or heavy swap paging (si/so).
+
+    2. Drill Down to Per-Process: If system-wide indicators highlight issues, pivot to per-process tools like pidstat to isolate which specific PID or thread ID is consuming CPU or experiencing high iodelay.
+
+    3. Trace Off-CPU States: Standard OS counters struggle to show why threads are sleeping or idle. For detailed off-CPU bottlenecks (like lock contention or API wait times), modern eBPF tools like offcputime (from bcc-tools) fill in where standard tools fall short.
+
+-------------------------------------------------
+##Check Historical System-Wide Context Switches
+
+sar -w -s 14:00:00 -e 14:30:00
+    cswch/s: Total context switches per second recorded during that time window.
+    proc/s: Total number of tasks created per second.
+
+##Querying a Previous Day
+
+By default, sar queries today's log file. To check a specific past day, point sar to that day's file (saDD or saYYYYMMDD):
+
+# Query the 15th of the current month between 09:00 and 09:15
+sar -w -s 09:00:00 -e 09:15:00 -f /var/log/sysstat/sa15
+
+##Setting Up a Quick One-Liner for Future Spot Checks
+echo "sar -w 1 60 > /tmp/context_switches_1530.log" | at 15:30
+
+# Run a 60-second vmstat capture starting 30 minutes from now
+(sleep 1800 && vmstat 1 60 > /tmp/vmstat_capture.txt) &
+-------------------------------------------------
+Summary Checklist
+
+Objective                       Recommended Command
+System-wide history today	    sar -w -s HH:MM:SS -e HH:MM:SS
+System-wide history past date	sar -w -s HH:MM:SS -e HH:MM:SS -f /var/log/sysstat/saDD
+Scheduled future capture	    echo "vmstat 1 60 > log.txt" | at HH:MM
+-------------------------------------------------
+##In the vmstat 1 output, si (swap-in) and so (swap-out) measure memory paging activity between physical RAM and swap space on disk.
+
+Because disk I/O is exponentially slower than memory access, high values here indicate severe performance degradation.
+
+
+procs -----------memory---------- ---swap-- -----io---- -system-- ------cpu-----
+ r  b   swpd   free   buff  cache   si   so    bi    bo   in   cs us sy id wa st
+ 1  0      0 120450  14200 450120    0    0     5    12  120  450  2  1 97  0  0
+ 4  1 102480  15200   2100  18200 1240 4800  2100  5100  980 2300 20 15 10 55  0
+
+(In the second line above, non-zero si/so along with high %wa CPU wait time flags a heavy swap bottleneck).
+How to Interpret the Numbers
+    • si = 0 and so = 0 (Ideal State):
+      The system has sufficient physical RAM for its current workload.
+    • so > 0, si = 0 (Pressure Building):
+      The kernel is running low on available RAM and is actively offloading inactive memory pages to disk to free up space.
+    • si > 0 and so > 0 (Active Swapping / Thrashing):
+      The system is under heavy memory contention. Applications are trying to access memory pages that were recently moved to swap, forcing the OS to constantly read from and write to disk simultaneously.
+
+Diagnostic Rule of Thumb (USE Method Context)
+Under Brendan Gregg's USE Method, si and so serve as the primary Saturation metrics for Memory:
+    1. Check swpd vs si/so:
+       Having a non-zero swpd (total swap used) is not inherently bad. If swpd is high but si and so are 0, the kernel simply moved stagnant, idle processes to swap to keep RAM free for file caching.
+    2. When to Worry:
+       Trouble begins when si or so are consistently $> 0$. Continuous non-zero values mean active thread working sets don't fit in physical RAM, causing disk wait times (%wa in vmstat or high iodelay in pidstat -d) to spike.
+
+
+-------------------------------------------------
+##If you see sustained non-zero si/so rates:
+
+1. Identify the Memory Hogs:
+
+    # Sort processes by memory usage
+    ps aux --sort=-%mem | head -n 10
+
+2. Check for OOM Invocation:
+	dmesg -T | grep -i oom
+
+3. Verify Per-Process Swap Usage:
+    # Find top processes actively using swap
+    for file in /proc/[0-9]*/status; do awk '/VmSwap|Name|^Pid/{printf $2 " " $3 " "}END{ print ""}' $file; done | sort -k 2 -n | tail -n 10
+
+-------------------------------------------------
+-------------------------------------------------
+-------------------------------------------------
+-------------------------------------------------
+-------------------------------------------------
