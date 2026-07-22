@@ -1,4 +1,10 @@
 
+https://www.brendangregg.com/bio.html
+https://www.brendangregg.com/methodology.html
+https://github.com/brendangregg
+https://www.brendangregg.com/overview.html
+
+Systems Performance 2nd Edition (2021) 
 -------------------------------------------------
 Brendan Gregg’s performance engineering framework centers on methodology-first troubleshooting: 
 starting with specific diagnostic questions and selecting the right Linux tools to answer them.
@@ -176,6 +182,20 @@ Under Brendan Gregg's USE Method, si and so serve as the primary Saturation metr
     for file in /proc/[0-9]*/status; do awk '/VmSwap|Name|^Pid/{printf $2 " " $3 " "}END{ print ""}' $file; done | sort -k 2 -n | tail -n 10
 
 -------------------------------------------------
+The Famous Methodologies
+ 
+The book is famous for introducing practical frameworks to eliminate analytical paralysis: 
+    • The USE Method: Designed for hardware resource bottlenecks. For every component (CPU, RAM, Disks, Network), you must track Utilization, Saturation (queuing), and Errors. 
+      
+    • The TSA Method: Designed for application-level bottlenecking. It stands for Thread State Analysis, which categorizes application threads by where they spend their time (Executing, Runnable/Waiting, or Blocked/Sleeping).
+
+## Deep Dive into System Resources
+The bulk of the book breaks down the operating system component by component: [1, 2, 3]
+    • CPUs: Moves beyond standard "CPU %" to explore run-queue latency, context switching, and hardware cache misses.
+    • Memory: Demystifies virtual memory, paging, swapping, and how kernel memory architectures (like NUMA) degrade software speed.
+    • Storage & File Systems: Details the asynchronous path between an application write() and the actual mechanical disk or NVMe drive, focusing on I/O operations per second (IOPS) and block latencies.
+    • Network: Addresses network stack delays, socket buffer queues, and packet drops under heavy congestion.
+
 -------------------------------------------------
 -------------------------------------------------
 -------------------------------------------------
