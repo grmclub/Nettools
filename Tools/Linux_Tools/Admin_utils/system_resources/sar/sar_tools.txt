@@ -88,17 +88,8 @@ replot "cpuload" using 1:5 title "Kernel Mode" with lines
 replot "cpuload" using 1:8 title "CPU Free" with lines
 
 --------------------------------------------------------------------------------------
-Linux Performance Tools, Brendan Gregg, part 1 of 2
-https://www.youtube.com/watch?v=FJW8nGV4jxY
-https://www.youtube.com/watch?v=zrr2nUln9Kk
 
---------------------------------------------------------------------------------------
-#vmstat
 
-vmstat -Sm 1
-iostat -xmdz 1
-
---------------------------------------------------------------------------------------
 
 
 
