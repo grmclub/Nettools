@@ -1,5 +1,6 @@
 
-
+https://www.thegeekstuff.com/2011/03/linux-performance-monitoring-intro/
+https://www.thegeekstuff.com/2011/12/linux-performance-monitoring-tools/
 --------------------------------------------------------------------------------------
 Linux Performance Tools, Brendan Gregg, part 1 of 2
 https://www.youtube.com/watch?v=FJW8nGV4jxY
@@ -10,7 +11,7 @@ https://www.youtube.com/watch?v=zrr2nUln9Kk
 
 vmstat -Sm 1
 
-
+vmstat -S M -n 1 5
 
 -------------------------------------------------
 ##IOStats
