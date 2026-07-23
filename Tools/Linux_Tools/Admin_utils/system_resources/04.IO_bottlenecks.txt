@@ -1,0 +1,165 @@
+
+-------------------------------------------------
+##linux+commands+to+show+which+process+is+doing+more+IO
+
+1. iotop (Best Overall)
+iotop acts like top or htop, but specifically for disk I/O. It displays real-time read and write speeds per process.
+    Interactive Command:
+    Bash
+    sudo iotop
+    Show Only Active I/O (Recommended):
+    Pressing o while running or launching with -o hides idle processes, making it much easier to spot the bottleneck:
+    Bash
+    sudo iotop -o
+    Note: iotop requires root privileges (sudo) and may need to be installed on some distributions (sudo apt install iotop or sudo dnf install iotop).
+
+2. pidstat (Best Non-Interactive / Scriptable Tool)
+pidstat is part of the sysstat package. It gives a detailed breakdown of I/O stats per process over time.
+    Command:
+    Bash
+    pidstat -d 1
+        -d: Displays I/O statistics (kB_rd/s, kB_wr/s, kB_ccwr/s).
+        1: Refreshes every 1 second continuously.
+
+3. htop (Built-in / Modern top Alternative)
+If you already have htop installed, you can easily sort running processes by disk activity.
+    Launch htop:
+    Bash
+    sudo htop
+    Press F6 (or >) to open the sort menu.
+    Select IO_READ_RATE, IO_WRITE_RATE, or IO_RATE.
+
+4. top (No Installation Required)
+If you cannot install third-party tools, standard top can show I/O wait, though it won't sort by I/O rate by default.
+    Run top.
+    Look at the %Cpu(s) line for wa (iowait). A high number indicates processes are waiting on disk operations.
+    To display write/read stats: Press f, use arrow keys to navigate to READB / WRITEB, press Space to enable them, and press d to display them as columns.
+
+5. Checking /proc Directly (Quick One-Liner)
+If you want to quickly check the total I/O stats of a specific known Process ID (PID):
+Bash
+sudo cat /proc/<PID>/io
+Look for:
+    rchar / wchar: Bytes read/written via system calls.
+    read_bytes / write_bytes: Actual bytes read/written to storage media.
+-------------------------------------------------
+=====================
+##Inspecting Kernel Data via /proc (For Still-Running Processes)
+
+The Linux kernel maintains strict I/O counters for every process currently alive on the system since it was launched.
+Option A: Read lifetime I/O for a specific process
+
+##Sort ALL running processes by lifetime read/write bytes
+
+You can use a quick shell loop to list and sort processes by total bytes read or written since they started:
+
+Top Read-heavy Processes:
+sudo awk '/read_bytes:/ {print $2, FILENAME}' /proc/[0-9]*/io 2>/dev/null | sort -nr | head -n 10
+
+Top Write-heavy Processes:
+sudo awk '/write_bytes:/ {print $2, FILENAME}' /proc/[0-9]*/io 2>/dev/null | sort -nr | head -n 10
+
+=====================
+##pidstat Cumulative Stats
+
+pidstat (from the sysstat package) can monitor process I/O continuously or sum up stats over a given time interval.
+sudo pidstat -dl 10
+
+    -d: Shows I/O statistics (kB_rd/s, kB_wr/s).
+
+    -l: Displays the full command line name for each process.
+
+    10: Calculates totals/averages over a 10-second interval
+-----------------	
+##Use pidstat for Historical Process-Level I/O
+Since sar won't tell you which executable caused the bottleneck, its companion tool pidstat (also from the sysstat suite) is used to log process-level details.
+If pidstat historical logging is already configured:
+
+Check if your distro stores pidstat logs in /var/log/sa/ or /var/log/sysstat/:
+
+pidstat -d -f /var/log/sa/saXX
+    -d: Shows I/O activity per process (kB_rd/s, kB_wr/s).	
+-----------------	
+##Option A: Schedule pidstat via Cron
+
+To log per-process I/O every 10 minutes to a history file, add this entry to /etc/cron.d/pidstat-io:
+Bash
+
+*/10 * * * * root pidstat -d 1 5 >> /var/log/pidstat_io.log
+=====================
+##Long-Term Automated Logging (For Historical Root-Cause Analysis)
+
+If the high I/O process already exited or happened in the middle of the night, standard tools won't capture it retroactively unless persistent logging was active.
+Method A: iotop in Batch Mode (Background Daemon)
+
+Run iotop in non-interactive batch mode and append timestamped I/O logs to a text file:
+Bash
+
+sudo iotop -b -b -t -o -d 60 >> /var/log/iotop_history.log &
+
+    -b: Non-interactive batch mode.
+
+    -t: Adds a timestamp to every line.
+
+    -d 60: Logs active I/O processes once every 60 seconds.
+=====================
+
+-------------------------------------------------
+=====================
+##use sar to verify when high I/O happened historically 
+
+Step 1: Check System-Wide I/O Wait (%iowait)
+
+High %iowait means the CPU was idling because it was waiting for disk read/write operations to complete.
+
+Filter Out High %iowait Spikes Automatically:
+
+Instead of scrolling through a full day's worth of 10-minute intervals, filter the output using awk to highlight times where %iowait exceeded a specific threshold (e.g., greater than 15%):
+##sar -u -f /var/log/sa/sa15 | awk '$8 > 15.00 {print $1, $2, "High I/O Wait:", $8"%"}'
+
+(Note: Column positions can vary by distro. On standard sar -u, %iowait is usually the 8th column).
+=====================
+Step 2: Check Disk Activity and Throughput (sar -d)
+
+Once you identify the timestamp of the spike, check the physical/virtual disks to see how much data was actually being read or written and whether the disk reached 100% utilization.
+##sar -d -p -f /var/log/sa/sa15
+
+    -d: Displays activity for each block device.
+
+    -p: Makes device names human-readable (e.g., sda, nvme0n1 instead of dev8-0)
+	
+Key Metrics to Look For:
+    %util: Percentage of CPU time during which I/O requests were issued to the device. If this is close to 100%, the disk was fully saturated.
+    rkB/s & wkB/s: Kilobytes read and written per second.
+    await: Average time (in milliseconds) for I/O requests to be served. High numbers (e.g., > 10–20ms on modern SSDs or > 50ms on HDDs) indicate a severe storage bottleneck.
+=====================
+Step 3: Narrow Down to a Specific Time Window
+
+If you know roughly when the issue happened (e.g., between 14:00 and 16:00), limit the results using the -s (start) and -e (end) flags:
+Bash
+
+sar -d -p -s 14:00:00 -e 16:00:00 -f /var/log/sa/sa15
+=====================
+##Summary Command Chain
+
+To quickly locate the worst I/O bottleneck window on a given day:
+Bash
+
+# 1. Find the exact time %iowait spiked on the 15th
+sar -u -f /var/log/sa/sa15 | sort -k8 -nr | head -n 5
+
+# 2. Check disk throughput and latency for that specific time window
+sar -d -p -s 14:30:00 -e 15:00:00 -f /var/log/sa/sa15
+=====================
+
+=====================
+
+=====================
+
+=====================
+
+=====================
+-------------------------------------------------
+-------------------------------------------------
+-------------------------------------------------
+-------------------------------------------------
