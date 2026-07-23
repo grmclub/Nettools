@@ -1,10 +1,25 @@
 
 https://www.thegeekstuff.com/2011/03/linux-performance-monitoring-intro/
 https://www.thegeekstuff.com/2011/12/linux-performance-monitoring-tools/
---------------------------------------------------------------------------------------
+-------------------------------------------------
 Linux Performance Tools, Brendan Gregg, part 1 of 2
 https://www.youtube.com/watch?v=FJW8nGV4jxY
 https://www.youtube.com/watch?v=zrr2nUln9Kk
+
+https://www.brendangregg.com/blog/2017-08-08/linux-load-averages.html
+https://www.brendangregg.com/systems-performance-2nd-edition-book.html
+
+-------------------------------------------------
+https://www.redhat.com/en/blog/troubleshooting-slow-servers
+
+##The "Big 3" (aka CPU, RAM, and Disk I/O)
+--Checking all of the "Big 3" with sar
+
+sar -u gives you info about all CPUs on the system, starting at midnight:
+sar -r, which give you that day’s memory usage
+sar -d, which gives you the disk I/O output using just the device name. To get the name of the devices, use sar -dP
+
+If any of these commands show a problem, you can go back to see when the server issues started by using sar {-u, -r, -d, -dP} -f /var/log/sa/sa<XX> (where XX is the day of the month you wish to look for).
 
 -------------------------------------------------
 #vmstat
@@ -109,11 +124,64 @@ More commonly, high voluntary context switches are a symptom of an application w
     • Blocking I/O Calls: When a thread issues a synchronous read or write to a disk or network socket, it cannot proceed until the data is ready. The kernel puts the thread into a sleeping/waiting state ($D$ state for disk, $S$ state for network) and performs a voluntary context switch (cswch) to give the CPU core to another runnable thread.
     • High-Frequency Small I/O Operations: If an application performs thousands of unbuffered, tiny reads/writes per second, every single request causes the thread to yield the CPU, wait for the storage controller, and wake back up—causing context switch rates and I/O latency to spike together.
 
+-------------------------------------------------
+##system latency causes
 
+=====================
+page faults
+context switching
+IO delay
+network errors/retransmissions
+=====================
 
+Quick Diagnostics Cheat-Sheet
+===============================================================================
+Cause	            | Key Metrics to Check	        | Recommended Tool
+===============================================================================
+I/O Bottlenecks	    | %iowait, await, %util	        | sar -d, iostat -xz 1
+Memory Reclaim	    | allocstall, pgscand	        | sar -B, /proc/vmstat
+CPU Runqueue Delay	| runq-sz, run-queue latency	| sar -q, perf sched
+Hardware SMIs	    | SMI counts, latency spikes	| hwlatdetect, cyclictest
+Cgroup Throttling	| nr_throttled, throttled_time  | /sys/fs/cgroup/.../cpu.stat
+===============================================================================
+
+Here are the primary causes of Linux system latency, categorized by the subsystem involved:
+
+1. Storage & Disk I/O Bottlenecks
+    I/O Saturated Queues (I/O Wait): When processes are waiting for synchronous disk reads/writes to complete, they enter an uninterruptible sleep state (D state). Slow disks, bad controllers, or high write loads (e.g., heavy database flushes) quickly inflate tail latency.
+    File System Locks & Journaling: Heavy journaling in filesystems like ext4 or file-locking mechanisms (e.g., flock, fcntl) force processes to wait for metadata writes to clear before proceeding.
+    Buffer Cache Thrashing: If the kernel is constantly clearing and re-populating page cache memory because working sets exceed RAM size, disk reads spike.
+
+2. Memory Contention & Allocation
+    Direct Memory Reclaim: When available free memory drops below the vm.min_free_kbytes watermark, the kernel pauses process allocations to reclaim memory synchronously, adding severe latency spikes.
+    Transparent Huge Pages (THP) Defrag: When THP is enabled in always mode, the kernel’s khugepaged daemon allocates 2 MB huge pages on the fly, triggering memory compaction and synchronous locks.
+    NUMA Remote Access: On multi-socket NUMA systems, if a process running on CPU Socket 0 accesses memory physically attached to Socket 1 (remote node), memory access latency significantly increases.
+
+3. CPU Scheduling & Lock Contention
+    CPU Core Saturation & Runqueue Latency: When the CPU runqueue is flooded (high load average relative to available cores), runnable processes sit waiting for an available time slice.
+    Kernel Spinlocks and Mutexes: High concurrency can lead to lock contention in the kernel or user space, where threads spend time spinning or sleeping while waiting to acquire a lock.
+    CPU Throttling (C-States & P-States):
+        Dynamic Frequency Scaling: Deep sleep states (C-states) save power but introduce latency when waking a core back up.
+        Thermal Throttling: CPU hardware drops clock speeds when temperature thresholds are hit.
+    Cgroups / Container Throttling: If running inside Docker/Kubernetes, hitting CFS (Completely Fair Scheduler) CPU quotas (cpu.cfs_quota_us) will cause the kernel to forcibly throttle execution, introducing artificial tail latency.
+
+4. Network Subsystem Delays
+    Packet Drop & Buffer Bloat: Overfilled network device queues (TX/RX ring buffers) lead to packet drops, forcing expensive TCP retransmissions.
+    TCP SYN Backlog Overflows: If the application socket backlog is full, incoming connections are dropped or delayed during the TCP handshake.
+    NAPI / SoftIRQ Overload: High packet rates process interrupts on CPU Core 0 or spread across cores via softirqd. If ksoftirqd maxes out CPU cores, packet processing halts.
+    DNS Resolution Delays: Synchronous or slow DNS lookups inside the network path block application execution threads.
+
+5. Hardware & Firmware Level Delays
+    System Management Interrupts (SMIs): Motherboard BIOS/firmware executes SMIs for hardware management (e.g., fan speed, power control). SMIs pause the entire OS, including the hypervisor/kernel, completely out of Linux’s control (often called "Hardware Latency").
+    PCIe Bus Bottlenecks: Saturation on PCIe lanes when transferring data between NVMe drives, GPUs, and NICs.
+    Interrupt Storms: Misconfigured hardware or failing devices generating excessive hardware interrupts (IRQs) that consume all CPU processing capacity.
 
 
 -------------------------------------------------
+-------------------------------------------------
+
+
+
 -------------------------------------------------
 -------------------------------------------------
 -------------------------------------------------
