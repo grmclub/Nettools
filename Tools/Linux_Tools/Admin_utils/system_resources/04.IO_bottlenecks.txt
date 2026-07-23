@@ -151,7 +151,24 @@ sar -u -f /var/log/sa/sa15 | sort -k8 -nr | head -n 5
 # 2. Check disk throughput and latency for that specific time window
 sar -d -p -s 14:30:00 -e 15:00:00 -f /var/log/sa/sa15
 =====================
+##CPU
+#cpu -2 sec intervals
+sar 2 5
+sar -f /var/log/sa/sa02 -u -s 07:00:00 -e 08:00:00 > /tmp/xx
 
+#CPU Usage of Individual CPU or Core (sar -P)
+sar -P ALL 1 1
+sar -P ALL -f /var/log/sa/sa10 Displays CPU usage broken down by all cores 
+
+#Memory
+--today 
+sar -r -s 09:00:00 -e 11:30:00
+sar -r -s 09:00:00 -e 11:30:00 --human
+
+sar -f /var/log/sa/sa02 -r -s 14:00:00 -e 15:50:00
+
+#Network
+sar -n ALL
 =====================
 
 =====================
@@ -159,6 +176,115 @@ sar -d -p -s 14:30:00 -e 15:00:00 -f /var/log/sa/sa15
 =====================
 
 =====================
+-------------------------------------------------
+## using pidstat to trace io bottlenecks 
+
+pidstat (part of the sysstat package) is one of the best tools for diagnosing process-level I/O bottlenecks because it isolates which specific Process IDs (PIDs) are causing high disk activity and measures their exact throughput.
+Here is a guide on how to effectively use pidstat to trace I/O bottlenecks.
+
+=====================
+1. Real-Time Diagnostics (Catching Active Bottlenecks)
+Basic I/O Monitoring
+To monitor process I/O activity updated every second:
+
+pidstat -d 1
+    • -d: Tells pidstat to report I/O statistics.
+    • 1: Refreshes the output every 1 second.
+Key Metrics to Analyze:
+
+=====================
+2. Advanced Filtering Options
+A. Filter Out Inactive Processes (Clear Noise)
+
+To ignore idle processes and show only processes actively doing I/O:
+
+pidstat -d 1 | grep -v '0\.00.*0\.00'
+
+B. Display Full Command Lines
+
+By default, process names are truncated. Add -l to reveal full pathnames and execution arguments:
+pidstat -dl 1
+
+C. Monitor Threads Instead of Main Processes
+
+If a multithreaded application (like Java, PostgreSQL, or MySQL) is hammering the disk, use -t to break down I/O per Thread ID (TID):
+pidstat -dt 1
+
+D. Focus on a Specific Known PID
+
+If you already suspect a process ID (e.g., PID 4120):
+pidstat -d 1 -p 4120
+=====================
+3. Investigating Historical / Intermittent Bottlenecks
+
+Since high I/O spikes often happen briefly or during batch jobs, you can use pidstat to capture data over time.
+Measure Average I/O Over a Fixed Window
+
+To take 5 samples at 10-second intervals and display an average summary at the end:
+pidstat -dl 10 5
+
+Save Output to a Log File for Retrospective Analysis
+
+If an I/O slowdown happens randomly, run pidstat in the background with timestamps (-T DAILY or standard output redirection):
+nohup pidstat -dl -t 5 > /var/log/pidstat_io_trace.log 2>&1 &
+
+When the latency event occurs again, search the log file for peak read/write activity timestamps.
+=====================
+4. Combining pidstat with Other Diagnostic Tools
+
+Once pidstat identifies the offending process PID, combine it with these tools for root-cause analysis:
+
+    Verify if physical disk storage is maxed out (iostat):
+    iostat -xz 1
+
+    Check if %util is near 100% or if await (latency) is abnormally high for the target disk device.
+
+    See what files the process is actively reading/writing (lsof or fuser):
+    sudo lsof -p <PID> | grep REG
+
+    Trace exact write/read system calls (strace):
+    sudo strace -p <PID> -e trace=read,write,pwrite64,pread64 -f
+=====================	
+	
+-------------------------------------------------
+https://man7.org/linux/man-pages/man1/pidstat.1.html
+
+Common Options and Usage
+
+To use pidstat, you typically specify an interval (in seconds) and optionally a count.
+    • Monitor all processes (CPU stats): pidstat 2 5 (Checks all active tasks every 2 seconds, 5 times)
+    • Target a specific process: pidstat -p <PID> 1 (Monitors a specific Process ID once per second)
+    • Memory Usage: pidstat -r 2 (Reports page faults and memory usage)
+    • Disk I/O Usage: pidstat -d 2 (Reports read and write I/O metrics)
+    • Context Switches: pidstat -w 2 (Reports voluntary and involuntary context switches)
+    • Thread Analysis: pidstat -t (Displays statistics broken down by individual threads) 
+
+-------------------------------------------------
+what type of performance issue you are troubleshooting (e.g., high CPU, memory leaks, or disk I/O bottlenecks)
+
+--what type of performance issue you are troubleshooting (disk I/O bottlenecks)
+When troubleshooting disk I/O bottlenecks, you are dealing with a storage subsystem performance issue.
+ This occurs when the storage hardware (SSDs or HDDs) cannot process the read/write requests from the CPU or memory quickly enough, 
+ causing the entire system to stall.
+
+Core Metrics
+To isolate a disk I/O bottleneck, look at these four indicators:
+    • High I/O Wait (%iowait): The CPU sits idle while waiting for the storage drive to return data.
+    • High Queue Depth: A long list of pending read or write requests waiting to be executed.
+    • High Latency: The time it takes for a single I/O operation to complete exceeds healthy thresholds (typically >10–20 ms).
+    • High Disk Utilization: The disk is actively processing data close to 100% of the time, leaving no headroom.
+Common Root Causes
+    • Heavy Database Queries: Poorly indexed databases performing massive full-table scans.
+    • RAM Exhaustion & Swapping: When memory runs out, the OS relies heavily on virtual memory (swap space), multiplying disk traffic.
+    • Overlapping Background Tasks: Concurrent processes like log rotation, backups, or security scans running at peak times.
+    • Hardware Limitations: Reaching the maximum limits of physical drive IOPS or cloud-provider storage bandwidth caps.
+    • Degraded Storage Arrays: Hardware failures or parity calculations slowing down misconfigured or broken RAID setups.
+Essential Diagnostics
+    • iostat -xz 1 – Isolates specific disk metrics like extended read/write times and device saturation.
+    • iotop -o – Acts like a "task manager" to explicitly pinpoint the top processes consuming storage bandwidth.
+    • vmstat 1 – Monitors blocked processes (b column) and general CPU wait states. 
+
+-------------------------------------------------
 -------------------------------------------------
 -------------------------------------------------
 -------------------------------------------------
