@@ -179,7 +179,15 @@ Here are the primary causes of Linux system latency, categorized by the subsyste
 
 -------------------------------------------------
 -------------------------------------------------
+https://medium.com/@bektiaw
+https://medium.com/@bektiaw/13-tiny-bash-scripts-that-save-me-time-every-day-40b09fb61a06
+https://dev.to/numbpill3d/20-practical-bash-scripts-for-everyday-automation-2026-edition-3l7i
+https://evanhahn.com/scripts-i-wrote-that-i-use-all-the-time/
+https://www.tecmint.com/bash-scripts-linux-sysadmin/
 
+https://medium.com/@bektiaw/linux-kernel-tunables-to-boost-performance-and-stability-6267028fd0ca
+https://medium.com/@bektiaw/how-to-investigate-disk-i-o-bottlenecks-e6810b2511e3
+https://monzool.net/blog/2024/07/14/a-second-search-for-bash-scripting-alternatives/
 
 
 -------------------------------------------------
