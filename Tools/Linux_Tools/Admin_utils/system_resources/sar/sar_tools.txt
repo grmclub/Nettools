@@ -5,6 +5,19 @@ https://www.thegeekstuff.com/2011/03/sar-examples/
 https://www.thegeekstuff.com/2011/03/linux-performance-monitoring-intro/
 https://www.thegeekstuff.com/2010/01/15-practical-unix-linux-top-command-examples/
 
+=========================================================
+https://www.redhat.com/en/blog/troubleshooting-slow-servers
+
+##The "Big 3" (aka CPU, RAM, and Disk I/O)
+--Checking all of the "Big 3" with sar
+
+sar -u gives you info about all CPUs on the system, starting at midnight:
+sar -r, which give you that day’s memory usage
+sar -d, which gives you the disk I/O output using just the device name. To get the name of the devices, use sar -dP
+
+If any of these commands show a problem, you can go back to see when the server issues started by using sar {-u, -r, -d, -dP} -f /var/log/sa/sa<XX> (where XX is the day of the month you wish to look for).
+
+=========================================================
 ##sar utils
 sar -A /var/log/sa/sa09 |less
 sar -A -f sa21 > YYYYMM21.txt
