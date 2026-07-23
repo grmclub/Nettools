@@ -285,6 +285,11 @@ Essential Diagnostics
     • vmstat 1 – Monitors blocked processes (b column) and general CPU wait states. 
 
 -------------------------------------------------
+https://oneuptime.com/blog/post/2026-01-24-fix-disk-io-bottleneck/view
+https://levelup.gitconnected.com/troubleshooting-slowness-in-it-systems-causes-and-solutions-e514d712862f
+
+
+
 -------------------------------------------------
 -------------------------------------------------
 -------------------------------------------------
