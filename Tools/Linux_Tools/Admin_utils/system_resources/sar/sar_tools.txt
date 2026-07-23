@@ -23,7 +23,7 @@ sar -A /var/log/sa/sa09 |less
 sar -A -f sa21 > YYYYMM21.txt
 
 for file in $(ls /var/log/sa*);do sar -P ALL -f$file > ~/data/$file;done
-
+=========================================================
 ##sar display context switches per sec
 sar -w 1 3
 
