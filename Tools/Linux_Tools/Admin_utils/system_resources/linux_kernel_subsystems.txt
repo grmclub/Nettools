@@ -1,0 +1,232 @@
+
+https://eng.libretexts.org/Bookshelves/Computer_Science/Operating_Systems/Linux_-_The_Penguin_Marches_On_(McClanahan)/06%3A_Kernel_Module_Management/1.03%3A_Linux_Kernel_Subsystem
+https://docs.kernel.org/admin-guide/mm/concepts.html
+-------------------------------------------------
+The Core Subsystems
+The primary architecture of Linux relies on five fundamental subsystems that keep the system running:
+--p_schd,mm,vfs,net,ipc
+
+
+• Process Scheduler (sched): Controls CPU time distribution among all active tasks. It manages process states, handles multi-core load balancing, and ensures responsive multitasking. 
+
+• Memory Management Unit (mm): Allocates physical and virtual memory spaces to user applications and kernel structures. It handles swapping, demand paging, and memory protection. 
+
+• Virtual File System (vfs): Masks variations among data storage layouts by presenting a unified directory tree. It maps standard read/write actions to specific filesystems like ext4, XFS, or Btrfs. 
+
+• Network Stack (net): Standardizes network communications across diverse hardware interfaces. It manages standard protocols such as TCP/IP, routing rules, and packet filtering via Netfilter. 
+
+• Inter-Process Communication (ipc): Links processes together within the system environment. It routes messaging through shared memory segments, semaphores, and message queues.
+
+Hardware & Input Subsystems
+Beyond the core operations, dedicated functional subsystems interface directly with devices: 
+    • Device Drivers (drivers): Houses code tailored to explicit hardware parts. It populates sub-trees for graphics, USB hardware, and serial controllers. 
+    • Block I/O Layer (block): Intermediates between filesystems and physical media like SSDs or NVMe drives. It queues, merges, and prioritizes data storage operations. 
+    • Human Interface Devices (hid): Captures input signals from standard peripherals. It normalizes raw inputs from mice, keyboards, touchscreens, and joysticks. 
+    • Sound Subsystem (sound/ALSA): Drives audio cards and audio output streams. It standardizes mixing, digital-to-analog conversions, and MIDI control paths. 
+
+System Control & Security Subsystems
+These internal modules guard system stability and optimize hardware performance: 
+    • Power Management (pm): Directs sleep cycles, thermal monitoring, and component power-down events. It coordinates frequency scaling through CPUFreq.
+    • Crypto API (crypto): Consolidates cryptographic routines for the whole kernel. It speeds up storage encryption and secure network tunneling using hardware acceleration.
+    • Extended Berkeley Packet Filter (eBPF): Allows sandboxed programs to execute safely inside the kernel without changing source code. It drives low-overhead tracking, profiling, and security policies.
+
+-------------------------------------------------
+https://www.linkedin.com/pulse/kernel-mind-moon-hee-lee-miwze?trk=article-ssr-frontend-pulse_x-social-details_comments-action_comment-text
+https://www.linkedin.com/pulse/living-core-practical-overview-linux-kernel-architecture-moon-hee-lee-kbwqc
+
+Overview of the Linux Kernel Architecture
+
+When a Linux system boots, the kernel takes over early in the process — immediately after the firmware (BIOS or UEFI) and bootloader finish their tasks. At that point, the compressed Linux kernel image is loaded into memory, often alongside a minimal temporary root filesystem called initramfs, which assists with early setup tasks — such as loading necessary drivers — before switching to the real root filesystem and continuing system initialization.
+
+From that point on, the Linux kernel becomes responsible for managing hardware, enforcing security boundaries, and coordinating all user and system-level processes.
+
+Linux is a monolithic kernel with modular capabilities. This means that while the core components are part of a single binary, optional features like device drivers can be loaded and unloaded dynamically as needed.
+## User Space and Kernel Space
+
+A fundamental aspect of Linux architecture is the strict separation between user space and kernel space.
+
+    User space is where applications and user-level processes run. These programs have limited privileges — meaning they are restricted from directly accessing hardware, kernel memory, or executing privileged CPU instructions.
+    Kernel space, by contrast, contains the core of the operating system. It runs with full privileges, allowing it to manage memory, schedule processes, control I/O devices, and access all hardware resources.
+
+    🧩 What are privileges? Privileges refer to the CPU’s ability to execute certain operations. Only privileged code (like the kernel) can perform low-level tasks such as accessing device registers, modifying page tables, or issuing hardware interrupts. User-mode programs are restricted to a safer subset of operations.
+
+This separation is enforced by the CPU using hardware privilege levels, often called rings. On x86 systems, Ring 3 is used for user applications (least privileged), while Ring 0 is reserved for the kernel (most privileged).
+
+Transitions between the two happen via system calls, which are controlled and validated by the kernel to ensure safe access to system resources.
+🧩 Kernel Subsystems
+
+The Linux kernel is composed of several interdependent subsystems, each with a specific role:
+1. Process Scheduler
+
+The Linux process scheduler manages multitasking by deciding which process or thread runs on a CPU at any given moment. It ensures that all runnable tasks get access to CPU time, balancing between fairness, performance, and responsiveness.
+
+Linux uses a preemptive, priority-based scheduling system with support for multiple scheduling policies. The default policy, known as the Completely Fair Scheduler (CFS), maintains fairness by tracking how much CPU time each process has received and favoring those that have used less. It uses a red-black tree to efficiently select the next task to run.
+
+Beyond CFS, Linux also supports real-time policies like SCHED_FIFO, SCHED_RR, and SCHED_DEADLINE, which are used in latency-sensitive or deadline-driven applications.
+
+The scheduler also supports CPU affinity, load balancing, and context switching, making it scalable across multi-core systems and responsive under varying workloads.
+2. Memory Management (MM)
+
+The memory management subsystem is responsible for controlling how memory is allocated, accessed, and protected across all processes.
+
+Each process operates in its own virtual address space, isolated from others. The kernel uses the Memory Management Unit (MMU) and page tables to translate these virtual addresses to actual physical memory, enforcing access permissions in the process.
+
+This subsystem also manages:
+
+    Page allocation and reclamation
+    Swapping (moving pages to disk when RAM is low)
+    Shared memory and copy-on-write
+    Memory-mapped files (mmap)
+    Kernel and user memory separation
+
+By abstracting physical memory behind virtual addresses, the kernel ensures process isolation, efficient memory usage, and the ability to support features like demand paging and overcommitment.
+3. Virtual File System (VFS)
+
+The Virtual File System (VFS) is an abstraction layer within the kernel that provides a uniform interface to all supported file systems.
+
+Regardless of whether files are stored on ext4, Btrfs, XFS, NFS, or in-memory systems like tmpfs, the VFS exposes a common API (e.g., open(), read(), write(), stat()) to user-space applications.
+
+Internally, VFS translates these generic operations into file system-specific implementations. It manages key structures like:
+
+    Inodes (metadata about files)
+    Dentries (directory entries)
+    File descriptors and mount points
+
+By decoupling the user interface from storage backends, VFS allows the kernel to support multiple file systems simultaneously and provides a foundation for features like bind mounts, chroot, and overlay file systems.
+4. Device Drivers
+
+Device drivers are kernel components that abstract the hardware details of physical devices and provide standard interfaces for user-space and other kernel subsystems to interact with them.
+
+Drivers handle communication with devices such as:
+
+    Storage (e.g., SSDs, HDDs)
+    Input devices (e.g., keyboards, mice)
+    Network interfaces (e.g., Ethernet, Wi-Fi)
+    Graphics and sound hardware
+
+They translate high-level operations (like reading a file or sending a packet) into low-level instructions understood by the hardware.
+
+Drivers can be:
+
+    Built directly into the kernel (static)
+    Loaded dynamically at runtime as Loadable Kernel Modules (LKMs)
+
+This modularity allows Linux to support a wide range of hardware while keeping the core kernel lean and flexible.
+5. Networking Stack
+
+The Linux networking stack implements a full-featured, high-performance TCP/IP stack, making the kernel capable of handling both client and server networking roles.
+
+It supports essential features such as:
+
+    Packet routing and forwarding
+    Socket-based communication (e.g., TCP, UDP)
+    Traffic filtering and firewalling (via iptables/nftables)
+    Network address translation (NAT)
+    Protocol handling for IPv4, IPv6, ARP, ICMP, and more
+
+The stack is integrated with the kernel’s scheduler and memory manager to handle thousands of concurrent connections efficiently. It also supports advanced features like traffic shaping, bridging, tunneling, and virtual network interfaces, making it suitable for both general-purpose systems and complex network appliances.
+
+
+6. System Call Interface
+
+The system call interface provides a controlled gateway for user-space applications to access privileged kernel services such as file I/O, memory allocation, and process management.
+
+Examples include:
+
+    read(), write() – for file and device I/O
+    open(), close() – for managing file descriptors
+    fork(), execve() – for creating and executing processes
+    mmap(), brk() – for memory management
+
+Each system call is handled via a well-defined entry point in the kernel, allowing user applications to request services without breaking the boundary between user space and kernel space.
+
+
+7. IPC and Namespaces
+
+The Linux kernel provides several Interprocess Communication (IPC) mechanisms that allow processes to exchange data and synchronize actions:
+
+    Pipes and FIFOs – for unidirectional byte streams between processes
+    Semaphores and mutexes – for coordination and mutual exclusion
+    Message queues – for structured message passing
+    Shared memory (shm) – for fast data exchange via shared address space
+
+In addition to IPC, the kernel introduces namespaces and control groups (cgroups) to isolate and manage resources:
+
+    Namespaces partition global kernel resources (e.g., process IDs, networking, mount points) into isolated views per process group
+    Cgroups control and limit resource usage (CPU, memory, I/O) for sets of processes
+
+Together, these features form the foundation of process isolation and containerization in Linux, enabling technologies like Docker, LXC, and Kubernetes.
+🔌 Loadable Kernel Modules (LKMs)
+
+Although Linux uses a monolithic kernel design, it achieves flexibility through support for Loadable Kernel Modules (LKMs) — standalone components that can be loaded into or removed from the running kernel.
+
+Modules are commonly used to extend kernel functionality at runtime, including:
+
+    Device drivers
+    File system implementations
+    Network protocol stacks
+
+They can be managed using standard tools such as modprobe, insmod, and rmmod, all without requiring a system reboot.
+
+This design allows the kernel to remain small and efficient during boot, while supporting a wide range of hardware and configurations through on-demand extensibility.
+🔄 User-Kernel Interaction
+
+In Linux, user space and kernel space are strictly isolated, and only the kernel has the privilege to perform critical operations such as accessing hardware, managing memory, or scheduling tasks. When a user-space application needs to request one of these services, it must do so via a system call — the only controlled and secure entry point into the kernel.
+
+Here’s a breakdown of what happens during a system call:
+🧩 Step-by-Step: What Happens During a System Call
+
+1. User Program Calls a Library Function
+
+Applications typically invoke system calls through the C standard library (e.g., libc). For example, calling read(), write(), fork(), or mmap() triggers a corresponding syscall.
+
+2. CPU Switches to Kernel Mode
+
+A special instruction such as syscall (on x86_64), int 0x80 (legacy x86), or svc (on ARM) transitions the processor from user mode to kernel mode, saving the current state and jumping to the kernel's syscall entry point.
+
+3. The Kernel Dispatches the Request
+
+The kernel reads the syscall number (usually from the rax register on x86_64) and uses a syscall table to locate the appropriate handler function (e.g., sys_read()).
+
+4. Returning to User Space
+
+After executing the requested operation, the kernel places the result in a return register and uses an instruction like sysret to switch the CPU back to user mode.
+
+This interaction model is crucial to system design. It ensures that:
+
+    Only the kernel can perform privileged operations
+    Applications can safely request system resources
+    Stability and security are maintained across process boundaries
+
+🔐 Memory Protection and Process Isolation
+
+Linux relies on hardware support — primarily the Memory Management Unit (MMU) — to enforce strict separation between processes and between user and kernel memory.
+
+Each user-space process is given its own private virtual address space, isolated from all other processes. The MMU, guided by per-process page tables managed by the kernel, translates these virtual addresses into physical memory. This mechanism ensures that a process can only access memory explicitly allocated to it — and nothing more.
+
+Access control is further enforced by setting permission flags on each memory page (e.g., read/write, user/kernel). If a process attempts to access memory it doesn't own — or tries to write to a read-only or kernel-protected page — the CPU raises a page fault or segmentation fault, and the kernel responds by terminating the offending process.
+
+Kernel memory is similarly protected. It resides in a separate region of the address space that is inaccessible to user-mode code, even if a user process tries to guess or forge a kernel address.
+
+This architecture guarantees:
+
+    Security — processes can't tamper with each other or with the kernel
+    Stability — faults are isolated to the offending process
+    Multitasking safety — multiple processes can run concurrently without interference
+
+🧾 Conclusion
+
+The Linux kernel is a general-purpose, modular, and secure operating system core designed to run reliably across a wide range of hardware platforms. Its architecture is centered around the separation of user and kernel space, a well-defined set of core subsystems, and strict enforcement of memory protection and process isolation.
+
+By coordinating tasks like scheduling, memory management, I/O, and interprocess communication, the kernel offers a stable foundation for running applications, while preserving system integrity, security, and performance.
+
+Understanding how these components work together provides a solid foundation for exploring how modern operating systems are built, secured, and optimized.
+
+-------------------------------------------------
+https://medium.com/@pooyan.azadparvar/exploring-linux-kernel-internals-779ec5b377e9
+
+
+
+-------------------------------------------------
+-------------------------------------------------
+-------------------------------------------------
