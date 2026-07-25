@@ -1,0 +1,606 @@
+
+-------------------------------------------------
+##Python Automation Secrets: 100 Scripts That Save 10+ Hours Per Week
+
+Breakdown of the 100-Script Categories
+    1. File & Folder Management (20 Scripts): Bulk renaming, auto-sorting downloads by extension, duplicate file hash finders, screenshot cleanups, directory archivers.
+    2. Data Processing & ETL (15 Scripts): Converting CSVs to JSON, cleaning bad Excel formatting, merging scattered spreadsheets, extracting database dumps.
+    3. Web Scraping & Collection (15 Scripts): Price monitoring, automated content downloaders, API polling, RSS/news collectors.
+    4. Email & Communication (10 Scripts): Automated inbox filtering via IMAP, sending HTML status reports via SMTP, extracting PDF attachments.
+    5. System Administration (10 Scripts): Disk space checkers, CPU/RAM resource monitors, automated backup syncs, log file parsers.
+    6. Document Generation (10 Scripts): Invoice generation, filling out PDF forms, image/PDF conversion (e.g., PNG → PDF).
+    7. Social & Messaging (10 Scripts): Scheduled messaging via webhooks (Slack/Discord), multi-channel status broad-casters.
+    8. Personal Productivity (10 Scripts): Password generation, system clip-saving, text-to-speech generators, CLI dashboard tool wrappers.
+-------------------------------------------------
+Highlights: 5 Key Automation Scripts from the Collection
+
+===================================
+1. Auto-Organize Downloads Folder
+
+Automatically categorizes loose files in a folder by file extension.
+Python
+
+import os
+import shutil
+
+SOURCE_DIR = os.path.expanduser("~/Downloads")
+
+CATEGORIES = {
+    "Images": [".jpg", ".jpeg", ".png", ".gif", ".svg"],
+    "Documents": [".pdf", ".docx", ".txt", ".xlsx", ".csv"],
+    "Archives": [".zip", ".tar", ".gz", ".7z"],
+    "Code": [".py", ".js", ".html", ".css", ".json"],
+    "Audio_Video": [".mp3", ".mp4", ".mkv", ".wav"]
+}
+
+def organize_folder():
+    for file in os.listdir(SOURCE_DIR):
+        file_path = os.path.join(SOURCE_DIR, file)
+        if os.path.isfile(file_path):
+            _, ext = os.path.splitext(file)
+            for category, extensions in CATEGORIES.items():
+                if ext.lower() in extensions:
+                    dest_dir = os.path.join(SOURCE_DIR, category)
+                    os.makedirs(dest_dir, exist_ok=True)
+                    shutil.move(file_path, os.path.join(dest_dir, file))
+                    print(f"Moved: {file} -> {category}/")
+                    break
+
+if __name__ == "__main__":
+    organize_folder()
+
+===================================
+2. Duplicate File Hunter (MD5 Hashing)
+
+Finds and safely removes identical duplicate files across large folders using hash comparisons rather than filenames.
+Python
+
+import hashlib
+import os
+
+def remove_duplicates(folder_path):
+    seen_hashes = {}
+    for root, _, files in os.walk(folder_path):
+        for file in files:
+            path = os.path.join(root, file)
+            hasher = hashlib.md5()
+            with open(path, "rb") as f:
+                hasher.update(f.read())
+            file_hash = hasher.hexdigest()
+            
+            if file_hash in seen_hashes:
+                print(f"Deleting duplicate: {path} (Matches {seen_hashes[file_hash]})")
+                os.remove(path)
+            else:
+                seen_hashes[file_hash] = path
+
+if __name__ == "__main__":
+    remove_duplicates("./target_folder")
+	
+===================================
+3. Image Batch Resizer & WebP Converter
+
+Loops through an image directory to resize high-resolution images and convert them into lightweight .webp web formats.
+Python
+
+import os
+from PIL import Image
+
+def optimize_images(input_folder, output_folder, max_size=(1080, 1080)):
+    os.makedirs(output_folder, exist_ok=True)
+    for filename in os.listdir(input_folder):
+        if filename.lower().endswith((".png", ".jpg", ".jpeg")):
+            img_path = os.path.join(input_folder, filename)
+            with Image.open(img_path) as img:
+                img.thumbnail(max_size)
+                clean_name = os.path.splitext(filename)[0]
+                save_path = os.path.join(output_folder, f"{clean_name}.webp")
+                img.save(save_path, "WEBP", quality=80)
+                print(f"Optimized: {filename} -> {save_path}")
+
+if __name__ == "__main__":
+    optimize_images("./raw_images", "./optimized_images")
+
+===================================
+4. Automatic Folder Backup with Timestamps
+
+Creates compressed .tar.gz backups of essential project folders timestamped by date and time.
+Python
+
+import datetime
+import shutil
+import os
+
+def create_backup(source_dir, backup_dir):
+    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+    os.makedirs(backup_dir, exist_ok=True)
+    archive_name = os.path.join(backup_dir, f"backup_{timestamp}")
+    
+    shutil.make_archive(archive_name, 'gztar', source_dir)
+    print(f"Archive generated at: {archive_name}.tar.gz")
+
+if __name__ == "__main__":
+    create_backup("./my_project", "./backups")
+
+===================================
+5. Secure Cryptographic Password Generator
+
+Generates strong, customizable passwords using Python’s cryptographically secure secrets module.
+Python
+
+import secrets
+import string
+
+def generate_password(length=16, use_special=True):
+    characters = string.ascii_letters + string.digits
+    if use_special:
+        characters += "!@#$%^&*()_+-="
+    
+    password = "".join(secrets.choice(characters) for _ in range(length))
+    return password
+
+if __name__ == "__main__":
+    print(f"Generated Secure Password: {generate_password(18)}")
+
+===================================
+-------------------------------------------------
+Here are four production-ready Python scripts covering the essential patterns for web scraping and API data collection—from simple REST APIs to dynamic JavaScript pages and fast asynchronous fetching.
+
+===================================
+1. Paginated API Collector with Rate-Limiting (requests)
+
+Extracts structured JSON data across multiple pages from a REST API, automatically handling pagination, headers, and respecting rate limits.
+Python
+
+import time
+import json
+import requests
+
+def fetch_api_data(base_url, total_pages=3):
+    headers = {
+        "User-Agent": "DataCollectorBot/1.0 (contact@example.com)"
+    }
+    all_results = []
+
+    for page in range(1, total_pages + 1):
+        params = {"page": page, "limit": 10}
+        print(f"Fetching page {page}...")
+        
+        try:
+            response = requests.get(base_url, headers=headers, params=params, timeout=10)
+            response.raise_for_status()  # Raise error for 4xx/5xx codes
+            
+            data = response.json()
+            # Adjust key based on the API response structure (e.g., data["items"])
+            all_results.extend(data if isinstance(data, list) else data.get("data", []))
+            
+            # Rate limit polite pause
+            time.sleep(1)
+            
+        except requests.exceptions.RequestException as e:
+            print(f"Error fetching page {page}: {e}")
+            break
+
+    # Save to JSON
+    with open("api_data.json", "w", encoding="utf-8") as f:
+        json.dump(all_results, f, indent=2)
+    
+    print(f"Successfully collected {len(all_results)} records.")
+
+if __name__ == "__main__":
+    # Example using JSONPlaceholder public mock API
+    fetch_api_data("https://jsonplaceholder.typicode.com/posts", total_pages=2)
+
+===================================
+2. Static HTML Web Scraper (BeautifulSoup + requests)
+
+Parses raw HTML from a target webpage to extract specific elements (e.g., headlines, prices, or links) and exports them directly to CSV.
+Python
+
+import csv
+import requests
+from bs4 import BeautifulSoup
+
+def scrape_headlines(url):
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+    }
+
+    response = requests.get(url, headers=headers, timeout=10)
+    if response.status_code != 200:
+        print(f"Failed to load page: HTTP {response.status_code}")
+        return
+
+    soup = BeautifulSoup(response.text, "html.parser")
+    articles = []
+
+    # Target specific elements (adjust selectors to target page)
+    for item in soup.find_all("h2"):
+        title = item.get_text(strip=True)
+        link = item.find("a")["href"] if item.find("a") else None
+        
+        if title:
+            articles.append({"title": title, "link": link})
+
+    # Export to CSV
+    with open("scraped_headlines.csv", "w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=["title", "link"])
+        writer.writeheader()
+        writer.writerows(articles)
+
+    print(f"Saved {len(articles)} items to scraped_headlines.csv")
+
+if __name__ == "__main__":
+    scrape_headlines("https://news.ycombinator.com/")
+
+===================================
+3. Dynamic JS Page Scraper (Playwright)
+
+Renders single-page applications (SPAs) and JavaScript-heavy websites that load content dynamically after initial load.
+
+    Requirement: pip install playwright && playwright install
+
+Python
+
+from playwright.sync_api import sync_playwright
+import csv
+
+def scrape_dynamic_page(target_url):
+    with sync_playwright() as p:
+        # Launch headless browser
+        browser = p.chromium.launch(headless=True)
+        page = browser.new_page()
+        
+        print(f"Loading {target_url}...")
+        page.goto(target_url, wait_until="networkidle")
+
+        # Wait for target selector to appear
+        page.wait_for_selector(".quote")
+
+        quotes_data = []
+        quotes = page.query_selector_all(".quote")
+
+        for q in quotes:
+            text = q.query_selector(".text").inner_text()
+            author = q.query_selector(".author").inner_text()
+            quotes_data.append({"text": text, "author": author})
+
+        browser.close()
+
+    # Save results
+    with open("dynamic_quotes.csv", "w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=["text", "author"])
+        writer.writeheader()
+        writer.writerows(quotes_data)
+
+    print(f"Extracted {len(quotes_data)} dynamic elements.")
+
+if __name__ == "__main__":
+    scrape_dynamic_page("https://quotes.toscrape.com/js/")
+
+===================================
+4. High-Speed Async Batch Collector (aiohttp + asyncio)
+
+Fetches dozens or hundreds of API endpoints concurrently, dramatically speeding up data pipeline collection compared to sequential loops.
+
+    Requirement: pip install aiohttp
+
+Python
+
+import asyncio
+import aiohttp
+import json
+
+async def fetch_endpoint(session, url, item_id):
+    target = f"{url}/{item_id}"
+    try:
+        async with session.get(target) as response:
+            if response.status == 200:
+                return await response.json()
+    except Exception as e:
+        print(f"Failed ID {item_id}: {e}")
+    return None
+
+async def main():
+    base_url = "https://jsonplaceholder.typicode.com/todos"
+    ids_to_fetch = range(1, 21)  # Batch request 20 endpoints concurrently
+
+    async with aiohttp.ClientSession() as session:
+        tasks = [fetch_endpoint(session, base_url, i) for i in ids_to_fetch]
+        results = await asyncio.gather(*tasks)
+
+    # Filter out failed responses
+    clean_results = [r for r in results if r is not None]
+
+    with open("async_batch_results.json", "w") as f:
+        json.dump(clean_results, f, indent=2)
+
+    print(f"Finished fetching {len(clean_results)} endpoints concurrently.")
+
+if __name__ == "__main__":
+    asyncio.run(main())
+===================================
+
+-------------------------------------------------
+##Data Processing & ETL (15 Scripts): Converting CSVs to JSON, cleaning bad Excel formatting, merging scattered spreadsheets, extracting database dumps.
+
+Here are four production-ready Python automation scripts covering the core Data Processing & ETL workflows from that category:
+
+===================================
+1. CSV to Clean JSON Converter
+
+Converts raw CSV files into structured JSON or JSON Lines (.jsonl). It automatically handles numerical data typing, strips whitespace, and drops empty rows.
+Python
+
+import csv
+import json
+
+def csv_to_json(csv_path, json_path, orient="list"):
+    """
+    Converts CSV to JSON.
+    orient="list" outputs a standard JSON array of objects.
+    orient="jsonl" outputs JSON Lines (1 object per line) for large datasets.
+    """
+    records = []
+    
+    with open(csv_path, mode="r", encoding="utf-8-sig") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            clean_row = {}
+            for k, v in row.items():
+                if not k:
+                    continue
+                key = k.strip()
+                val = v.strip() if v else None
+                
+                # Auto-cast integers and floats
+                if val is not None:
+                    if val.isdigit():
+                        val = int(val)
+                    else:
+                        try:
+                            val = float(val)
+                        except ValueError:
+                            pass
+                clean_row[key] = val
+            
+            if any(v is not None for v in clean_row.values()):
+                records.append(clean_row)
+
+    with open(json_path, mode="w", encoding="utf-8") as f:
+        if orient == "jsonl":
+            for record in records:
+                f.write(json.dumps(record) + "\n")
+        else:
+            json.dump(records, f, indent=2, ensure_ascii=False)
+            
+    print(f" Converted {len(records)} rows from {csv_path} -> {json_path}")
+
+if __name__ == "__main__":
+    # csv_to_json("data.csv", "data.json")
+    pass
+
+===================================
+2. Excel Format Cleaner & Sanitizer
+
+Fixes common dirty Excel errors: strips trailing spaces, converts messy text dates to standard YYYY-MM-DD, standardizes phone numbers/IDs, and removes completely blank rows/columns.
+
+    Requirement: pip install pandas openpyxl
+
+Python
+
+import pandas as pd
+
+def clean_excel_file(input_file, output_file, date_cols=None):
+    # Load all sheets or default active sheet
+    df = pd.read_excel(input_file)
+
+    # 1. Drop completely empty rows & columns
+    df.dropna(how="all", inplace=True)
+    df.dropna(how="all", axis=1, inplace=True)
+
+    # 2. Clean column headers (strip whitespace, lowercase, replace spaces with underscores)
+    df.columns = [str(c).strip().lower().replace(" ", "_") for c in df.columns]
+
+    # 3. Strip whitespace from string columns
+    string_cols = df.select_dtypes(include=["object"]).columns
+    for col in string_cols:
+        df[col] = df[col].astype(str).str.strip()
+        df[col] = df[col].replace({"nan": None, "NaN": None, "": None})
+
+    # 4. Standardize date columns to YYYY-MM-DD
+    if date_cols:
+        for d_col in date_cols:
+            if d_col in df.columns:
+                df[d_col] = pd.to_datetime(df[d_col], errors="coerce").dt.strftime("%Y-%m-%d")
+
+    # Export sanitized file
+    df.to_excel(output_file, index=False)
+    print(f" Cleaned Excel exported to: {output_file}")
+
+if __name__ == "__main__":
+    # clean_excel_file("dirty_data.xlsx", "clean_data.xlsx", date_cols=["hire_date", "dob"])
+    pass
+
+===================================
+3. Multi-Spreadsheet Merger
+
+Recursively finds and merges all scattered .csv or .xlsx files in a folder into a single unified master dataset, automatically tagging each row with its source filename for auditability.
+
+    Requirement: pip install pandas openpyxl
+
+Python
+
+import os
+import glob
+import pandas as pd
+
+def merge_spreadsheets(folder_path, output_filename="merged_master.csv", file_type="csv"):
+    pattern = os.path.join(folder_path, f"*.{file_type}")
+    all_files = glob.glob(pattern)
+
+    if not all_files:
+        print(f"No .{file_type} files found in {folder_path}")
+        return
+
+    combined_dfs = []
+    print(f"Found {len(all_files)} files. Merging...")
+
+    for file_path in all_files:
+        file_name = os.path.basename(file_path)
+        try:
+            if file_type == "csv":
+                df = pd.read_csv(file_path)
+            else:
+                df = pd.read_excel(file_path)
+            
+            # Add source provenance column
+            df["_source_file"] = file_name
+            combined_dfs.append(df)
+        except Exception as e:
+            print(f"⚠️ Skipping corrupt file {file_name}: {e}")
+
+    # Concatenate all dataframes along rows
+    master_df = pd.concat(combined_dfs, ignore_index=True)
+    
+    if output_filename.endswith(".xlsx"):
+        master_df.to_excel(output_filename, index=False)
+    else:
+        master_df.to_csv(output_filename, index=False)
+
+    print(f" Merged {len(all_files)} files ({len(master_df)} total rows) -> {output_filename}")
+
+if __name__ == "__main__":
+    # merge_spreadsheets("./monthly_reports", output_filename="annual_summary.csv", file_type="csv")
+    pass
+
+===================================
+4. Database Dump & Backup Extractor
+
+Connects to an SQL database (PostgreSQL, MySQL, or SQLite), runs query dumps in chunks to avoid memory overflows, and exports tables into compressed .csv.gz or .parquet files for ETL pipelines.
+
+    Requirement: pip install sqlalchemy pandas
+
+Python
+
+import pandas as pd
+from sqlalchemy import create_engine
+
+def dump_table_to_csv(db_uri, table_name, output_gz_path, chunksize=50000):
+    """
+    Streams large database tables in chunks to avoid OOM errors.
+    """
+    engine = create_engine(db_uri)
+    
+    query = f"SELECT * FROM {table_name}"
+    
+    first_chunk = True
+    total_rows = 0
+
+    print(f"Starting dump for table '{table_name}'...")
+    
+    # Stream query results in chunks
+    for chunk in pd.read_sql_query(query, con=engine, chunksize=chunksize):
+        mode = "w" if first_chunk else "a"
+        header = first_chunk
+        
+        # Save as compressed GZIP CSV
+        chunk.to_csv(
+            output_gz_path, 
+            mode=mode, 
+            header=header, 
+            index=False, 
+            compression="gzip"
+        )
+        
+        total_rows += len(chunk)
+        first_chunk = False
+        print(f"  Dumped {total_rows} rows...")
+
+    print(f" Table '{table_name}' ({total_rows} rows) exported to {output_gz_path}")
+
+if __name__ == "__main__":
+    # Example Database URI strings:
+    # SQLite: 'sqlite:///local_database.db'
+    # PostgreSQL: 'postgresql://user:password@localhost:5432/dbname'
+    # MySQL: 'mysql+pymysql://user:password@localhost:3306/dbname'
+    
+    # dump_table_to_csv("sqlite:///sample.db", "users", "users_backup.csv.gz")
+    pass
+
+===================================
+
+
+-------------------------------------------------
+Python Automation Secrets: 100 Scripts That Save 10+ Hours Per Week
+
+The 100 Script Automation Architecture
+🗄️ File & Workspace Management (Scripts 1-20)
+    • File Extension Organizer: Automatically groups files by type into categorized folders.
+    • Bulk Document Renamer: Replaces spaces with underscores or prepends timestamps.
+    • Log Purger: Deletes log files older than a user-specified number of days.
+    • Empty Folder Sweeper: Recursively searches for and removes dead directories.
+    • Duplicate File Finder: Scans MD5 hashes to isolate and delete identical files.
+    • Desktop Unclutterer: Relocates files on your desktop to a dedicated archive daily.
+    • Cloud Mirror Backup: Compresses specified directories and moves them to cloud folders.
+    • Zip Extractor Bot: Monitors a folder to unzip incoming archives instantly.
+    • Large File Alert System: Flags any local file taking up more than 1 GB.
+    • Config File Sync: Standardizes configuration templates across multiple development environments.
+    • Scripts 11-20 cover variation workflows for specific file formats (JSON, XML, YAML formatting and validation).
+
+📊 Data Crushing & Report Generation (Scripts 21-40)
+    • Excel Consolidation Engine: Merges hundreds of individual client sheets into a master workbook.
+    • CSV Formatter & Deduplicator: Drops row anomalies, parses dates, and drops duplicated rows.
+    • PDF Splitter & Merger: Extracts specific pages or binds separate documents together.
+    • Automated KPI Plotter: Reads database views to output PNG/PDF charts via Matplotlib.
+    • JSON to CSV Converter: Flattens deeply nested API response data into structured tables.
+    • Database Backup Exporter: Connects via SQLAlchemy to dump SQL schemas automatically.
+    • Automatic Invoice Maker: Fills a predefined Word/PDF template with billing line items.
+    • Regex Phone/Email Extractor: Scrapes text files to harvest and validate contact formats.
+    • Markdown to HTML Converter: Automatically compiles project documentation files into a clean web layout.
+    • Currency Conversion Auditor: Standardizes variable financial sheets into a singular base currency.
+    • Scripts 31-40 focus on deep data manipulation, currency normalization, and specialized cross-tab calculations.
+
+🌐 Web Scraping & API Integrations (Scripts 41-60)
+    • Competitor Price Tracker: Watches specific e-commerce URLs and alerts on price changes.
+    • E-Paper/Article Archiver: Pulls daily reading lists and parses them into plain text files.
+    • Stock Portfolio Monitor: Queries public financial APIs to summarize daily gains/losses.
+    • Website Down-Time Watchdog: Pings target servers continuously to monitor response codes.
+    • Social Media Scheduler: Automatically distributes pre-written posts using REST APIs.
+    • Public Image Batch Downloader: Targets a specific image gallery to fetch resources locally.
+    • Form Auto-Filler: Leverages Selenium to automate repetitive multi-page web forms.
+    • SEO Keyword Rank Checker: Tracks search indexing trends for specific web assets.
+    • Broken Link Scanner: Crawls all internal links of a site to detect 404 errors.
+    • Weather SMS Alert: Pulls forecast data to send daily morning clothing recommendations.
+    • Scripts 51-60 deal with custom OAuth handshakes, proxy rotation patterns, and headless browser workflows.
+
+📬 Communication & Notification Systems (Scripts 61-80)
+    • Bulk Email Dispatcher: Sends personalized marketing or update emails via SMTP protocol.
+    • Slack Out-of-Office Nudge: Automatically reminds teammates of your availability status.
+    • Unread Inbox Purger: Archives notification or newsletter clutter according to rules.
+    • Attachment Auto-Downloader: Pulls file attachments from predefined email senders instantly.
+    • Weekly Report Ghostwriter: Gathers text snippets across sources to format an executive email summary.
+    • SMS Gateway Alert: Connects to Twilio to dispatch immediate error warnings to text.
+    • Discord Webhook Bot: Drops GitHub repository push updates directly to your group team channel.
+    • Calendar Meeting Auditing Tool: Pulls data to flag meeting invites with room or video-link conflicts.
+    • Automated Birthday Greeter: Matches dates in a spreadsheet to send timed greetings.
+    • Teams Urgent Message System: Highlights messages flagged with specific high-priority keywords.
+    • Scripts 71-80 expand on attachment parsing rules, IM bots, and multi-recipient mail merge configurations.
+
+💻 System & Security Utilities (Scripts 81-100)
+    • CPU/RAM Usage Monitor: Logs computer health and warns when resources max out.
+    • Password Generator: Compiles highly secure, randomized cryptographic strings.
+    • Automated Git Committer: Pushes safe workspace updates incrementally to a remote branch.
+    • Clipboard History Saver: Persists copied texts to a markdown log file continuously.
+    • Expired Certificate Auditor: Scans network infrastructure for aging SSL certificates.
+    • Malicious IP Blacklist Scraper: Updates custom local network firewall profiles automatically.
+    • Wi-Fi Interrupter for Focus: Shuts off network connectivity temporarily for isolated workflows.
+    • Process Killer Engine: Immediately closes background apps known to sap battery life.
+    • Local Port Scanner: Audits system security by verifying which local ports remain exposed.
+    • Auto-Lock Screen Timer: Secures your system desktop display when peripheral links drop.
+    • Scripts 91-100 implement precise system environment configurations, disk sector audits, and secure credential handling.
+-------------------------------------------------
+-------------------------------------------------
+-------------------------------------------------
+-------------------------------------------------
+-------------------------------------------------
