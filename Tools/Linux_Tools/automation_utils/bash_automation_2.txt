@@ -1,0 +1,576 @@
+
+-------------------------------------------------
+##20 Practical Bash Scripts for Everyday Automation (2026 Edition) 
+https://dev.to/numbpill3d/20-practical-bash-scripts-for-everyday-automation-2026-edition-3l7i
+
+1. Automatic System Update Script
+
+If you maintain Linux machines, updates become routine maintenance. Automating them prevents neglected systems.
+
+#!/bin/bash
+echo "Updating package lists…"
+sudo apt update
+echo "Upgrading packages…"
+sudo apt upgrade -y
+echo "Removing unnecessary packages…"
+sudo apt autoremove -y
+echo "System update completed at $(date)"
+
+You can run this manually or schedule it with cron.
+
+Example cron entry:
+
+0 3 * * * /home/user/scripts/update.sh
+
+Now your system updates itself every night at 3 AM.
+
+
+===================================
+2. Bulk File Renamer
+
+Anyone who works with downloaded datasets, photos, or scraped content eventually needs to rename hundreds of files.
+
+#!/bin/bash
+count=1
+for file in *.jpg; do
+. mv "$file" "image_$count.jpg"
+. ((count++))
+done
+
+You can easily modify this for other formats or naming patterns.
+
+===================================
+3. Disk Usage Analyzer
+
+When storage mysteriously disappears, this script quickly identifies large directories.
+
+#!/bin/bash
+echo "Top 10 Largest Directories:"
+du -h - max-depth=1 | sort -hr | head -10
+
+Run it inside any directory and immediately see where space is being consumed.
+
+===================================
+4. Automatic Backup Script
+
+Backups should never rely on memory.
+
+#!/bin/bash
+SOURCE="/home/user/projects"
+DEST="/mnt/backup/projects"
+rsync -av - delete "$SOURCE" "$DEST"
+echo "Backup completed at $(date)"
+
+This uses rsync, which is efficient and only transfers changed files.
+
+===================================
+5. Website Uptime Monitor
+
+A simple Bash script can check if a website is alive.
+
+#!/bin/bash
+URL="https://example.com"
+status=$(curl -o /dev/null -s -w "%{http_code}" $URL)
+if [ "$status" == "200" ]; then
+. echo "Website is online"
+else
+. echo "Website appears down (Status: $status)"
+fi
+
+===================================
+Add notifications or logging for production monitoring.
+6. Log File Watcher
+
+Security researchers and sysadmins constantly monitor logs.
+
+#!/bin/bash
+LOGFILE="/var/log/auth.log"
+tail -f "$LOGFILE"
+
+This streams login activity in real time.
+
+Add grep filters to isolate failed login attempts
+
+===================================
+7. Git Auto Commit Script
+
+If you maintain small personal projects or notes repositories, automation helps maintain commit history.
+
+#!/bin/bash
+cd /home/user/projects/myrepo
+git add .
+git commit -m "Automated commit $(date)"
+git push
+
+Run via cron for periodic snapshots.
+
+===================================
+8. Batch Image Converter
+
+Convert entire directories of images using ImageMagick.
+
+#!/bin/bash
+for file in *.png; do
+. convert "$file" "${file%.png}.jpg"
+done
+
+Useful for web asset pipelines.
+
+===================================
+9. Directory Organizer
+
+Automatically sort files into folders by extension.
+
+#!/bin/bash
+for file in *; do
+. if [ -f "$file" ]; then
+. ext="${file##*.}"
+. mkdir -p "$ext"
+. mv "$file" "$ext/"
+. fi
+done
+
+Your messy download directory instantly becomes structured.
+
+===================================
+10. Network Scanner
+
+A lightweight Bash-based network scanner.
+
+#!/bin/bash
+network="192.168.1"
+for ip in {1..254}; do
+. ping -c 1 "$network.$ip" &> /dev/null && echo "$network.$ip is online"
+done
+
+Useful for quickly identifying active devices.
+
+===================================
+11. Quick Archive Script
+
+Compress directories automatically.
+
+#!/bin/bash
+DIR=$1
+tar -czvf "$DIR.tar.gz" "$DIR"
+echo "Archive created: $DIR.tar.gz"
+
+Usage:
+
+./archive.sh myfolder
+
+===================================
+12. Weather From Terminal
+
+Yes, Bash can fetch weather data.
+
+#!/bin/bash
+curl wttr.in
+
+For a specific city:
+
+curl wttr.in/NewYork
+
+Surprisingly readable.
+
+===================================
+13. Random Password Generator
+
+Security professionals often need quick credentials.
+
+#!/bin/bash
+openssl rand -base64 16
+
+Produces a secure random password instantly.
+
+===================================
+14. Process Killer by Name
+
+When runaway programs appear, this script cleans them quickly.
+
+#!/bin/bash
+PROCESS=$1
+pkill "$PROCESS"
+echo "$PROCESS processes terminated."
+
+Usage:
+
+./killproc.sh chrome
+
+===================================
+15. File Change Monitor
+
+Detect when files are modified.
+
+#!/bin/bash
+WATCH_DIR="/home/user/projects"
+inotifywait -m -r "$WATCH_DIR"
+
+This is excellent for build pipelines or security monitoring.
+
+===================================
+16. Automatic Screenshot Tool
+
+For documentation or testing workflows.
+
+#!/bin/bash
+import -window root screenshot_$(date +%F_%T).png
+
+Requires ImageMagick.
+
+
+===================================
+17. CPU Temperature Monitor
+
+Hardware monitoring is easy with Bash.
+
+#!/bin/bash
+watch -n 2 sensors
+
+Updates CPU temperatures every two seconds.
+
+
+===================================
+18. Internet Speed Test
+
+Quick network benchmarking.
+
+#!/bin/bash
+curl -s https://raw.githubusercontent.com/sivel/speedtest-cli/master/speedtest.py | python3 -
+
+Many engineers keep a script like this handy.
+
+
+===================================
+19. Project Bootstrap Script
+
+Starting new projects often means creating the same directory structure.
+
+#!/bin/bash
+PROJECT=$1
+mkdir -p "$PROJECT"/{src,docs,tests}
+touch "$PROJECT/README.md"
+echo "Project structure created for $PROJECT"
+
+Usage:
+
+./bootstrap.sh myapp
+
+===================================
+20. Daily Journal Logger
+
+A surprisingly useful script.
+
+#!/bin/bash
+FILE="$HOME/journal_$(date +%F).txt"
+echo "$(date): $1" >> "$FILE"
+
+Usage:
+
+./log.sh "Investigated strange network traffic today."
+
+Over time you build a searchable engineering diary.
+
+===================================
+-------------------------------------------------
+##5 Bash Scripts to Automate Your Linux Server Tasks
+
+===================================
+1. Disk Usage Monitor Script
+
+This script checks all mounted partitions and sends an email alert if any of them go above 80% usage.
+
+#!/bin/bash
+
+THRESHOLD=80
+EMAIL="admin@example.com"
+
+df -hP | grep -vE '^Filesystem|tmpfs|devtmpfs|udev' | while read -r line; do
+  USAGE=$(echo "$line" | awk '{print $5}' | sed 's/%//')
+  MOUNTPOINT=$(echo "$line" | awk '{print $6}')
+
+  if [ "$USAGE" -ge "$THRESHOLD" ]; then
+    echo "Warning: $MOUNTPOINT is at ${USAGE}% on $HOSTNAME" | \
+      mail -s "Disk Alert: $HOSTNAME" "$EMAIL"
+  fi
+done
+===================================
+2. System Update Automation Script
+
+Keeping packages updated is one of the easiest and most effective security practices on any Linux server, but logging into every machine, running updates manually, and checking the output doesn’t scale well, especially if you manage multiple servers.
+
+This script automates the full update process, logs everything for later review, and sends you a short email summary so you know what changed.
+
+On Ubuntu:
+
+#!/bin/bash
+
+LOGFILE="/var/log/sys-updates.log"
+EMAIL="admin@example.com"
+
+echo "=== Update started: $(date) ===" >> "$LOGFILE"
+apt update >> "$LOGFILE" 2>&1
+apt upgrade -y >> "$LOGFILE" 2>&1
+apt autoremove -y >> "$LOGFILE" 2>&1
+echo "=== Update finished: $(date) ===" >> "$LOGFILE"
+
+tail -30 "$LOGFILE" | mail -s "Update Report: $HOSTNAME" "$EMAIL"
+
+On RHEL:
+
+#!/bin/bash
+
+LOGFILE="/var/log/sys-updates.log"
+EMAIL="admin@example.com"
+
+echo "=== Update started: $(date) ===" >> "$LOGFILE"
+dnf upgrade -y >> "$LOGFILE" 2>&1
+dnf autoremove -y >> "$LOGFILE" 2>&1
+echo "=== Update finished: $(date) ===" >> "$LOGFILE"
+
+tail -30 "$LOGFILE" | mail -s "Update Report: $HOSTNAME" "$EMAIL"
+
+-----------
+If email sending doesn’t work, install a mail utility first:
+
+sudo apt install mailutils #Ubuntu
+sudo dnf install mailx     #RHEL
+
+Once this is set up, your servers stay patched automatically, and you still get a quick daily summary without logging in manually.
+===================================
+3. Service Health Checker Script
+
+On any Linux server, services will fail sooner or later. It might be Apache, MySQL, SSH, or something critical to your application. The real problem is not the crash itself, but how long it stays down before you notice it.
+
+This script continuously checks your important services, restarts them if they are down, and sends you an alert so you know exactly what happened.
+
+#!/bin/bash
+
+SERVICES=("apache2" "mysql" "ssh")
+EMAIL="admin@example.com"
+
+for SERVICE in "${SERVICES[@]}"; do
+  if ! systemctl is-active --quiet "$SERVICE"; then
+    systemctl start "$SERVICE"
+    STATUS=$?
+    if [ $STATUS -eq 0 ]; then
+      echo "$SERVICE was down and has been restarted on $HOSTNAME" | \
+        mail -s "Service Restarted: $SERVICE on $HOSTNAME" "$EMAIL"
+    else
+      echo "$SERVICE failed to restart on $HOSTNAME. Manual intervention needed." | \
+        mail -s "Service FAILED to Restart: $SERVICE on $HOSTNAME" "$EMAIL"
+    fi
+  fi
+done
+
+===================================
+4. Backup Script for Important Files
+
+Backups are one of those things every Linux admin knows they should set up, but often delay until something actually breaks, and by then, it’s usually too late.
+
+This simple script helps you avoid that situation. It automatically creates a compressed backup of your important directories, checks whether it worked, sends you a status email, and also cleans up old backups so your storage doesn’t slowly fill up.
+
+#!/bin/bash
+
+BACKUP_DIR="/backup"
+SOURCE_DIRS="/etc /var/www /home"
+DATE=$(date +%F)
+BACKUP_FILE="$BACKUP_DIR/backup-$DATE.tar.gz"
+EMAIL="admin@example.com"
+RETENTION_DAYS=7
+
+mkdir -p "$BACKUP_DIR"
+
+tar -czf "$BACKUP_FILE" $SOURCE_DIRS 2>/dev/null
+EXIT_CODE=$?
+
+if [ $EXIT_CODE -eq 0 ]; then
+  SIZE=$(du -sh "$BACKUP_FILE" | awk '{print $1}')
+  echo "Backup completed: $BACKUP_FILE ($SIZE)" | \
+    mail -s "Backup Success: $HOSTNAME" "$EMAIL"
+else
+  echo "Backup FAILED on $HOSTNAME. Exit code: $EXIT_CODE" | \
+    mail -s "Backup FAILED: $HOSTNAME" "$EMAIL"
+fi
+
+find "$BACKUP_DIR" -name "backup-*.tar.gz" -mtime +$RETENTION_DAYS -delete
+
+===================================
+5. User Login Monitoring Script
+
+On a production Linux server, knowing who logs in is just as important as knowing what services are running. Especially for SSH access, unexpected logins can be an early sign of misconfiguration or even a security issue.
+
+This script keeps track of new login sessions and sends you an email only when something new happens, so you don’t have to constantly stare at logs.
+
+Ubuntu typically writes authentication logs to /var/log/auth.log, so we can monitor that file directly.
+
+#!/bin/bash
+
+LOGFILE="/var/log/auth.log"
+LAST_RUN_FILE="/tmp/login_monitor_last_run"
+EMAIL="admin@example.com"
+NOW=$(date +%s)
+
+if [ ! -f "$LAST_RUN_FILE" ]; then
+  date -d '5 minutes ago' +%s > "$LAST_RUN_FILE"
+fi
+
+LAST_RUN=$(cat "$LAST_RUN_FILE")
+
+LOGINS=$(awk '/session opened for user/ {
+  cmd = "date -d \""$1" "$2" "$3" $(date +%Y)\" +%s 2>/dev/null"
+  cmd | getline t
+  close(cmd)
+  if (t+0 >= '"$LAST_RUN"'+0 && t+0 <= '"$NOW"'+0) print $0 }' "$LOGFILE") if [ -n "$LOGINS" ]; then echo "$LOGINS" | mail -s "Login Activity: $HOSTNAME" "$EMAIL" fi echo "$NOW" > "$LAST_RUN_FILE"
+
+On RHEL-systems, it relies on systemd-journald, so we query logs using journalctl.
+#!/bin/bash
+
+LAST_RUN_FILE="/tmp/login_monitor_last_run"
+EMAIL="admin@example.com"
+NOW=$(date +%s)
+
+if [ ! -f "$LAST_RUN_FILE" ]; then
+  date -d '5 minutes ago' +%s > "$LAST_RUN_FILE"
+fi
+
+LAST_RUN=$(cat "$LAST_RUN_FILE")
+SINCE=$(date -d @"$LAST_RUN" '+%Y-%m-%d %H:%M:%S')
+
+LOGINS=$(journalctl _SYSTEMD_UNIT=sshd.service --since "$SINCE" --no-pager | \
+  grep "session opened for user")
+
+if [ -n "$LOGINS" ]; then
+  echo "$LOGINS" | mail -s "Login Activity: $HOSTNAME" "$EMAIL"
+fi
+
+echo "$NOW" > "$LAST_RUN_FILE"
+
+How it works (simple explanation):
+
+    LAST_RUN_FILE: stores the last time the script ran so it only checks new logins.
+    session opened for user: the log message generated when a user successfully logs in.
+    journalctl _SYSTEMD_UNIT=sshd.service: reads SSH login events on systems that use systemd logs instead of /var/log/auth.log.
+    if [ -n "$LOGINS" ]: ensures you only get an email when there is actual login activity.
+
+Run it every 5 minutes for near real-time visibility:
+
+*/5 * * * * /usr/local/bin/login-monitor.sh
+
+===================================
+
+
+
+-------------------------------------------------
+##Daily Linux Health Checks with a Bash Script + Cron
+https://www.tecmint.com/bash-script-automate-system-health-checks/
+
+What Will the Script Monitor?
+
+Here are the key system health checks we’ll include in the script:
+
+    Disk Usage – to catch low storage before it causes issues.
+    CPU Load – to spot unusually high load on the server.
+    Memory Usage – to identify memory pressure or leaks.
+    Failed Services – to know if any systemd service has crashed or failed silently.
+    Top 5 Memory & CPU-Hungry Processes – to find greedy applications.
+    System Uptime – to track unexpected reboots.
+    Available Package Updates (Optional) – helps keep your system secure and up-to-date.
+
+===================================
+
+#!/bin/bash
+
+# Author: Ravi Saive (Tecmint)
+# Description: Simple System Health Check Script
+
+LOGFILE="/var/log/system-health-$(date +%F).log"
+HOSTNAME=$(hostname)
+DATE=$(date)
+
+{
+echo "============================================"
+echo " System Health Report for $HOSTNAME"
+echo " Generated on: $DATE"
+echo "============================================"
+
+# Disk Usage
+echo -e "\nDisk Usage:"
+printf "%-20s %-10s %-10s %-10s %-6s %-s\n" "Filesystem" "Size" "Used" "Avail" "Use%" "Mounted on"
+df -h --output=source,size,used,avail,pcent,target | tail -n +2
+
+# CPU Load
+echo -e "\nCPU Load (1/5/15 min average):"
+uptime | awk -F'load average:' '{ print "  " $2 }'
+
+# Memory Usage
+echo -e "\nMemory Usage:"
+free -h | awk 'NR==1 || /Mem|Swap/ { printf "  %-10s %-10s %-10s %-10s %-10s %-10s\n", $1, $2, $3, $4, $5, $6 }'
+
+# Failed Services
+echo -e "\nFailed Systemd Services:"
+FAILED=$(systemctl --failed --no-legend)
+if [ -z "$FAILED" ]; then
+    echo "  No failed services."
+else
+    echo "$FAILED" | while read -r line; do
+        echo "  $line"
+    done
+fi
+
+# Top 5 Memory-Consuming Processes
+echo -e "\nTop 5 Memory Consuming Processes:"
+ps -eo user,pid,%cpu,%mem,command --sort=-%mem | head -n 6 | \
+awk '{ printf "  %-10s %-6s %-6s %-6s %-s\n", $1, $2, $3, $4, substr($0, index($0,$5), 60) }'
+
+# Top 5 CPU-Consuming Processes
+echo -e "\nTop 5 CPU Consuming Processes:"
+ps -eo user,pid,%cpu,%mem,command --sort=-%cpu | head -n 6 | \
+awk '{ printf "  %-10s %-6s %-6s %-6s %-s\n", $1, $2, $3, $4, substr($0, index($0,$5), 60) }'
+
+# Uptime
+echo -e "\nSystem Uptime:"
+echo "  $(uptime -p)"
+
+# Package Updates
+echo -e "\nAvailable Package Updates:"
+if command -v apt &> /dev/null; then
+    UPDATES=$(apt list --upgradable 2>/dev/null | grep -v "Listing...")
+    if [ -z "$UPDATES" ]; then
+        echo "  System is up to date."
+    else
+        echo "$UPDATES" | awk '{ print "  " $0 }'
+    fi
+elif command -v dnf &> /dev/null; then
+    dnf check-update || echo "  System is up to date."
+elif command -v yum &> /dev/null; then
+    yum check-update || echo "  System is up to date."
+else
+    echo "  Package manager not supported."
+fi
+
+echo -e "\nEnd of Report"
+
+} > "$LOGFILE"
+
+# Optional: Send report via mail (if mail is configured)
+MAIL_TO="your@email.com"
+if command -v mail > /dev/null 2>&1; then
+    mail -s "Daily Health Report for $HOSTNAME" "$MAIL_TO" < "$LOGFILE"
+fi
+
+
+===================================
+
+
+
+
+
+
+
+-------------------------------------------------
+-------------------------------------------------
+-------------------------------------------------
+-------------------------------------------------
+
+
