@@ -23,7 +23,7 @@ tar -czf "$BACKUP_DIR/$BACKUP_NAME" "$SOURCE_DIR"
 
 echo "Backup completed successfully: $BACKUP_DIR/$BACKUP_NAME"
 
-Use code with caution.
+------------------------------------
 2. Disk Space Monitor and Alert
 This script monitors system storage. It checks all partitions and flags any drive exceeding a specified threshold percentage. You can easily connect this to an email client or webhook. 
 bash
@@ -44,7 +44,7 @@ do
     fi
 done
 
-Use code with caution.
+------------------------------------
 3. Bulk File Renamer
 This utility safely replaces spaces with underscores (_) for all files inside a chosen directory. It helps clean up files downloaded from the web or shared across different operating systems. 
 bash
@@ -65,7 +65,7 @@ for file in *; do
     fi
 done
 
-Use code with caution.
+------------------------------------
 4. Website Availability Checker
 This lightweight script uses curl to ping a web service. It checks the HTTP response code to ensure your site or API server is running smoothly. 
 bash
@@ -82,7 +82,7 @@ else
     echo "WARNING: $URL might be down! (Status: $STATUS_CODE)."
 fi
 
-Use code with caution.
+------------------------------------
 5. Automated System Resource Cleanup
 Over time, temporary systems, development builds, and old caches consume valuable storage. This script clears common temporary directories, standard system logs, and broken symlinks.
 bash
