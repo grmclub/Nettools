@@ -1,0 +1,103 @@
+------------------------------------------------
+Here are five highly practical Bash scripts to automate daily workflows, system administration, and file management. 
+
+1. Automated Directory Backup
+This script creates a compressed .tar.gz archive of a specified folder. It appends a precise timestamp to prevent overwriting old backups and automatically creates the target backup directory if it does not exist. 
+bash
+
+#!/bin/bash
+# Backup a specific directory with a timestamp
+
+SOURCE_DIR="/path/to/source_folder"
+BACKUP_DIR="/path/to/backup_folder"
+TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+BACKUP_NAME="backup_$TIMESTAMP.tar.gz"
+
+# Create the backup folder if it missing
+if [ ! -d "$BACKUP_DIR" ]; then
+    mkdir -p "$BACKUP_DIR"
+fi
+
+# Compress and archive the source directory
+tar -czf "$BACKUP_DIR/$BACKUP_NAME" "$SOURCE_DIR"
+
+echo "Backup completed successfully: $BACKUP_DIR/$BACKUP_NAME"
+
+Use code with caution.
+2. Disk Space Monitor and Alert
+This script monitors system storage. It checks all partitions and flags any drive exceeding a specified threshold percentage. You can easily connect this to an email client or webhook. 
+bash
+
+#!/bin/bash
+# Alert when disk usage crosses the safety threshold
+
+THRESHOLD=80
+
+df -h | grep -vE '^Filesystem|tmpfs|cdrom' | awk '{ print $5 " " $1 }' | while read -r output;
+do
+    # Extract the numerical percentage value
+    usage=$(echo "$output" | awk '{ print $1 }' | cut -d'%' -f1)
+    partition=$(echo "$output" | awk '{ print $2 }')
+    
+    if [ "$usage" -ge "$THRESHOLD" ]; then
+        echo "ALERT: Partition $partition is at ${usage}% capacity!"
+    fi
+done
+
+Use code with caution.
+3. Bulk File Renamer
+This utility safely replaces spaces with underscores (_) for all files inside a chosen directory. It helps clean up files downloaded from the web or shared across different operating systems. 
+bash
+
+#!/bin/bash
+# Replace spaces in filenames with underscores
+
+TARGET_DIR="/path/to/target_directory"
+
+cd "$TARGET_DIR" || exit
+
+for file in *; do
+    # Check if the file name contains spaces
+    if [[ "$file" == *" "* ]]; then
+        new_name=$(echo "$file" | tr ' ' '_')
+        mv "$file" "$new_name"
+        echo "Renamed: '$file' -> '$new_name'"
+    fi
+done
+
+Use code with caution.
+4. Website Availability Checker
+This lightweight script uses curl to ping a web service. It checks the HTTP response code to ensure your site or API server is running smoothly. 
+bash
+
+#!/bin/bash
+# Check if a website or local web app is up
+
+URL="https://example.com"
+STATUS_CODE=$(curl -s -o /dev/null -w "%{http_code}" "$URL")
+
+if [ "$STATUS_CODE" -eq 200 ]; then
+    echo "SUCCESS: $URL is up and running (Status: $STATUS_CODE)."
+else
+    echo "WARNING: $URL might be down! (Status: $STATUS_CODE)."
+fi
+
+Use code with caution.
+5. Automated System Resource Cleanup
+Over time, temporary systems, development builds, and old caches consume valuable storage. This script clears common temporary directories, standard system logs, and broken symlinks.
+bash
+
+#!/bin/bash
+# Clean temporary files and broken system shortcuts
+
+echo "Starting system cleanup..."
+
+# Clear user cache files safely
+rm -rf ~/.cache/*
+
+# Find and delete broken symbolic links in the current workspace
+find . -type l ! -exec test -e {} \; -delete
+
+echo "Cleanup finished. System storage optimized."
+
+-------------------------------------------------
