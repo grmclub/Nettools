@@ -1,0 +1,698 @@
+
+-------------------------------------------------
+##20 Useful Python Automation Scripts Which I Use in Every Day Work
+Scripts That Increased the Productivity, Save Time and Boost Performance
+https://vishwajeetsinghrana8.medium.com/my-20-useful-python-automation-scripts-which-i-use-in-every-day-work-8bbcb082d60c
+
+====================================
+1. Automatic File Renamer
+
+When dealing with files, especially in bulk, renaming them manually can be a tedious task. This script automates the process by renaming multiple files according to a specified pattern.
+
+import os
+
+def batch_rename(path, prefix):
+    for filename in os.listdir(path):
+        if filename.endswith(".txt"):  # You can change this to any file extension
+            new_name = prefix + "_" + filename
+            os.rename(os.path.join(path, filename), os.path.join(path, new_name))
+batch_rename("/path/to/your/folder", "new_prefix")
+
+====================================
+2. File Backup Script
+
+This script automates the process of creating backups of important files or directories to another location, which is useful for data protection.
+
+import shutil
+
+def backup_directory(source, backup_location):
+    shutil.copytree(source, backup_location)
+backup_directory("/path/to/important/data", "/path/to/backup/location")
+
+====================================
+3. Daily Email Reminder
+
+This script sends a daily email reminder about upcoming tasks, meetings, or personal reminders. It utilizes Python’s smtplib and email modules.
+
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+
+def send_email(subject, body, to_email):
+    from_email = "your_email@gmail.com"
+    password = "your_password"
+    
+    msg = MIMEMultipart()
+    msg['From'] = from_email
+    msg['To'] = to_email
+    msg['Subject'] = subject
+    
+    msg.attach(MIMEText(body, 'plain'))
+    
+    server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+    server.login(from_email, password)
+    text = msg.as_string()
+    server.sendmail(from_email, to_email, text)
+    server.quit()
+send_email("Daily Reminder", "Don't forget to check your tasks for today!", "recipient@example.com")
+
+====================================
+4. Automated Web Scraping
+
+Web scraping can be easily automated using Python. This script pulls content from a website (e.g., news, stock prices) and saves it in a text file.
+
+import requests
+from bs4 import BeautifulSoup
+
+def scrape_website(url):
+    response = requests.get(url)
+    soup = BeautifulSoup(response.text, "html.parser")
+    content = soup.find_all("p")
+    with open("output.txt", "w") as f:
+        for paragraph in content:
+            f.write(paragraph.get_text() + "\n")
+scrape_website("https://www.example.com")
+
+====================================
+5. PDF to Text Converter
+
+This script converts PDF files to text format, making it easier to work with data in a machine-readable form.
+
+import PyPDF2
+
+def pdf_to_text(pdf_file):
+    with open(pdf_file, 'rb') as file:
+        reader = PyPDF2.PdfReader(file)
+        text = ""
+        for page in reader.pages:
+            text += page.extract_text()
+    with open("output.txt", "w") as f:
+        f.write(text)
+pdf_to_text("sample.pdf")
+
+====================================
+6. Automated System Health Check
+
+If you’re managing multiple servers or systems, running a health check script daily is a great way to monitor resources like CPU usage, memory, and disk space.
+
+import psutil
+
+def system_health_check():
+    cpu = psutil.cpu_percent()
+    memory = psutil.virtual_memory().percent
+    disk = psutil.disk_usage('/').percent
+    print(f"CPU: {cpu}%")
+    print(f"Memory: {memory}%")
+    print(f"Disk: {disk}%")
+system_health_check()
+
+====================================
+7. Bulk Image Resizer
+
+Resizing multiple images can be time-consuming, but this Python script uses the PIL library to resize images in bulk.
+
+from PIL import Image
+import os
+
+def resize_images(directory, width, height):
+    for filename in os.listdir(directory):
+        if filename.endswith((".jpg", ".jpeg", ".png")):
+            img = Image.open(os.path.join(directory, filename))
+            img = img.resize((width, height))
+            img.save(os.path.join(directory, f"resized_{filename}"))
+resize_images("/path/to/images", 800, 600)
+
+====================================
+8. Automated Report Generator
+
+Creating reports with predefined templates and data can be automated by using Python to pull data from a database or API and format it into a nice report.
+
+import pandas as pd
+
+def generate_report(data):
+    df = pd.DataFrame(data)
+    df.to_csv("report.csv", index=False)
+data = {"Name": ["Alice", "Bob"], "Sales": [100, 150]}
+generate_report(data)
+
+====================================
+9. Directory Cleaner
+
+If you accumulate a lot of files in your directories, use this script to clean up by removing files older than a certain date.
+
+import os
+import time
+
+def clean_directory(path, days_old):
+    now = time.time()
+    cutoff = now - days_old * 86400  # Convert days to seconds
+    
+    for filename in os.listdir(path):
+        file_path = os.path.join(path, filename)
+        if os.path.getmtime(file_path) < cutoff:
+            os.remove(file_path)
+clean_directory("/path/to/your/folder", 30)  # Clean files older than 30 days
+
+====================================
+10. Automated Task Scheduler
+
+This script allows you to automate tasks on a scheduled basis, such as running a script every day at a specific time.
+
+import schedule
+import time
+
+def job():
+    print("Running scheduled task...")
+schedule.every().day.at("09:00").do(job)
+while True:
+    schedule.run_pending()
+    time.sleep(1)
+
+====================================
+11. Stock Price Tracker
+
+This script monitors the stock price of a company and sends you an email if the price crosses a specific threshold.
+
+import requests
+import smtplib
+
+def check_stock_price(symbol, target_price):
+    url = f"https://api.example.com/stock/{symbol}"
+    response = requests.get(url)
+    data = response.json()
+    price = data['current_price']
+    
+    if price >= target_price:
+        send_email("Stock Price Alert", f"The stock price of {symbol} is now {price}", "recipient@example.com")
+check_stock_price("AAPL", 150)
+
+====================================
+12. Social Media Auto-Post
+
+This script automates the posting of updates on social media platforms like Twitter, Facebook, or Instagram.
+
+import tweepy
+
+def post_to_twitter(status):
+    auth = tweepy.OAuthHandler("consumer_key", "consumer_secret")
+    auth.set_access_token("access_token", "access_token_secret")
+    api = tweepy.API(auth)
+    
+    api.update_status(status)
+post_to_twitter("This is an automated tweet!")
+
+====================================
+13. Data Cleaning and Formatting
+
+If you work with messy data, this script cleans and formats your CSV files by removing empty rows and fixing column headers.
+
+import pandas as pd
+
+def clean_data(file_path):
+    df = pd.read_csv(file_path)
+    df.dropna(inplace=True)  # Remove rows with missing data
+    df.columns = [col.strip() for col in df.columns]  # Clean column headers
+    df.to_csv("cleaned_data.csv", index=False)
+clean_data("raw_data.csv")
+
+====================================
+14. Automated Git Commit
+
+This script automates the process of committing changes to a Git repository with a predefined commit message.
+
+import os
+
+def git_commit(message):
+    os.system("git add .")
+    os.system(f"git commit -m '{message}'")
+    os.system("git push")
+git_commit("Automated commit message")
+
+====================================
+15. File Search Script
+
+Searching for specific files in a directory is simplified with this Python script that allows you to search by filename or file type.
+
+import os
+
+def search_files(path, search_term):
+    for root, dirs, files in os.walk(path):
+        for file in files:
+            if search_term in file:
+                print(os.path.join(root, file))
+search_files("/path/to/your/folder", ".txt")
+
+====================================
+16. Currency Converter
+
+If you frequently deal with multiple currencies, this script can automate the conversion using an API like OpenExchangeRates.
+
+import requests
+
+def convert_currency(amount, from_currency, to_currency):
+    url = f"https://api.exchangerate-api.com/v4/latest/{from_currency}"
+    response = requests.get(url)
+    data = response.json()
+    rate = data['rates'][to_currency]
+    return amount * rate
+converted_amount = convert_currency(100, "USD", "EUR")
+print(f"Converted amount: {converted_amount}")
+
+====================================
+17. Text File Word Counter
+
+This script counts the number of words in a text file, which can be useful for content analysis.
+
+def word_counter(file_path):
+    with open(file_path, 'r') as file:
+        text = file.read()
+    words = text.split()
+    print(f"Word count: {len(words)}")
+
+word_counter("document.txt")
+====================================
+18. Automated Data Backup to Cloud
+
+This script automatically backs up data to cloud storage services like Google Drive or Dropbox using their APIs.
+
+# Example for Google Drive backup using Google Drive API
+import os
+from googleapiclient.discovery import build
+from googleapiclient.http import MediaFileUpload
+
+def upload_to_drive(file_path):
+    service = build('drive', 'v3', credentials=credentials)  # You need to set up OAuth
+    media = MediaFileUpload(file_path)
+    file_metadata = {'name': os.path.basename(file_path)}
+    service.files().create(body=file_metadata, media_body=media, fields='id').execute()
+upload_to_drive("important_file.txt")
+====================================
+19. Website Downtime Alert
+
+This script checks whether a website is up or down and sends you an alert if the site is unavailable.
+
+import requests
+import smtplib
+
+def check_website(url):
+    try:
+        response = requests.get(url)
+        if response.status_code != 200:
+            send_email("Website Down", f"The website {url} is down.", "recipient@example.com")
+    except requests.exceptions.RequestException:
+        send_email("Website Down", f"The website {url} is unreachable.", "recipient@example.com")
+check_website("https://www.example.com")
+====================================
+20. Automated Data Visualization
+
+This script generates automated data visualizations (e.g., graphs, charts) using libraries like Matplotlib and Seaborn.
+
+import matplotlib.pyplot as plt
+import seaborn as sns
+import pandas as pd
+
+def generate_visualization(data):
+    df = pd.DataFrame(data)
+    sns.barplot(x="Name", y="Sales", data=df)
+    plt.show()
+data = {"Name": ["Alice", "Bob"], "Sales": [100, 150]}
+generate_visualization(data)
+====================================
+Conclusion
+
+These 20 Python automation scripts can save you significant time and effort by automating tasks you do regularly. Whether it’s file management, system monitoring, or data handling, Python provides the flexibility to customize these scripts according to your needs. With just a little knowledge of Python, you can automate almost anything and focus on more important aspects of your work.
+
+
+
+-------------------------------------------------
+##8 Mindblowing Python Automation Scripts I Use Every Day
+https://medium.com/the-pythonworld/8-mindblowing-python-automation-scripts-i-use-every-day-cb9883b79ea6
+
+
+1. Bulk File Renamer (with Pattern Matching)
+
+This is the script that started it all. I needed something that could take a folder full of chaotically named files and impose some order on them. Not just sequential numbering, but actual pattern-based renaming using regex.
+
+import os
+import re
+from pathlib import Path
+
+def bulk_rename(directory, pattern, replacement, dry_run=True):
+    """Rename files matching a regex pattern."""
+    target_dir = Path(directory)
+    renamed = []
+    
+    for file_path in sorted(target_dir.iterdir()):
+        if file_path.is_file():
+            new_name = re.sub(pattern, replacement, file_path.name)
+            if new_name != file_path.name:
+                new_path = file_path.parent / new_name
+                if dry_run:
+                    print(f"  Would rename: {file_path.name} -> {new_name}")
+                else:
+                    file_path.rename(new_path)
+                    print(f"  Renamed: {file_path.name} -> {new_name}")
+                renamed.append((file_path.name, new_name))
+    
+    print(f"\n{'Would rename' if dry_run else 'Renamed'} {len(renamed)} files.")
+    return renamed
+
+# Example: Strip "Screenshot " prefix and reformat dates
+bulk_rename(
+    directory="~/Desktop/screenshots",
+    pattern=r"Screenshot (\d{4})-(\d{2})-(\d{2}) at .+\.png",
+    replacement=r"\1\2\3_capture.png",
+    dry_run=True  # Set to False when you're confident
+)
+
+The dry_run flag is non-negotiable. I learned that the hard way after accidentally flattening an entire project's directory structure. Run it with dry_run=True first, check the output, then flip the switch.
+
+The pathlib module does most of the heavy lifting here. If you’re still using os.path.join() everywhere, pathlib will change how you think about file operations.
+
+====================================
+2. Automated Email Report Generator
+
+Every Monday morning, I used to spend 30 minutes pulling numbers from a CSV, formatting them into a readable summary, and emailing it to my team. Now Python does it before I wake up.
+
+import smtplib
+import csv
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from datetime import datetime
+
+def generate_weekly_report(csv_path, recipient):
+    """Read data from CSV and send a formatted email report."""
+    with open(csv_path, "r") as f:
+        reader = csv.DictReader(f)
+        rows = list(reader)
+    
+    total_revenue = sum(float(r["revenue"]) for r in rows)
+    avg_revenue = total_revenue / len(rows) if rows else 0
+    top_product = max(rows, key=lambda r: float(r["revenue"]))
+    report_date = datetime.now().strftime("%B %d, %Y")
+    
+    body = f"""
+    Weekly Report - {report_date}
+    Total Revenue: ${total_revenue:,.2f}
+    Average per Entry: ${avg_revenue:,.2f}
+    Top Performer: {top_product['product']} (${float(top_product['revenue']):,.2f})
+    Total Records: {len(rows)}
+    """
+    msg = MIMEMultipart()
+    msg["From"] = "you@example.com"
+    msg["To"] = recipient
+    msg["Subject"] = f"Weekly Report - {report_date}"
+    msg.attach(MIMEText(body, "plain"))
+    
+    with smtplib.SMTP("smtp.gmail.com", 587) as server:
+        server.starttls()
+        server.login("you@example.com", "your_app_password")
+        server.send_message(msg)
+        print(f"Report sent to {recipient}")
+
+generate_weekly_report("sales_data.csv", "team@example.com")
+
+A few things worth noting. Don’t hardcode your email password. Use environment variables or a .env file with python-dotenv. If you're using Gmail, you'll need an App Password since Google disabled less-secure app access. And if you need something fancier than plain text, check out Jinja2 for HTML email templates.
+
+I pair this with a cron job on my Mac (crontab -e) that fires every Monday at 7 AM. By the time I sit down with my laptop, the report's already sent.
+
+====================================
+3. Website Uptime Monitor
+
+I run a couple of side projects and a few client sites. Before this script, I’d find out a site was down when someone texted me about it. Not ideal.
+
+import requests
+import time
+from datetime import datetime
+
+SITES = [
+    {"name": "Portfolio", "url": "https://yoursite.com"},
+    {"name": "Client Blog", "url": "https://clientblog.com"},
+    {"name": "Side Project API", "url": "https://api.sideproject.dev/health"},
+]
+
+def check_uptime(sites, timeout=10):
+    """Check if each site responds with a 200 status."""
+    results = []
+    for site in sites:
+        try:
+            response = requests.get(site["url"], timeout=timeout)
+            status = "UP" if response.status_code == 200 else f"DOWN ({response.status_code})"
+            latency = response.elapsed.total_seconds()
+        except requests.exceptions.RequestException as e:
+            status = f"DOWN ({type(e).__name__})"
+            latency = None
+        results.append({
+            "name": site["name"],
+            "status": status,
+            "latency": f"{latency:.2f}s" if latency else "N/A",
+            "checked_at": datetime.now().strftime("%H:%M:%S"),
+        })
+        print(f"  [{status}] {site['name']} - {results[-1]['latency']}")
+    return results
+
+# Run every 5 minutes
+while True:
+    print(f"\n--- Uptime Check: {datetime.now().strftime('%Y-%m-%d %H:%M')} ---")
+    check_uptime(SITES)
+    time.sleep(300)
+
+This is the simple version. In production, I log results to a SQLite database and send myself a Slack notification (via webhook) when something goes down. The requests library handles the HTTP calls. For something more battle-tested, look into UptimeRobot or Better Uptime, but there’s something satisfying about rolling your own.
+
+====================================
+4. Image Batch Processor (Resize, Compress, Convert)
+
+I write a lot of blog posts with screenshots and diagrams. Uploading a 4MB PNG to Medium when a 200KB WebP would look identical is wasteful. This script processes an entire folder of images in one go.
+
+from PIL import Image
+from pathlib import Path
+
+def batch_process_images(input_dir, output_dir, max_width=1200,
+                         quality=85, output_format="WEBP"):
+    """Resize, compress, and convert images in bulk."""
+    in_path = Path(input_dir)
+    out_path = Path(output_dir)
+    out_path.mkdir(parents=True, exist_ok=True)
+    supported = {".png", ".jpg", ".jpeg", ".bmp", ".tiff"}
+    processed = 0
+    for img_file in in_path.iterdir():
+        if img_file.suffix.lower() not in supported:
+            continue
+        
+        with Image.open(img_file) as img:
+            # Resize if wider than max_width, keep aspect ratio
+            if img.width > max_width:
+                ratio = max_width / img.width
+                new_size = (max_width, int(img.height * ratio))
+                img = img.resize(new_size, Image.LANCZOS)
+            # Convert RGBA to RGB for formats that don't support alpha
+            if img.mode == "RGBA" and output_format in ("JPEG", "WEBP"):
+                img = img.convert("RGB")
+            ext = ".webp" if output_format == "WEBP" else f".{output_format.lower()}"
+            output_file = out_path / f"{img_file.stem}{ext}"
+            img.save(output_file, format=output_format, quality=quality)
+            processed += 1
+            print(f"  Processed: {img_file.name} -> {output_file.name}")
+    
+    print(f"\nDone. Processed {processed} images.")
+
+batch_process_images("raw_screenshots/", "optimized/", max_width=1000)
+
+You’ll need Pillow (pip install Pillow). The LANCZOS resampling filter gives the best quality for downscaling. I typically aim for 1000–1200px wide and WebP format, which cuts file size by 50–70% compared to PNG with barely visible quality loss.
+
+====================================
+5. PDF Merger and Splitter
+
+I deal with PDFs more than I’d like. Invoices, contracts, research papers. Sometimes I need to combine five invoices into one file for accounting. Sometimes I need to extract pages 12–18 from a 200-page report. This handles both.
+
+from PyPDF2 import PdfReader, PdfWriter
+from pathlib import Path
+
+def merge_pdfs(pdf_list, output_path):
+    """Merge multiple PDFs into a single file."""
+    writer = PdfWriter()
+    for pdf_file in pdf_list:
+        reader = PdfReader(pdf_file)
+        for page in reader.pages:
+            writer.add_page(page)
+        print(f"  Added: {pdf_file} ({len(reader.pages)} pages)")
+    with open(output_path, "wb") as f:
+        writer.write(f)
+    print(f"\nMerged into: {output_path}")
+
+def split_pdf(input_path, start_page, end_page, output_path):
+    """Extract a range of pages from a PDF."""
+    reader = PdfReader(input_path)
+    writer = PdfWriter()
+    for i in range(start_page - 1, min(end_page, len(reader.pages))):
+        writer.add_page(reader.pages[i])
+    with open(output_path, "wb") as f:
+        writer.write(f)
+    print(f"Extracted pages {start_page}-{end_page} -> {output_path}")
+
+# Merge quarterly invoices
+merge_pdfs(
+    ["invoice_q1.pdf", "invoice_q2.pdf", "invoice_q3.pdf", "invoice_q4.pdf"],
+    "annual_invoices.pdf"
+)
+
+# Extract specific pages from a report
+split_pdf("full_report.pdf", start_page=12, end_page=18, output_path="section_3.pdf")
+
+PyPDF2 does the job. If you need more advanced PDF manipulation (watermarks, form filling, OCR on scanned docs), look at pikepdf or pdfplumber for table extraction.
+
+====================================
+6. Clipboard History Manager
+
+This one’s a bit niche, but I use it constantly. I copy a lot of text throughout the day: code snippets, URLs, error messages. Sometimes I need something I copied 20 minutes ago, and it’s gone because I copied something else since then.
+
+This script watches your clipboard and saves everything to a searchable log.
+
+import pyperclip
+import time
+from datetime import datetime
+from pathlib import Path
+
+def run_clipboard_history(log_file="clipboard_log.txt", poll_interval=1.0):
+    """Monitor clipboard and log new entries with timestamps."""
+    log_path = Path(log_file)
+    previous = ""
+    entry_count = 0
+    print("Clipboard monitor running. Press Ctrl+C to stop.\n")
+    try:
+        while True:
+            current = pyperclip.paste()
+            if current != previous and current.strip():
+                previous = current
+                entry_count += 1
+                timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                entry = f"[{timestamp}] Entry #{entry_count}\n{current}\n{'=' * 50}\n"
+                with open(log_path, "a", encoding="utf-8") as f:
+                    f.write(entry)
+                # Show a preview (first 80 chars)
+                preview = current[:80].replace("\n", " ")
+                print(f"  #{entry_count} [{timestamp}] {preview}...")
+            time.sleep(poll_interval)
+    except KeyboardInterrupt:
+        print(f"\nStopped. Logged {entry_count} entries to {log_path}")
+
+run_clipboard_history()
+
+Install pyperclip with pip install pyperclip. On Linux you'll also need xclip or xsel installed. I run this in a background terminal tab and forget about it until I need to find something I copied earlier. Then I just grep through the log file.
+
+Yes, I know clipboard managers exist (I’ve used Raycast’s). But building your own means you control exactly what gets logged and where. No syncing to someone else’s cloud.
+
+====================================
+7. CSV Data Cleaner and Deduplicator
+
+If you work with data from clients, vendors, or scraped sources, you know that CSVs are rarely clean. Duplicate rows, inconsistent formatting, empty fields, trailing whitespace. I used to clean these by hand in Excel. Now I don’t.
+
+import pandas as pd
+from pathlib import Path
+
+def clean_csv(input_file, output_file=None):
+    """Clean, deduplicate, and standardize a CSV file."""
+    df = pd.read_csv(input_file)
+    original_rows = len(df)
+    print(f"  Original: {original_rows} rows, {len(df.columns)} columns")
+    
+    # Strip whitespace from string columns
+    for col in df.select_dtypes(include=["object"]).columns:
+        df[col] = df[col].str.strip()
+    
+    # Drop fully empty rows
+    df.dropna(how="all", inplace=True)
+    
+    # Remove exact duplicate rows
+    dupes = df.duplicated().sum()
+    df.drop_duplicates(inplace=True)
+    
+    # Standardize column names: lowercase, replace spaces with underscores
+    df.columns = [col.strip().lower().replace(" ", "_") for col in df.columns]
+    
+    # Fill missing values in numeric columns with 0
+    for col in df.select_dtypes(include=["number"]).columns:
+        df[col].fillna(0, inplace=True)
+    output = output_file or input_file.replace(".csv", "_cleaned.csv")
+    df.to_csv(output, index=False)
+    print(f"  Removed {dupes} duplicates")
+    print(f"  Final: {len(df)} rows -> {output}")
+    return df
+
+clean_csv("messy_client_data.csv")
+
+Pandas is overkill if all you need is deduplication, but it’s so good at chaining transformations that I reach for it every time. The select_dtypes method is a real time-saver when you want to apply operations only to string or numeric columns without specifying them by name.
+
+For larger files (100MB+), consider Polars instead. It’s faster for this kind of batch processing.
+
+====================================
+8. Git Repository Backup Script
+
+I keep all my important projects on GitHub, but I wanted a local backup too. Not just the code, but all branches, tags, and commit history. This script clones or updates a list of repos to a backup folder on an external drive.
+
+import subprocess
+from pathlib import Path
+from datetime import datetime
+
+REPOS = [
+    "https://github.com/yourusername/project-one.git",
+    "https://github.com/yourusername/project-two.git",
+    "https://github.com/yourusername/dotfiles.git",
+]
+
+def backup_repos(repos, backup_dir="~/git_backups"):
+    """Clone or update git repos as bare mirrors."""
+    backup_path = Path(backup_dir).expanduser()
+    backup_path.mkdir(parents=True, exist_ok=True)
+    print(f"Backup started: {datetime.now().strftime('%Y-%m-%d %H:%M')}\n")
+    for repo_url in repos:
+        repo_name = repo_url.split("/")[-1].replace(".git", "")
+        repo_dir = backup_path / f"{repo_name}.git"
+        if repo_dir.exists():
+            # Update existing mirror
+            print(f"  Updating: {repo_name}")
+            result = subprocess.run(
+                ["git", "-C", str(repo_dir), "remote", "update"],
+                capture_output=True, text=True
+            )
+        else:
+            # Clone as bare mirror (all branches, tags, refs)
+            print(f"  Cloning: {repo_name}")
+            result = subprocess.run(
+                ["git", "clone", "--mirror", repo_url, str(repo_dir)],
+                capture_output=True, text=True
+            )
+        if result.returncode == 0:
+            print(f"    Done.")
+        else:
+            print(f"    Failed: {result.stderr.strip()}")
+    print(f"\nBackup complete. Location: {backup_path}")
+backup_repos(REPOS)
+
+The --mirror flag is important. A regular git clone only grabs the default branch. A mirror clone copies everything: all branches, all tags, all refs. It's the difference between a copy and a backup. I run this weekly via a cron job pointed at an external SSD.
+
+====================================
+If you want these scripts to run on a schedule, you don’t need anything complicated. On macOS or Linux, crontab -e handles it:
+
+# Run uptime check every 5 minutes
+*/5 * * * * /usr/bin/python3 /home/user/scripts/uptime_monitor.py
+
+# Weekly email report, Monday at 7 AM
+0 7 * * 1 /usr/bin/python3 /home/user/scripts/email_report.py
+
+# Git backup every Sunday at midnight
+0 0 * * 0 /usr/bin/python3 /home/user/scripts/git_backup.py
+
+On Windows, Task Scheduler does the same thing with a GUI. Or use schedule as a Python-native alternative if you want to keep everything in one ecosystem.
+
+None of these scripts are complicated. Most of them are under 50 lines. The longest took maybe 20 minutes to write and test. But they save me hours every week, and more importantly, they eliminated the kind of tedious work that slowly drains your energy without you noticing.
+-------------------------------------------------
+-------------------------------------------------
+-------------------------------------------------
+-------------------------------------------------
+-------------------------------------------------
+-------------------------------------------------
+-------------------------------------------------
+-------------------------------------------------
+-------------------------------------------------
+-------------------------------------------------
