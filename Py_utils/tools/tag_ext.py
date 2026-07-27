@@ -4,7 +4,7 @@ import os, sys, getopt
 import errno, traceback
 
 def printHelp():
-    print ("""Usage: %s -f <filename>
+    print ("""Usage: %s
 
     OPTIONS:
          -d delimeter
@@ -14,12 +14,12 @@ def printHelp():
     """ % os.path.basename(__file__))
     sys.exit(0)
 
-def format_str(str):
-    result = str[:-1] if str[-1] == "," else str
+def format_str(tagstr):
+    result = tagstr[:-1] if tagstr[-1] == "," else tagstr
     return result
 
 def process_file(data_file,delm,tag_list,log_ts_flag):
-    print(tag_list)
+    #print(tag_list)
     tag_list = tag_list.split(",")
     tl_size = len(tag_list)
     row_dict= {}
