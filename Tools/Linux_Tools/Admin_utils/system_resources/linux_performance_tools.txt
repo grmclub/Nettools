@@ -183,6 +183,57 @@ https://medium.com/@bektiaw/how-to-investigate-disk-i-o-bottlenecks-e6810b2511e3
 
 
 -------------------------------------------------
+Here is a summary and structured list of the essential tools and techniques used to troubleshoot application performance delays in Linux.
+
+Troubleshooting performance issues follows a system-level process: start high-level to identify where the bottleneck lies (CPU, Memory, Disk I/O, Network, or Application Lock/System Calls), and then drill down into detailed tracing.
+
+1. System Bottleneck Identification (High-Level Monitoring)
+Before profiling specific code, identify which system resource is constrained.
+    • CPU Utilization & Load Average
+        ◦ top / htop: Real-time view of system process resource consumption. Look at high %CPU or %wa (I/O Wait).
+        ◦ uptime / cat /proc/loadavg: Checks load averages (1, 5, 15 minutes) relative to CPU core count.
+        ◦ mpstat -P ALL 1: Reports individual CPU core performance to spot uneven load distribution or single-thread saturation.
+    • Disk & Storage I/O
+        ◦ iostat -xz 1: Evaluates disk throughput, average wait times (await), and utilization percentage (%util). High %util or await indicates a disk bottleneck.
+        ◦ iotop: Identifies specific processes generating high read/write operations.
+    • Memory & Paging
+        ◦ free -h: Checks total, used, free, and cached RAM.
+        ◦ vmstat 1: Monitors process states (r = running/waiting, b = blocked), swap activity (si/so), and page fault rates. High swapping causes massive latency spikes.
+    • Network Delay
+        ◦ sar -n DEV 1: Real-time network throughput and packet rates.
+        ◦ ss -tulpn / netstat: Inspects socket connections, queue lengths (Recv-Q, Send-Q), and drop rates.
+
+2. Process & Thread-Level Profiling (Drill-Down)
+Once a suspect process is found, investigate its internal execution state.
+    • System Call Tracing
+        ◦ strace -p <PID> -c: Counts time spent in system calls (e.g., futex, read, write). Great for finding slow file access or lock contention.
+        ◦ strace -p <PID> -T: Displays the time spent inside each system call.
+    • Process State Inspection
+        ◦ cat /proc/<PID>/status / /proc/<PID>/stack: Views the kernel call stack of a thread to see if it is sleeping on a lock, waiting on disk I/O, or blocked in network operations.
+        ◦ pstack <PID>: Prints the native C/C++ thread stack trace to see what application functions are currently running or blocked.
+
+3. Advanced Kernel & Dynamic Tracing (Low Overhead)
+For production environments where tools like strace introduce too much overhead, dynamic instrumentation is required.
+    • Linux perf
+        ◦ perf top -p <PID>: Shows CPU hotspots at the function level in real time.
+        ◦ perf record -F 99 -g -p <PID> -- sleep 10: Captures stack traces to generate CPU or off-CPU Flame Graphs (using Brendan Gregg’s tools) to visually identify execution bottlenecks.
+    • eBPF Tools (bcc / bpftrace)
+        ◦ execsnoop: Traces short-lived processes being rapidly created.
+        ◦ biolatency: Measures block I/O latency distribution.
+        ◦ tcprtt: Tracks TCP Round Trip Times to pinpoint network latency.
+        ◦ offcputime: Summarizes time threads spend sleeping/blocked waiting for locks, I/O, or CPU scheduler time.
+
+4. Key Troubleshooting Techniques & Methodologies
+    1. The USE Method (Utilization, Saturation, Errors):
+        ◦ For every hardware/software resource (CPU, Memory, Disk, Network), check:
+            ▪ Utilization: How busy is the resource?
+            ▪ Saturation: Is work queuing up waiting for it?
+            ▪ Errors: Are hardware/kernel drop counters incrementing?
+    2. On-CPU vs. Off-CPU Analysis:
+        ◦ On-CPU: The thread is burning CPU cycles (high %CPU). Tool: perf top, flame graphs.
+        ◦ Off-CPU: The thread is blocked waiting on external resources, mutex locks, database calls, or disk I/O while %CPU remains low. Tool: offcputime (eBPF), strace, /proc/<PID>/stack.
+    3. Baseline Comparison:
+        ◦ Collect metrics when the system is healthy so you can quickly spot deviations during a latency incident.
 -------------------------------------------------
 -------------------------------------------------
 -------------------------------------------------
