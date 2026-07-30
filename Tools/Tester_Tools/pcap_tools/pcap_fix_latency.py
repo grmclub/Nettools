@@ -82,14 +82,14 @@ def process_file(data_file):
                     delay = abs(t2 -t1)
                     id_dict[ClOrdId]["time_diff"] = "%0.9f" % delay
 
-    sorted_dict = OrderedDict(sorted(id_dict.items(), key=lambda t:t[1]["time_diff]))
+    sorted_dict = OrderedDict(sorted(id_dict.items(), key=lambda t:t[1]["time_diff"]))
     sorted_list = []
     sess = ""
     for key,val in sorted_dict.items():
         print val
         if val["time_diff"] != "":
             sorted_list.append(val["time_diff"])
-        sess = ses.split('.')
+        sess = sess.split('.')
         if sess[0] != '':
             calc_latency(sess[0],sorted_list)
 
