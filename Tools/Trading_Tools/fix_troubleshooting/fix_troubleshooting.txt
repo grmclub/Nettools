@@ -1,0 +1,415 @@
+
+Diagnostics Matrix
+
+======================================================================================================================================
+Metric / Error                         | Primary Cause                                                | Recommended Diagnostic Tool
+======================================================================================================================================
+High Order-to-Ack Latency              | Engine internal queuing or network bottleneck                | fix_latency_analyzer.py
+Session / Business Rejects (35=3, 35=j)| Missing required tag, bad enum value, or invalid field       | fix_reject_parser.py
+Garbage Data / Format Error            | Wrong timestamp string, negative quantity, invalid side code | fix_schema_validator.py
+State File Corruption / Out-of-Sync    | Server crash or ungraceful logout                            | fix_seq_recovery.sh
+======================================================================================================================================
+
+-------------------------------------------------
+Troubleshooting Financial Information eXchange (FIX) protocol connections typically spans two layers: Session Layer (connection maintenance, message sequencing, logons) and Application Layer (order management, execution reports, tag validation). 
+Below is a categorized list of scripts in Python and Bash designed to diagnose and resolve the most common FIX protocol production issues.
+
+-------------------------------------------------
+1. Network & Socket Connectivity
+Common Issue: FIX engine fails to log on or hangs because the TCP connection cannot be established or is blocked by a firewall. 
+Bash Script: TCP & Port Diagnostics
+This script verifies basic network reachability, DNS, latency, and socket binding for a given FIX target.
+Bash
+#!/bin/bash
+# fix_net_diag.sh - Diagnostic tool for FIX TCP Connectivity
+
+TARGET_HOST="fix.broker.com"
+TARGET_PORT=9821
+SENDER_COMP_ID="MY_FIRM"
+
+echo "=== 1. Checking DNS Resolution ==="
+host $TARGET_HOST
+
+echo -e "\n=== 2. Testing TCP Socket Connectivity ==="
+nc -zv -w 5 $TARGET_HOST $TARGET_PORT
+
+echo -e "\n=== 3. Checking Active Connections / Local Sockets ==="
+netstat -an | grep $TARGET_PORT
+
+echo -e "\n=== 4. Measuring Network Latency ==="
+ping -c 4 $TARGET_HOST
+
+-------------------------------------------------
+2. Session Layer: Log Parser & Field Formatter
+Common Issue: Raw FIX log files use \x01 (SOH) delimiters, making them difficult to read or grep during active incidents.
+Python Script: Pretty-Print & Validate Standard FIX Logs
+This script converts raw SOH (\x01) or ASCII | delimited FIX logs into a readable key-value format and translates critical tags (e.g., 35=MsgType, 39=OrdStatus).
+Python
+#!/usr/bin/env python3
+# fix_pretty_printer.py
+
+import sys
+
+# Standard FIX Tag Mappings
+MSG_TYPES = {
+    "0": "Heartbeat", "1": "TestRequest", "2": "ResendRequest", 
+    "3": "Reject", "4": "SequenceReset", "5": "Logout", 
+    "8": "ExecutionReport", "A": "Logon", "D": "NewOrderSingle"
+}
+
+ORD_STATUS = {
+    "0": "New", "1": "PartiallyFilled", "2": "Filled", 
+    "4": "Canceled", "8": "Rejected"
+}
+
+def parse_fix_message(raw_msg):
+    # Replace SOH or pipe with a standard delimiter
+    clean_msg = raw_msg.strip().replace('\x01', '|').strip('|')
+    tags = clean_msg.split('|')
+    
+    print("\n" + "="*50)
+    print(f"RAW: {clean_msg}")
+    print("="*50)
+    
+    for item in tags:
+        if '=' not in item:
+            continue
+        tag, value = item.split('=', 1)
+        
+        # Annotate key tags
+        annotation = ""
+        if tag == "35":
+            annotation = f" ({MSG_TYPES.get(value, 'Unknown MsgType')})"
+        elif tag == "39":
+            annotation = f" ({ORD_STATUS.get(value, 'Unknown Status')})"
+            
+        print(f"Tag {tag:>4} : {value}{annotation}")
+
+if __name__ == "__main__":
+    sample_log = "8=FIX.4.4|9=112|35=5|49=TARGET|56=SENDER|34=1|52=20260731-08:00:00|58=Invalid SenderCompID|10=187|"
+    log_input = sys.argv[1] if len(sys.argv) > 1 else sample_log
+    parse_fix_message(log_input)
+	
+-------------------------------------------------	
+3. Sequence Number Gap & Mismatch Analyzer
+Common Issue: A sequence number break occurs when the receiving FIX engine expects a lower/higher MsgSeqNum (Tag 34) than provided, triggering ResendRequest (MsgType 2) or immediate logouts. 
+Python Script: Detect Sequence Gaps and Out-of-Order Messages
+Scans a FIX session log file, tracks MsgSeqNum(34), and flags sequence jumps, resend requests, or unexpected sequence resets.
+Python
+#!/usr/bin/env python3
+# fix_seq_analyzer.py
+
+import re
+import sys
+
+def check_sequence_gaps(file_path):
+    expected_seq = 1
+    
+    with open(file_path, 'r') as f:
+        for line_num, line in enumerate(f, start=1):
+            # Extract Tag 34 (MsgSeqNum) and Tag 35 (MsgType)
+            seq_match = re.search(r'(?:^|[\x01|])34=(\d+)', line)
+            type_match = re.search(r'(?:^|[\x01|])35=([A-Za-d0-9]+)', line)
+            
+            if seq_match and type_match:
+                seq = int(seq_match.group(1))
+                msg_type = type_match.group(1)
+                
+                # Check for gap
+                if seq != expected_seq and msg_type not in ['A', '5']: # Skip Logon/Logout initializations
+                    if seq > expected_seq:
+                        print(f"[LINE {line_num}] GAP DETECTED: Expected {expected_seq}, Got {seq} (MsgType: {msg_type}). Counterparty will issue ResendRequest(35=2).")
+                    elif seq < expected_seq:
+                        # Check if PossDupFlag(43)=Y
+                        is_poss_dup = "43=Y" in line
+                        if not is_poss_dup:
+                            print(f"[LINE {line_num}] CRITICAL: Low Sequence Number {seq} (Expected {expected_seq}) without PossDupFlag(43)=Y. Session may disconnect.")
+                
+                expected_seq = seq + 1
+
+if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        print("Usage: python fix_seq_analyzer.py <path_to_fix_log>")
+    else:
+        check_sequence_gaps(sys.argv[1])
+		
+-------------------------------------------------		
+4. Checksum & Body Length Verifier
+Common Issue: Messages are dropped or rejected (35=3) due to corrupt transport framing caused by incorrect BodyLength (Tag 9) or CheckSum (Tag 10).
+Python Script: FIX Message Structural & Checksum Validator
+Recalculates the exact body length and modulo 256 checksum for troubleshooting corrupted raw logs.
+Python
+#!/usr/bin/env python3
+# fix_checksum_calc.py
+
+def validate_fix_checksum(raw_msg):
+    # Ensure SOH delimiter
+    msg = raw_msg.replace('|', '\x01')
+    
+    # 1. Checksum Verification (Tag 10)
+    if '\x0110=' not in msg:
+        print("Error: Missing Tag 10 (CheckSum)")
+        return
+        
+    main_body, checksum_part = msg.split('\x0110=')
+    provided_checksum = checksum_part.replace('\x01', '').strip()
+    
+    # Checksum is sum of all ASCII bytes up to '10=' modulo 256
+    calculated_bytes = sum((main_body + '\x01').encode('latin1'))
+    calculated_checksum = f"{(calculated_bytes % 256):03d}"
+    
+    # 2. BodyLength Verification (Tag 9)
+    # BodyLength is count of characters starting after Tag 9's SOH up to Tag 10's SOH
+    try:
+        header, rest = msg.split('\x019=', 1)
+        length_val, body_and_trailer = rest.split('\x01', 1)
+        body_content = body_and_trailer.split('\x0110=')[0] + '\x01'
+        calculated_length = len(body_content)
+        provided_length = int(length_val)
+    except Exception as e:
+        print(f"Parsing error for BodyLength: {e}")
+        return
+
+    print(f"Provided BodyLength (9): {provided_length} | Calculated: {calculated_length} --> {'VALID' if provided_length == calculated_length else 'INVALID'}")
+    print(f"Provided CheckSum   (10): {provided_checksum} | Calculated: {calculated_checksum} --> {'VALID' if provided_checksum == calculated_checksum else 'INVALID'}")
+
+if __name__ == "__main__":
+    # Example message with valid framing
+    test_msg = "8=FIX.4.2|9=65|35=A|35=A|49=SERVER|56=CLIENT|34=1|52=20260731-08:00:00|98=0|108=30|10=108|"
+    validate_fix_checksum(test_msg)
+
+
+
+-------------------------------------------------
+Here is an expanded suite of Python and Bash tools focusing on advanced FIX diagnostics: Latency Measurement, Tag/Field Validation, Business Reject Analysis, and Automated Session State Recovery.
+1. FIX Application Latency Calculator
+Problem: High order-to-ack delays or internal processing bottleneck issues.
+Solution: Pairs order requests (e.g., NewOrderSingle 35=D or OrderCancelRequest 35=F) with their corresponding execution responses (ExecutionReport 35=8) by matching ClOrdID (Tag 11) and measuring round-trip time (RTT).
+Python
+#!/usr/bin/env python3
+# fix_latency_analyzer.py
+
+from datetime import datetime
+import re
+import sys
+
+def parse_fix_time(ts_str):
+    # Formats: YYYYMMDD-HH:MM:SS.mmm or YYYYMMDD-HH:MM:SS.uuuuuu
+    fmt = "%Y%m%d-%H:%M:%S.%f" if "." in ts_str else "%Y%m%d-%H:%M:%S"
+    return datetime.strptime(ts_str, fmt)
+
+def calculate_latency(file_path):
+    pending_orders = {}  # { ClOrdID: sending_time }
+    latencies = []
+
+    with open(file_path, 'r') as f:
+        for line in f:
+            line = line.replace('\x01', '|')
+            
+            # Extract essential tags: MsgType(35), ClOrdID(11), SendingTime(52)
+            msg_type = re.search(r'\|35=([^\|]+)', line)
+            cl_ord_id = re.search(r'\|11=([^\|]+)', line)
+            sending_time = re.search(r'\|52=([^\|]+)', line)
+
+            if not (msg_type and cl_ord_id and sending_time):
+                continue
+
+            m_type = msg_type.group(1)
+            cid = cl_ord_id.group(1)
+            ts = parse_fix_time(sending_time.group(1))
+
+            # New Order Single (35=D) or Cancel Request (35=F)
+            if m_type in ['D', 'F']:
+                pending_orders[cid] = ts
+
+            # Execution Report (35=8)
+            elif m_type == '8':
+                if cid in pending_orders:
+                    rtt_ms = (ts - pending_orders[cid]).total_seconds() * 1000
+                    latencies.append(rtt_ms)
+                    print(f"ClOrdID: {cid:<15} | RTT Latency: {rtt_ms:.3f} ms")
+                    del pending_orders[cid]
+
+    if latencies:
+        avg_lat = sum(latencies) / len(latencies)
+        print("-" * 50)
+        print(f"Processed: {len(latencies)} Order ACK pairs")
+        print(f"Min Latency : {min(latencies):.3f} ms")
+        print(f"Avg Latency : {avg_lat:.3f} ms")
+        print(f"Max Latency : {max(latencies):.3f} ms")
+
+if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        print("Usage: python fix_latency_analyzer.py <path_to_fix_log>")
+    else:
+        calculate_latency(sys.argv[1])
+2. Reject & Business Reject Diagnostic Parser
+Problem: Counterparties send Reject (35=3) or BusinessMessageReject (35=j) due to protocol deviations, missing conditional tags, or invalid enum values.
+Solution: Scans logs for rejection messages, extracts the rejected tag number, and maps standard FIX reason codes to human-readable text.
+Python
+#!/usr/bin/env python3
+# fix_reject_parser.py
+
+import re
+import sys
+
+SESSION_REJECT_REASONS = {
+    "0": "Invalid Tag Number",
+    "1": "Required Tag Missing",
+    "2": "Tag Not Defined For This Message",
+    "3": "Undefined Tag",
+    "4": "Tag Specified Without a Value",
+    "5": "Value Is Incorrect Out Of Range",
+    "6": "Incorrect Data Format For Value",
+    "11": "Invalid MsgType",
+    "99": "Other"
+}
+
+BUSINESS_REJECT_REASONS = {
+    "0": "Other",
+    "1": "Unknown ID",
+    "2": "Unknown Security",
+    "3": "Unsupported Message Type",
+    "4": "Application Not Available",
+    "5": "Conditionally Required Field Missing"
+}
+
+def analyze_rejects(file_path):
+    with open(file_path, 'r') as f:
+        for line_num, line in enumerate(f, start=1):
+            clean_line = line.replace('\x01', '|')
+            
+            # Session Reject (35=3)
+            if "|35=3|" in clean_line:
+                ref_tag = re.search(r'\|371=([^\|]+)', clean_line) # RefTagID
+                ref_seq = re.search(r'\|45=([^\|]+)', clean_line)  # RefSeqNum
+                reason = re.search(r'\|373=([^\|]+)', clean_line)  # SessionRejectReason
+                text = re.search(r'\|58=([^\|]+)', clean_line)     # Text
+
+                r_code = reason.group(1) if reason else "N/A"
+                r_desc = SESSION_REJECT_REASONS.get(r_code, "Unknown Reason")
+                
+                print(f"[Line {line_num}] SESSION REJECT (35=3)")
+                print(f" ├─ Ref Seq (Tag 45) : {ref_seq.group(1) if ref_seq else 'N/A'}")
+                print(f" ├─ Bad Tag (Tag 371): {ref_tag.group(1) if ref_tag else 'N/A'}")
+                print(f" ├─ Reason  (Tag 373): {r_code} ({r_desc})")
+                print(f" └─ Explanation      : {text.group(1) if text else 'None'}\n")
+
+            # Business Reject (35=j)
+            elif "|35=j|" in clean_line:
+                reason = re.search(r'\|380=([^\|]+)', clean_line) # BusinessRejectReason
+                text = re.search(r'\|58=([^\|]+)', clean_line)
+                
+                r_code = reason.group(1) if reason else "N/A"
+                r_desc = BUSINESS_REJECT_REASONS.get(r_code, "Unknown Reason")
+                
+                print(f"[Line {line_num}] BUSINESS REJECT (35=j)")
+                print(f" ├─ Reason  (Tag 380): {r_code} ({r_desc})")
+                print(f" └─ Explanation      : {text.group(1) if text else 'None'}\n")
+
+if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        print("Usage: python fix_reject_parser.py <path_to_fix_log>")
+    else:
+        analyze_rejects(sys.argv[1])
+3. FIX Message Data-Type & Schema Validator
+Problem: Field values contain incorrect data formats (e.g., non-numeric string in an integer field, invalid timestamp formatting, invalid side flags).
+Solution: Tests critical fields against standard FIX specifications and flags schema violations.
+Python
+#!/usr/bin/env python3
+# fix_schema_validator.py
+
+import re
+
+def validate_fix_schema(raw_msg):
+    msg = raw_msg.replace('\x01', '|').strip('|')
+    fields = dict(item.split('=', 1) for item in msg.split('|') if '=' in item)
+    errors = []
+
+    # 1. Validate Tag 54 (Side): Must be 1 (Buy), 2 (Sell), 3 (Buy Minus), etc.
+    if '54' in fields:
+        if fields['54'] not in ['1', '2', '3', '4', '5', '6', '7', '8']:
+            errors.append(f"Tag 54 (Side) has invalid value '{fields['54']}'")
+
+    # 2. Validate Tag 38 (OrderQty): Must be a positive integer/float
+    if '38' in fields:
+        try:
+            val = float(fields['38'])
+            if val <= 0:
+                errors.append(f"Tag 38 (OrderQty) must be > 0. Got '{fields['38']}'")
+        except ValueError:
+            errors.append(f"Tag 38 (OrderQty) is not numeric: '{fields['38']}'")
+
+    # 3. Validate Tag 52 / Tag 60 Timestamps (YYYYMMDD-HH:MM:SS[.mmm])
+    time_regex = r'^\d{8}-\d{2}:\d{2}:\d{2}(\.\d{3,6})?$'
+    for time_tag in ['52', '60']:
+        if time_tag in fields:
+            if not re.match(time_regex, fields[time_tag]):
+                errors.append(f"Tag {time_tag} (UTCTimestamp) format invalid: '{fields[time_tag]}'")
+
+    # Report results
+    if errors:
+        print("Validation FAILED:")
+        for err in errors:
+            print(f" ❌ {err}")
+    else:
+        print("Validation PASSED: All core data types and fields conform to standard rules.")
+
+if __name__ == "__main__":
+    # Test message with invalid Side (54=9) and bad timestamp (52=INVALID)
+    sample_invalid = "8=FIX.4.4|9=120|35=D|49=CLIENT|56=SERVER|34=10|52=INVALID|11=ORD123|55=AAPL|54=9|38=-50|10=099|"
+    print("Testing message...")
+    validate_fix_schema(sample_invalid)
+4. Sequence Number Recovery Helper
+Problem: Engine crashes or sequence state files get corrupted, requiring automated recovery calculations for standard QuickFIX/Python .seqnums or .state files.
+Solution: Audits a raw log file, finds the maximum outgoing/incoming sequence numbers, and outputs the target sequence values to safely resume session synchronization.
+Bash
+#!/bin/bash
+# fix_seq_recovery.sh - Extract maximum sequence numbers to recover state files
+
+LOG_FILE=$1
+
+if [ -z "$LOG_FILE" ]; then
+    echo "Usage: ./fix_seq_recovery.sh <fix_session_log_file>"
+    exit 1
+fi
+
+echo "=================================================="
+echo "    FIX Session Sequence Number Recovery Tool"
+echo "=================================================="
+
+# Extract incoming sequence numbers (where sender is counterparty)
+MAX_INBOUND=$(grep -oE '(^|\||\x01)34=[0-9]+' "$LOG_FILE" | cut -d'=' -f2 | sort -n | tail -n1)
+
+# Count total messages present in log
+TOTAL_MSGS=$(grep -c -E '(^|\||\x01)8=FIX' "$LOG_FILE")
+
+echo "File Processed        : $LOG_FILE"
+echo "Total FIX Messages    : $TOTAL_MSGS"
+echo "Highest Sequence (34) : $MAX_INBOUND"
+echo "--------------------------------------------------"
+echo "Recommended Recovery Steps:"
+echo " 1. Stop your FIX Engine."
+echo " 2. Set expected Target Sequence to : $((MAX_INBOUND + 1))"
+echo " 3. Restart engine or send SequenceReset (35=4) with GapFillFlag(123)=N."
+echo "=================================================="
+
+
+-------------------------------------------------
+-------------------------------------------------
+-------------------------------------------------
+-------------------------------------------------
+-------------------------------------------------
+-------------------------------------------------
+-------------------------------------------------
+-------------------------------------------------
+-------------------------------------------------
+-------------------------------------------------
+
+
+
+
+
+
+
+
