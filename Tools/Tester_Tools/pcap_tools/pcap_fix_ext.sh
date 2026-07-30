@@ -14,18 +14,21 @@
 tshark -r "$1" \
 -Y "fix.MsgType == 'D' or fix.MsgType != 'F' or fix.MsgType == 'G' or fix.MsgType == '8' or fix.MsgType == '9' " \
 -T fields \
--E header=y \
--E separator='|' \
--Tfields -Eseparator='|' \
--Eoccurrence=l  \
+-Eseparator=, \
+-Eoccurrence=l \
 -e frame.time_epoch \
+-e ip.src\
+-e tcp.srcport \
+-e ip.dst \
+-e tcp.dstport \
 -e fix.MsgType \
+-e fix.ClOrdID \
+-e fix.OrderID \
 -e fix.OrdStatus \
 -e fix.SenderCompID \
 -e fix.SenderSubID \
+-e fix.TargetCompID \
 -e fix.Symbol \
 -e fix.Side \
 -e fix.Price \
--e fix.OrderQty \
--e fix.ClOrdID \
--e fix.OrderID 
+-e fix.OrderQty 
