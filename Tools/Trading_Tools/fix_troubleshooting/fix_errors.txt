@@ -1,0 +1,74 @@
+
+-------------------------------------------------
+/deepanalyse and generate common error scenarios in FIX protocol 
+
+A deep-dive analysis into standard FIX protocol failure modes reveals that operational issues generally fall into three distinct architectural layers: Transport/Framing, Session State Maintenance, and Application/Business Logic.
+1. Session Layer Error Scenarios
+Session layer errors affect connection state, sequence numbers, and transport integrity. When these fail, the engine usually terminates the socket or issues a Session Reject (35=3).
+                     +---------------------------+
+                     |    Incoming FIX Message   |
+                     +---------------------------+
+                                   |
+                       Is CheckSum/Length Valid?
+                        /                     \
+                       NO                      YES
+                      /                         \
+          [Drop Connection /              Is MsgSeqNum Valid?
+           Ignore Packet]                 /                   \
+                                      Seq Too Low              Seq Too High
+                                      (No PossDup)                        |
+                                        |                           [Send 35=2 Resend]
+                                    [Send 35=5 Logout /                   |
+                                    Disconnect Socket]              [Process Gap Fill]
+
+Scenario 1.1: Sequence Gap (MsgSeqNum Too High)
+    • Trigger: The engine receives a message with MsgSeqNum (Tag 34) greater than ExpectedSeqNum.
+    • Root Cause: Dropped TCP packets, unacknowledged socket buffers during failover, or session restart on one end without the counterparty resetting.
+    • Engine Behavior:
+        1. Queues the out-of-order message.
+        2. Transmits a ResendRequest (35=2) with BeginSeqNo (Tag 7) and EndSeqNo (Tag 16).
+    • Protocol Failure Risks: If the counterparty sends administrative messages (Heartbeats 35=0, Logons 35=A) during resend processing instead of skipping them with SequenceReset-GapFill (35=4 with 123=Y), a Resend Loop occurs.
+
+Scenario 1.2: Sequence Too Low Without PossDupFlag=Y
+    • Trigger: Received MsgSeqNum (Tag 34) is less than ExpectedSeqNum, but Tag 43 (PossDupFlag) is missing or N.
+    • Root Cause: Out-of-sync sequence state files, or a sender replay engine sending historical messages without flagging them as potential duplicates.
+    • Engine Behavior: Fatal protocol violation. The receiver issues a Logout (35=5) or forcibly terminates the TCP connection to prevent duplicate order execution.
+
+Scenario 1.3: Frame Corruption (BodyLength or CheckSum Mismatch)
+    • Trigger:
+        ◦ Tag 9 (BodyLength) does not equal the character count between Tag 9's delimiter and Tag 10's delimiter.
+        ◦ Tag 10 (CheckSum) does not match the modulo 256 sum of all bytes up to 10=.
+    • Root Cause: SOH (\x01) character stripping by network proxies, payload truncation, or custom tag encoding bugs.
+    • Engine Behavior: The receiver must ignore the packet completely. Sending a Reject (35=3) is prohibited because the header itself cannot be trusted.
+
+2. Application & Business Layer Errors
+Application errors occur when session layer framing is valid, but the message payload violates schema constraints or business domain logic.
+
+Refer to table in fix_errors.md
+
+3. High-Risk FIX State & Edge Cases
+Scenario 3.1: Sequence Reset / Gap Fill Race Conditions
+When a ResendRequest (35=2) is processed, the sender must replay missing application messages while replacing administrative messages (Heartbeats, Test Requests) with SequenceReset (35=4) in GapFill mode (123=Y).
+Sender                                            Receiver
+  |                                                  |
+  |  <--- 35=2 ResendRequest (Seq 100 to 105) -----  |
+  |                                                  |
+  |  --- 35=4 SequenceReset-GapFill (100 -> 103) --> |  (Fills Gap for administrative msgs)
+  |  --- 35=8 ExecutionReport (Seq 103) -----------> |  (Replays actual trade)
+  |  --- 35=4 SequenceReset-GapFill (104 -> 106) --> |  (Fills Gap to current sequence)
+Common Edge Case Failure: Setting 123=N (Reset Mode instead of GapFill Mode) during normal session operation. Mode 123=N forcefully overrides sequence numbers without accounting for dropped trades, leading to silent message loss.
+Scenario 3.2: Stale Timestamp Rejection
+    • Trigger: Receiving a message where Tag 52 (SendingTime) differs from local system clock by more than the allowed threshold (typically 120 seconds).
+    • Root Cause: Clock drift on trading host (lack of NTP/PTP synchronization) or queue stalling in engine socket buffers.
+    • Engine Response: Rejection via 35=3 (SessionRejectReason=10 - SendingTime Accuracy Problem), followed by session disconnection if persistent.
+Scenario 3.3: Inbound Message Storm / Buffer Bloat
+    • Trigger: Burst of market data or high-frequency order cancellation cascades exceeding engine socket read throughput.
+    • Root Cause: Single-threaded processing engines handling both socket IO and application parsing.
+    • Symptom: Disconnection due to missed Heartbeat responses (35=0 trigger timed out because application thread was blocked).
+
+
+-------------------------------------------------
+-------------------------------------------------
+-------------------------------------------------
+-------------------------------------------------
+-------------------------------------------------
