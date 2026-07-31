@@ -68,6 +68,205 @@ Scenario 3.3: Inbound Message Storm / Buffer Bloat
 
 
 -------------------------------------------------
+##FIX protocol generate cases for finding unacked orders 
+
+Here are practical scripts and query strategies designed specifically to find unacknowledged orders (orders sent via 35=D or 35=G that never received a corresponding 35=8 ExecutionReport or 35=9 OrderCancelReject).
+
+Unacknowledged orders pose a severe financial risk (double-execution, unhedged exposure, or stuck state), so identifying them quickly is critical for FIX operations.
+
+1. Python Script: Unacknowledged Order Detector & Timeout Auditor
+
+This script tracks sent orders, matches incoming acknowledgments (39=0, 39=A, 39=8, 39=4, 39=5), and flags any orders that remain pending past a configurable timeout threshold (e.g., 500ms or 5 seconds).
+
+#!/usr/bin/env python3
+"""
+FIX Unacknowledged Order Detector
+Scans FIX logs to identify orders (35=D / 35=G) that never received 
+an initial acknowledgment (35=8) or timed out waiting for one.
+"""
+
+from datetime import datetime
+import sys
+
+# Configurable timeout threshold for considering an order "unacknowledged"
+ACK_TIMEOUT_SECONDS = 2.0  
+
+def parse_fix_time(ts_str):
+    """Parses FIX UTCTimestamp (Tag 52 or 60)."""
+    try:
+        if '.' in ts_str:
+            base, frac = ts_str.split('.', 1)
+            frac = (frac + '000000')[:6]
+            return datetime.strptime(f"{base}.{frac}", "%Y%m%d-%H:%M:%S.%f")
+        return datetime.strptime(ts_str, "%Y%m%d-%H:%M:%S")
+    except ValueError:
+        return None
+
+def parse_fix_tags(line):
+    """Parses SOH or pipe delimited string into a dictionary."""
+    clean = line.strip().replace('\x01', '|').strip('|')
+    tags = {}
+    for item in clean.split('|'):
+        if '=' in item:
+            k, v = item.split('=', 1)
+            tags[k] = v
+    return tags
+
+def find_unacked_orders(log_file):
+    # Stores sent orders: { ClOrdID: { 'time': datetime, 'symbol': str, 'side': str, 'sender': str, 'line': int } }
+    sent_orders = {}
+    
+    # Stores identified unacknowledged orders
+    unacked_orders = []
+    
+    # Keep track of last timestamp seen in file to compute timeouts for open orders at EOF
+    last_seen_time = None
+
+    with open(log_file, 'r', encoding='utf-8', errors='ignore') as f:
+        for line_num, line in enumerate(f, start=1):
+            if "8=FIX" not in line:
+                continue
+                
+            tags = parse_fix_tags(line)
+            msg_type = tags.get('35')
+            cl_ord_id = tags.get('11')
+            snd_time_str = tags.get('52')
+            
+            if not (msg_type and snd_time_str):
+                continue
+                
+            msg_time = parse_fix_time(snd_time_str)
+            if msg_time:
+                last_seen_time = msg_time
+
+            # ------------------------------------------------------------------
+            # 1. OUTBOUND ORDERS: New Order Single (D) or Cancel/Replace (G)
+            # ------------------------------------------------------------------
+            if msg_type in ['D', 'G']:
+                if cl_ord_id:
+                    sent_orders[cl_ord_id] = {
+                        'send_time': msg_time,
+                        'send_time_str': snd_time_str,
+                        'msg_type': 'NewOrder' if msg_type == 'D' else 'Replace',
+                        'symbol': tags.get('55', 'N/A'),
+                        'side': tags.get('54', 'N/A'),
+                        'price': tags.get('44', 'MKT'),
+                        'qty': tags.get('38', 'N/A'),
+                        'sender': tags.get('49', 'UNKNOWN'),
+                        'target': tags.get('56', 'UNKNOWN'),
+                        'line_num': line_num
+                    }
+
+            # ------------------------------------------------------------------
+            # 2. ACKNOWLEDGMENTS / RESPONSES: ExecutionReport (8) or CancelReject (9)
+            # ------------------------------------------------------------------
+            elif msg_type in ['8', '9']:
+                # Tag 11 = ClOrdID, Tag 41 = OrigClOrdID
+                ack_id = cl_ord_id or tags.get('41')
+                
+                if ack_id and ack_id in sent_orders:
+                    order_info = sent_orders.pop(ack_id)
+                    
+                    # Calculate response delta if timestamp available
+                    if msg_time and order_info['send_time']:
+                        delta = (msg_time - order_info['send_time']).total_seconds()
+                        if delta > ACK_TIMEOUT_SECONDS:
+                            print(f"⚠️ [SLOW ACK WARNING] ClOrdID {ack_id} acked after {delta:.3f}s (Threshold: {ACK_TIMEOUT_SECONDS}s)")
+
+            # ------------------------------------------------------------------
+            # 3. REJECTS: Session Reject (3) or Business Reject (j)
+            # ------------------------------------------------------------------
+            elif msg_type in ['3', 'j']:
+                # Optional: Check if Tag 45 (RefSeqNum) or Tag 58 points to an order
+                pass
+
+    # ------------------------------------------------------------------
+    # 4. AUDIT UNACKNOWLEDGED ORDERS
+    # ------------------------------------------------------------------
+    print("==========================================================================")
+    print("                UNACKNOWLEDGED FIX ORDER REPORT                           ")
+    print("==========================================================================")
+    print(f"Timeout Threshold : {ACK_TIMEOUT_SECONDS} seconds")
+    print(f"Total Unacked     : {len(sent_orders)}\n")
+
+    if not sent_orders:
+        print("✅ All orders were successfully acknowledged.")
+        return
+
+    printf_fmt = "  %-15s | %-6s | %-10s | %-4s | %-8s | %-20s | %-6s"
+    print(printf_fmt % ("ClOrdID", "Type", "Symbol", "Side", "Qty", "SendingTime", "Line#"))
+    print("  " + "-" * 82)
+
+    for cl_ord_id, info in sent_orders.items():
+        print(printf_fmt % (
+            cl_ord_id[:15],
+            info['msg_type'],
+            info['symbol'],
+            info['side'],
+            info['qty'],
+            info['send_time_str'],
+            info['line_num']
+        ))
+
+    print("\n--------------------------------------------------------------------------")
+    print("RECOMMENDED ACTION:")
+    print("1. Check Session sequence gaps (MsgSeqNum) around flagged line numbers.")
+    print("2. Send OrderStatusRequest (35=H) for unacknowledged ClOrdIDs.")
+    print("==========================================================================")
+
+if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        print("Usage: python find_unacked_orders.py <path_to_fix_log>")
+    else:
+        find_unacked_orders(sys.argv[1])
+
+2. AWK / Shell One-Liner (Fast Log Inspection)
+
+For quick CLI triage on production servers without running heavy scripts, this AWK pipeline compares sent ClOrdIDs (35=D) against returned ClOrdIDs (35=8):
+
+awk -F'[\x01|]' '
+# 1. Capture outgoing New Orders (35=D) and save ClOrdID (Tag 11)
+/35=D/ {
+    for(i=1;i<=NF;i++) {
+        if ($i ~ /^11=/) { id=substr($i,4); sent[id]=$0; break; }
+    }
+}
+# 2. Capture incoming Execution Reports (35=8) and remove acknowledged ClOrdID
+/35=8/ {
+    for(i=1;i<=NF;i++) {
+        if ($i ~ /^11=/) { id=substr($i,4); delete sent[id]; break; }
+    }
+}
+# 3. Output remaining unacknowledged ClOrdIDs
+END {
+    print "=== UNACKNOWLEDGED ORDERS COUNT: " length(sent) " ===";
+    for (id in sent) {
+        print "UNACKED ClOrdID: " id " ---> " sent[id];
+    }
+}' production_fix.log
+
+3. SQL Query Scenario (Order State Database Diagnostic)
+
+If your FIX engine or Order Management System (OMS) logs FIX message states into a database table, use this LEFT JOIN pattern to find orphaned orders:
+SQL
+
+SELECT 
+    o.cl_ord_id,
+    o.sender_comp_id,
+    o.target_comp_id,
+    o.symbol,
+    o.order_qty,
+    o.sending_time,
+    DATEDIFF(second, o.sending_time, GETUTCDATE()) AS pending_seconds
+FROM fix_messages o
+LEFT JOIN fix_messages a 
+    ON o.cl_ord_id = a.cl_ord_id 
+    AND a.msg_type = '8' -- ExecutionReport
+WHERE 
+    o.msg_type = 'D'     -- NewOrderSingle
+    AND a.cl_ord_id IS NULL
+    AND o.sending_time >= DATEADD(day, -1, GETUTCDATE());
+
 -------------------------------------------------
 -------------------------------------------------
 -------------------------------------------------
