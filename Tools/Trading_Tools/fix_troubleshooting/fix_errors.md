@@ -1,6 +1,6 @@
 
 ### Application & Business Layer Errors
-### Application errors occur when session layer framing is valid, but the message payload violates schema constraints or business domain logic.
+#### Application errors occur when session layer framing is valid, but the message payload violates schema constraints or business domain logic.
 
 | Error Type | MsgType | Key Tags | Common Triggers | Resolution |
 |--------------|---------|----------|-----------------|------------|
@@ -10,6 +10,8 @@
 
 
 ### Root Causes & Troubleshooting Matrix for Unacknowledged Orders
+#### unacknowledged orders (orders sent via 35=D or 35=G that never received a corresponding 35=8 ExecutionReport or 35=9 OrderCancelReject).
+#### Unacknowledged orders pose a severe financial risk (double-execution, unhedged exposure, or stuck state), so identifying them quickly is critical for FIX operations.
 
 | Scenario / Root Cause | FIX Diagnostic Signatures | Recovery Action |
 |------------------------|---------------------------|----------------|
