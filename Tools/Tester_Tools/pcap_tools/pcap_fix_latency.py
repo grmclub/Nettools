@@ -87,6 +87,7 @@ def process_file(data_file):
     sess = ""
     for key,val in sorted_dict.items():
         print val
+        sess = val["token"]
         if val["time_diff"] != "":
             sorted_list.append(val["time_diff"])
         sess = sess.split('.')
