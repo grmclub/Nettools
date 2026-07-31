@@ -12,10 +12,10 @@
 
 
 ### Root Causes & Troubleshooting Matrix for Unacknowledged Orders
-```
+<pre>
 #Unacknowledged orders (orders sent via 35=D or 35=G that never received a corresponding 35=8 ExecutionReport or 35=9 OrderCancelReject).
 #Unacknowledged orders pose a severe financial risk (double-execution, unhedged exposure, or stuck state), so identifying them quickly is critical for FIX operations.
-```
+</pre>
 
 | Scenario / Root Cause | FIX Diagnostic Signatures | Recovery Action |
 |------------------------|---------------------------|----------------|
