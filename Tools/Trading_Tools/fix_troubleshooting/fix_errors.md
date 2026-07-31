@@ -11,9 +11,9 @@
 
 ### Root Causes & Troubleshooting Matrix for Unacknowledged Orders
 
-# Scenario / Root Cause | FIX Diagnostic Signatures | Recovery Action
---- | --- | ---
-**Inbound Sequence Gap** | 35=2 (ResendRequest) issued by venue after order was sent. | Check if venue missed 35=D during sequence replay. Issue Order Status Request (35=H).
-**Silent Drop by Venue** | Order sent, no 35=8, no session reject, sequence numbers incrementing normally. | Check for custom tag validation failures or network drop on venue side. Contact counterparty support with Tag 11 (ClOrdID) and Tag 34 (MsgSeqNum).
-**TCP Buffer Drop / Disconnect** | Session disconnected (35=5 or TCP RST) right after sending 35=D. | Reconnect session, check PossDupFlag(43)=Y rules before resending, or query venue state via 35=H.
-**Corrupted Frame Parsing** | Tag 9 or Tag 10 mismatch caused venue to silently drop packet. | Run frame validator script (fix_checksum_calc.py) on raw socket logs.
+| Scenario / Root Cause | FIX Diagnostic Signatures | Recovery Action |
+|------------------------|---------------------------|----------------|
+| **Inbound Sequence Gap** | 35=2 (ResendRequest) issued by venue after order was sent. | Check if venue missed 35=D during sequence replay. Issue Order Status Request (35=H). |
+| **Silent Drop by Venue** | Order sent, no 35=8, no session reject, sequence numbers incrementing normally. | Check for custom tag validation failures or network drop on venue side. Contact counterparty support with Tag 11 (ClOrdID) and Tag 34 (MsgSeqNum). |
+| **TCP Buffer Drop / Disconnect** | Session disconnected (35=5 or TCP RST) right after sending 35=D. | Reconnect session, check PossDupFlag(43)=Y rules before resending, or query venue state via 35=H. |
+| **Corrupted Frame Parsing** | Tag 9 or Tag 10 mismatch caused venue to silently drop packet. | Run frame validator script (`fix_checksum_calc.py`) on raw socket logs. |
