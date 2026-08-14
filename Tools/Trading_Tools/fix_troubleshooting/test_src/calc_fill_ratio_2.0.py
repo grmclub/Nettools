@@ -1,4 +1,8 @@
-import sys
+#!/usr/bin/env python3
+
+import os, sys, getopt
+import errno, traceback
+import csv
 from collections import defaultdict
 
 def parse_fix_line(line: str) -> dict:
