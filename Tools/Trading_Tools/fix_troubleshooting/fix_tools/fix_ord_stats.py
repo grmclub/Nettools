@@ -24,7 +24,6 @@ def process_file(data_file):
 
     with open(data_file, "r") as ifile:
         reader = csv.reader(ifile)
-        rownum = 0
         for row in reader:
             t11111 = row[0]
             t35    = row[1]
