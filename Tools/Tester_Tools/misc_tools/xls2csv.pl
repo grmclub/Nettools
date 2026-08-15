@@ -10,7 +10,7 @@ use FileHandle;
 use MIME::Lite;
 use Data::Dumper;
 use POSIX qw(strftime);
-use Spreadsheet::WriteExcel
+#use Spreadsheet::WriteExcel
 use Spreadsheet::ParseExcel;
 
 my $g_filename="";
@@ -34,13 +34,16 @@ sub convert_xls
 			for my $col($col_min .. $col_max) {
 				my $cell= $worksheet->get_cell($row,$col);
 				next unless $cell;
-				$line = $line . $cell->unformated() . ";" ;
+				$line = $line . $cell->unformated() . ';' ;
 				#print("Row,Col = ($row,$col), "\n");
 				#print "Value =, cell->value();
 				# print '$line \n";
 			}
 			print '$line \n";
 		}
+		
+	}
+}
 
 sub main
 {
