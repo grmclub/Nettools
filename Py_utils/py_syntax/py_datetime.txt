@@ -1,10 +1,127 @@
 -------------------------------------------------------------
+ 1. Getting the Current Date & Timepythonfrom datetime import datetime, date
 
--------------------------------------------------------------
+now = datetime.now()       # Current date and time (e.g., 2026-08-15 11:27:05.123)
+today = date.today()       # Current date only (e.g., 2026-08-15)
 
--------------------------------------------------------------
+print(now.year)            # 2026
+print(now.month)           # 8
+print(now.day)             # 15
+Use code with caution.➡️ 2. Creating Specific Datespythonfrom datetime import datetime
 
+# Syntax: datetime(year, month, day, hour, minute, second)
+birthday = datetime(1995, 5, 23)
+appointment = datetime(2026, 12, 25, 14, 30)  # Dec 25, 2026 at 2:30 PM
+Use code with caution.➡️ 3. Date Math (Adding/Subtracting Time)Use timedelta to add or subtract days, weeks, hours, minutes, or seconds.pythonfrom datetime import datetime, timedelta
+
+now = datetime.now()
+
+# Add or subtract time
+three_days_ago = now - timedelta(days=3)
+next_week = now + timedelta(weeks=1)
+in_two_hours = now + timedelta(hours=2)
+
+# Calculate the difference between two dates (returns a timedelta object)
+days_until_appointment = appointment - now
+print(days_until_appointment.days)  # Returns total days remaining as an integer
+Use code with caution.➡️ 4. Formatting Dates to Strings (strftime)Use .strftime() (string format time) to convert a datetime object into a clean, human-readable string.pythonnow = datetime.now()
+
+# Common formats
+print(now.strftime("%Y-%m-%d"))      # "2026-08-15" (ISO format)
+print(now.strftime("%m/%d/%Y"))      # "08/15/2026" (US format)
+print(now.strftime("%B %d, %Y"))     # "August 15, 2026"
+print(now.strftime("%H:%M:%S"))      # "11:27:05" (24-hour time)
+print(now.strftime("%I:%M %p"))      # "11:27 AM" (12-hour time with AM/PM)
+Use code with caution.➡️ 5. Parsing Strings into Dates (strptime)Use datetime.strptime() (string parse time) to turn a text string into a real Python datetime object so you can perform math on it. The format layout must match your string exactly.pythondate_string = "2026-10-31 23:59"
+format_layout = "%Y-%m-%d %H:%M"
+
+parsed_date = datetime.strptime(date_string, format_layout)
+print(parsed_date.year)  # 2026
+Use code with caution.💡 Core Format Code Cheat Sheet%Y / %y: 4-digit year (2026) / 2-digit year (26)%m / %B / %b: Month number (08) / Month name (August) / Short month (Aug)%d: Day of the month zero-padded (15)%A / %a: Full weekday (Saturday) / Short weekday (Sat)%H / %I: 24-hour clock (13) / 12-hour clock (01)%M / %S: Minute (30) / Second (45)%p: AM or PMIf you are dealing with global users, let me know if you need to add timezone support (UTC/local conversions) using Python's zoneinfo module, or if you need to convert Unix timestamps.
 -------------------------------------------------------------
+## 10 Python one-liners for working with dates and times:
+
+Current Timestamp in ISO 8601 Format
+datetime.now().isoformat()
+
+Parsing a String Into a DateTime Object
+datetime.strptime("2025-05-10", "%Y-%m-%d")
+
+Add X Days to a Given Date
+date.today() + timedelta(days=7)
+
+Calculate the Difference in Days Between Two Dates
+(date(2025, 12, 31) - date(2025, 6, 29)).days
+
+Generate a Date Range of 5 Consecutive Days Using Pandas
+pd.date_range(start="2025-01-01", periods=5).tolist()
+
+Convert a Column of Date Strings in Pandas
+df['date'] = pd.to_datetime(df['date'])
+
+Get the Name of the Day of the Week
+datetime(2025, 5, 10).strftime("%A")
+
+Generate Month-Level Timestamps
+np.arange('2025-01', '2025-06', dtype='datetime64[M]')
+
+Filter DataFrame Rows by a Date Condition
+df[df['date'] > '2025-01-15']
+
+Get Unix Timestamp From a DateTime Object
+datetime.now().timestamp()
+-------------------------------------------------------------
+The article "Python Datetime: A Simple Guide with 39 Code Examples" by Artur Sannikov on Dataquest provides a practical, step-by-step tutorial on working with dates, times, and time zones in Python.
+https://www.dataquest.io/blog/python-datetime/
+
+Core Topics Covered
+1. Fundamental datetime Classes
+The article begins by introducing Python's built-in datetime module and its primary constructors, showing how to create objects and retrieve current times:
+    date(year, month, day): Stores calendar dates strictly following ISO 8601 formatting.
+    time(hour, minute, second): Represents clock times independent of dates.
+    datetime(year, month, day, hour, minute, second): Combines date and time into a single object.
+    datetime.now() & date.today(): Fetches current timestamps or today's date.
+    isocalendar(): Extracts ISO year, week number, and weekday indices.
+
+2. String Conversions & Parsing
+Converting between formatted strings and Python datetime objects:
+    isoformat() / fromisoformat(): Converts to and from standard YYYY-MM-DD strings.
+    strptime(): Parses custom date strings into datetime objects using format directives (e.g., %d-%m-%Y, %B).
+    strftime(): Formats datetime objects into human-readable custom strings.
+
+3. Timestamps & Time Arithmetic
+    Unix Timestamps: Demonstrates converting timestamps to datetime objects using datetime.fromtimestamp() and vice versa using .timestamp().
+    timedelta: Used for time arithmetic, such as adding/subtracting days or calculating elapsed durations between two dates.
+
+4. Time Zones & the dateutil Library
+    zoneinfo & tzinfo: Shows how to assign and convert time zones (e.g., UTC, America/New_York) to make datetime objects "aware" rather than "naive."
+    dateutil Package: Demonstrates advanced relative date calculations, such as finding the last day of a month or adding specific months/years using relativedelta.
+
+Practical Project
+The tutorial culminates in a practical hands-on example: building a New Year's Eve Countdown Timer that calculates remaining days, hours, and minutes until midnight in a specific time zone using timedelta and zoneinfo.
+-------------------------------------------------------------
+## 10 Essential Best Practices for Dates & Times in Python
+
+    1. Always Store and Process in UTC
+       Store all dates and times in UTC in database models and internal logic. Only convert to local timezones when displaying timestamps to end users.
+    2. Avoid "Naive" Datetimes
+       Always attach timezone information using zoneinfo (Python 3.9+) or pytz to make datetime objects "timezone-aware" and prevent silent errors during timezone shifts or Daylight Saving Time (DST).
+    3. Use ISO 8601 Strings for Storage and APIs
+       Format date/time strings as YYYY-MM-DDTHH:MM:SSZ using isoformat() and fromisoformat() for unambiguous parsing across different services and databases.
+    4. Use timedelta for Simple Time Differences
+       Perform operations like adding/subtracting days or hours using built-in datetime.timedelta objects rather than manually calculating seconds or days.
+    5. Use dateutil.relativedelta for Complex Calendar Math
+       For adding units like "1 month" or "1 year" (which vary in exact length), use dateutil.relativedelta instead of fixed-day timedelta arithmetic.
+    6. Parse Arbitrary Strings with dateutil.parser or strptime
+       Use datetime.strptime() for strict format validation, or dateutil.parser.parse() to automatically detect and parse unknown date formats.
+    7. Leverage pandas.to_datetime for Bulk Data Processing
+       When dealing with DataFrames or dataset series, use Pandas' vectorized functions (pd.to_datetime()) rather than iterating through lists with native Python standard libraries.
+    8. Watch Out for Daylight Saving Time (DST) Transitions
+       Never hardcode timezone offsets (e.g., assuming EST is always UTC-5). Always use named timezone identifiers like "America/New_York" via ZoneInfo.
+    9. Use date.today() vs. datetime.now() Intentionally
+       Use date.today() when time-of-day is irrelevant (e.g., birthdays or billing cycle dates) to avoid unnecessary timestamp precision overhead.
+    10. Consider High-Level Modern Libraries (e.g., Pendulum or Arrow)
+       For complex applications with heavy time calculations, third-party libraries like Pendulum or Arrow offer cleaner syntax for formatting, human-readable durations ("2 hours ago"), and timezone conversions.
 
 -------------------------------------------------------------
 
