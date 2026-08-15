@@ -5,12 +5,180 @@
 - strings 
 
 -------------------------------------------------------------
+➡️ Conditionals (if, elif, else)
+
+if condition1:
+    # Code to run if condition1 is true
+    print("Condition 1 is true")
+elif condition2:
+    # Code to run if condition1 is false AND condition2 is true
+    print("Condition 2 is true")
+else:
+    # Code to run if all previous conditions are false
+    print("None of the conditions are true")
+
+➡️ Logical & Comparison Operatorspython# Comparison: ==, !=, >, <, >=, <=
+# Logical keywords: and, or, not
+
+if age > 18 and is_active:
+    print("Access granted")
+	
+If you are writing a specific script, let me know if you need to combine conditions using logical operators (and, or, not) or if you want to see how to write a one-liner if-else statement (ternary operator).	
+-------------------------------------------------------------
+➡️ Collections (Lists, Dicts, Tuples)
+
+# Lists (Ordered, mutable)
+fruits = ["apple", "banana", "cherry"]
+fruits.append("date")        # Add item
+first_fruit = fruits[0]      # Get index 0
+
+# Dictionaries (Key-Value pairs)
+user = {"name": "Bob", "age": 25}
+user["email"] = "bob@x.com"  # Add key-value
+user_name = user["name"]     # Get value
+
+# Tuples (Ordered, unchangeable)
+coordinates = (10.0, 20.0)
 
 -------------------------------------------------------------
+➡️ Loops (for and while)python# For Loop over a range (stops before 5)
+for i in range(0, 5):
+    print(i) # Outputs 0, 1, 2, 3, 4
+
+# For Loop over a list
+for fruit in fruits:
+    print(fruit)
+
+# While Loop
+count = 0
+while count < 3:
+    print(count)
+    count += 1
+-------------------------------------------------------------
+➡️ Functions Defined using the def keyword. Use return to pass back a value.pythondef greet(user_name):
+    return f"Hello, {user_name}!"
+
+# Call the function
+message = greet("Charlie")
+-------------------------------------------------------------
+➡️ File I/O (Read/Write)Always use the with statement. It automatically closes the file for you, even if errors occur.python# Writing to a file
+with open("test.txt", "w") as file:
+    file.write("Hello World")
+
+# Reading from a file
+with open("test.txt", "r") as file:
+    content = file.read()
+-------------------------------------------------------------	
+➡️ Error Handling (try, except)Prevents your program from crashing when an error happens.pythontry:
+    result = 10 / 0
+except ZeroDivisionError:
+    print("You cannot divide by zero!")
+except Exception as e:
+    print(f"An unexpected error occurred: {e}")
+
+-------------------------------------------------------------
+➡️ String FormattingModern Python uses f-strings (formatted string literals) for clean, readable text replacement. Place an f before the opening quote and wrap variables or expressions in curly braces {}.
+
+name = "Alice"
+price = 12.3456
+items = 3
+
+# Basic variable insertion
+msg = f"Hello {name}"                   # "Hello Alice"
+
+# Math and expressions inside strings
+total = f"Total: ${price * items}"       # "Total: $37.0368"
+
+# Number formatting (Rounding decimals)
+# :.2f means 2 decimal places, float
+rounded = f"Price: ${price:.2f}"         # "Price: $12.35"
+
+# Zero padding (Useful for IDs or dates)
+# :03d means width of 3, pad with zeros, integer
+padded = f"ID: {items:03d}"              # "ID: 003"
+
+
+-------------------------------------------------------------
+➡️ List ComprehensionsList comprehensions provide a short, one-line syntax to create new lists based on existing lists or iterables.
+
+# Formula: [expression for item in iterable if condition]
+
+numbers = [1, 2, 3, 4, 5]
+
+# 1. Basic transformation (Square all numbers)
+squares = [num ** 2 for num in numbers]
+# Output: [1, 4, 9, 16, 25]
+
+# 2. Filtering with 'if' (Keep only even numbers)
+evens = [num for num in numbers if num % 2 == 0]
+# Output: [2, 4]
+
+# 3. String manipulation (Convert words to uppercase)
+words = ["hello", "world"]
+caps = [w.upper() for w in words]
+# Output: ['HELLO', 'WORLD']
+
+# 4. Using 'if-else' conditional (Replace values inline)
+# Note: Move the if-else BEFORE the 'for' keyword
+labels = ["Even" if num % 2 == 0 else "Odd" for num in numbers]
+# Output: ['Odd', 'Even', 'Odd', 'Even', 'Odd']
+
+-------------------------------------------------------------
+➡️ Lambda FunctionsLambdas are small, anonymous, one-line functions. They use the lambda keyword instead of def and automatically return their single expression.
+
+# Formula: lambda arguments: expression
+
+# 1. Basic assignment (rarely used this way, use 'def' instead)
+add_five = lambda x: x + 5
+print(add_five(10))                      # 15
+
+# 2. Sorting a list of tuples by a specific index (Common use case)
+pairs = [(1, 'one'), (3, 'three'), (2, 'two')]
+# Sort by the text name (index 1) instead of the number
+pairs.sort(key=lambda item: item[1])
+# Output: [(1, 'one'), (3, 'three'), (2, 'two')]
+
+# 3. Inline filtering with filter()
+nums = [1, 2, 3, 4, 6]
+evens = list(filter(lambda x: x % 2 == 0, nums))
+# Output: [2, 4, 6]
+
+# 4. Inline transforming with map()
+doubled = list(map(lambda x: x * 2, nums))
+# Output: [2, 4, 6, 8, 12]
+
+
+
+-------------------------------------------------------------
+##Combine list comprehension and lambda functions
+
+1. Creating a List of Functions (The Standard Way)If you want to generate a list of distinct, reusable mathematical functions or operations on the fly:
+# Create a list of multiplier functions: x*0, x*1, x*2, x*3
+# We bind i=i to freeze the current value of 'i' into each lambda
+multipliers = [lambda x, i=i: x * i for i in range(4)]
+
+# To use them, pick a function by index and pass an argument (e.g., x=10)
+print(multipliers[2](10))  # Output: 20  (10 * 2)
+print(multipliers[3](10))  # Output: 30  (10 * 3)
+
+2. Creating and Immediately Executing a Lambda (Data Extraction)If you want to use a lambda to process data and instantly return a list of values, you must wrap the lambda in parentheses and immediately pass it an argument (item) at the end of the expression:pythondata = [10, 20, 30, 40]
+
+# Syntax: [(lambda variables: expression)(argument) for item in iterable]
+processed_data = [(lambda x: x * 2 + 5)(num) for num in data]
+
+print(processed_data)  
+# Output: [25, 45, 65, 85]
 
 -------------------------------------------------------------
 -------------------------------------------------------------
-
+-------------------------------------------------------------
 -------------------------------------------------------------
 
--------------------------------------------------------------
+
+
+
+
+
+
+
+
