@@ -24,7 +24,7 @@ def percentile_calc(N,percent):
       return N[int(k-1)]
 
 def calc_latency(session,sess_list):
-     
+
     sess_list.sort()
     p50 = percentile_calc(sess_list,0.50)
     p80 = percentile_calc(sess_list,0.80)
@@ -69,7 +69,7 @@ def process_file():
         for sess in session_set:
             for key in id_dict.keys():
                 if id_dict[key]["mkt"] == mkt and id_dict[key]["sess"] == sess:
-                    id = id_dict[key] 
+                    id = id_dict[key]
                     print('%s,%s,%s,%s,%s,%s" %(mkt,sess,key,id["t1"],id["2"],id["time_diff"]))
                     td=id_dict[key]["time_diff"]
                     key = mkt + "-" + sess

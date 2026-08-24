@@ -9,7 +9,7 @@ import subprocess
 
 def printHelp():
     print ("""Usage: %s -f <filename>
-    
+
     ##header
     11111,35,39,11,41,49,56,9245,52,54,59,12124,38,44,376,151,14,31,32,1
 
@@ -45,16 +45,16 @@ def process_file(data_file):
             t31    = row[17]
             t32    = row[18]
             t1     = row[19]
-            
+
             #print(t11111,t35,t39,t11,t41,t49,t56,t9245,t52,t54,t59,t12124,t38,t44,t376,t151,t14,t31,t32,t1)
             if t35 == "D":
                 client_key = t9245 + "," + t1 + "," + t59
-                
+
             if client_dict.get(client_key):
                 client_dict[client_key]["ord_count"] += 1
                 client_dict[client_key]["ord_vol"  ] += int(t38)
                 client_dict[client_key]["ord_value"] += float("%0.2f" %(int(t38)*float(t44)))
-                
+
             else:
                 client_dict[client_key] = { "ord_count":1,
                                             "ord_vol"  : int(t38),
@@ -72,7 +72,7 @@ def process_file(data_file):
                                           }
             if t59 == "3":
                 client_dict[client_key]["ioc_count"] += 1
-                id_dict[t376] = { 
+                id_dict[t376] = {
                                 "11111"      = t11111,
                                 "clordid"    = t11,
                                 "oclordid"   = t41,
@@ -84,7 +84,7 @@ def process_file(data_file):
                                 "sym"        = t12124,
                                 "ord_qty"    = t38,
                                 "ord_price"  = t44,
-                                "cl_account" = t1                     
+                                "cl_account" = t1
                             }
 
             elif t35 == "8":
@@ -103,7 +103,7 @@ def process_file(data_file):
                         elif (t39 == "8"):
                             client_dict[client_key]["rej_count"] += 1
                             client_dict[client_key]["rej_vol"  ] += int(t32)
-                            client_dict[client_key]["rej_value"] += float("%0.2f" %(int(t32)*float(t31))) 
+                            client_dict[client_key]["rej_value"] += float("%0.2f" %(int(t32)*float(t31)))
 
     print("acronym,tag1,ioc,ord_count,ord_vol,ord_value,fill_count,fill_vol,fill_value,cxl_count,cxl_vol,cxl_value,rej_count,rej_vol,rej_value")
     for key in sorted(client_dict.keys()):
@@ -120,8 +120,8 @@ def process_file(data_file):
                                                           ("%0.2f" % x["cxl_value"]),
                                                           x["rej_count"],
                                                           x["rej_vol"  ],
-                                                          ("%0.2f" % x["rej_value"])))                                                       
-  
+                                                          ("%0.2f" % x["rej_value"])))
+
 def main():
     try:
         opts, args = getopt.getopt(sys.argv[1:], "f:h")
