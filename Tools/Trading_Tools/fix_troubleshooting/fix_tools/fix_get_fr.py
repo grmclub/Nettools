@@ -28,21 +28,21 @@ def process_file(data_file):
 			fill_qty  = row[4]
 			#print("%s,%s,%s,%s,%s" % (rtpc_acct,comp_id,exec_type,qty,fill_qty))
 
-			if not acct.dict.get(rtpc _acct):
+			if not acct_dict.get(rtpc _acct):
 				acct_dict[rtpc_acct] = {'total_qty':0, 'total_fill_qty':0, 'ord_cnt':0, 'fill_cnt':0 }
 
 			if exec_type == "0":
-				acct_dict[rtpc_acct]['total_qty'] += int(qty)
-				acct_dict[rtpc_acct]['order_cnt'] += 1
+				acct_dict[rtpc_acct]['total_qty'] = acct_dict[rtpc_acct]['total_qty'] + int(qty)
+				acct_dict[rtpc_acct]['ord_cnt']   = acct_dict[rtpc_acct]['ord_cnt'] + 1
 
-			if exec_type == 1 or 2:
-				acct_dict[rtpc_acct]['total_fill_qty'] += int(qty)
-				acct_dict[rtpc_acct]['fill_cnt'] += 1
+			if exec_type == "1" or exec_type == "2" :
+				acct_dict[rtpc_acct]['total_fill_qty'] = acct_dict[rtpc_acct]['total_fill_qty'] + int(qty)
+				acct_dict[rtpc_acct]['fill_cnt']       = acct_dict[rtpc_acct]['fill_cnt'] + 1
 
     print('acct,ord_cnt,total_qty,fill_cnt,fill_qty,fill_ratio')
     for acct in sorted(acct_dict.keys()):
         x = acct_dict[acct]
-        fill_ratio = (x['total_fill_qty']/(float) x['total_qty'])*100
+        fill_ratio = (x['total_fill_qty']/float( x['total_qty']))*100
         print("%s,%d,%d,%d,%d,%0.2f"%(acct,x['ord_cnt'],x['total_qty'], x['fill_cnt'], x['total_fill_qty'], fill_ratio))
 
 
