@@ -10,10 +10,10 @@ def printHelp():
     OPTIONS:
          -f  host list file
          -h  Display this help message.
-         
+
          #12100,376,150,38,32
          cat fix_log| egrep -a "150=[012]"| gtags -t 1,376,150,38,32 > all_fix
-         
+
     """ % os.path.basename(__file__))
 
 def process_file(data_file):
