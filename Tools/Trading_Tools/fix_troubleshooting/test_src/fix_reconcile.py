@@ -7,6 +7,13 @@ from collections import defaultdict
 # cat fix_messages.log | python3 fix_reconcile.py --client CLIENT_SESSION --broker BROKER_SESSION
 # tail -f /path/to/fix.log | python3 fix_reconcile.py --client CLIENT_SESSION --broker BROKER_SESSION
 #
+# Key Mapping & Logic Highlights:
+#
+#    Client Side: Extracts execution reports (35=8) matching --client in Tag 49/56 and aggregates filled quantities (32) and prices (31) mapped to Tag 37 (OrderID).
+#
+#    Broker Side: Extracts execution reports (35=8) matching --broker in Tag 49/56 and aggregates filled quantities (32) and prices (31) mapped to Tag 11 (ClOrdID).
+#
+#    Delimiter Handling: Supports standard \x01 (SOH), | (pipe), or space-separated log entries.
 
 
 def parse_fix_message(line: str) -> dict:
