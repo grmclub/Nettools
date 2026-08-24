@@ -17,27 +17,27 @@ def printHelp():
     """ % os.path.basename(__file__))
 
 def process_file(data_file):
-	acct_dict = {}
-	with open(data_file, "r") as ifile:
-		reader = csv.reader(ifile)
-		for row  in reader:
-			rtpc_acct = row[0]
-			comp_id   = row[1]
-			exec_type = row[2]
-			qty       = row[3]
-			fill_qty  = row[4]
-			#print("%s,%s,%s,%s,%s" % (rtpc_acct,comp_id,exec_type,qty,fill_qty))
+    acct_dict = {}
+    with open(data_file, "r") as ifile:
+        reader = csv.reader(ifile)
+        for row  in reader:
+            rtpc_acct = row[0]
+            comp_id   = row[1]
+            exec_type = row[2]
+            qty       = row[3]
+            fill_qty  = row[4]
+            #print("%s,%s,%s,%s,%s" % (rtpc_acct,comp_id,exec_type,qty,fill_qty))
 
-			if not acct_dict.get(rtpc _acct):
-				acct_dict[rtpc_acct] = {'total_qty':0, 'total_fill_qty':0, 'ord_cnt':0, 'fill_cnt':0 }
+            if not acct_dict.get(rtpc _acct):
+                acct_dict[rtpc_acct] = {'total_qty':0, 'total_fill_qty':0, 'ord_cnt':0, 'fill_cnt':0 }
 
-			if exec_type == "0":
-				acct_dict[rtpc_acct]['total_qty'] = acct_dict[rtpc_acct]['total_qty'] + int(qty)
-				acct_dict[rtpc_acct]['ord_cnt']   = acct_dict[rtpc_acct]['ord_cnt'] + 1
+            if exec_type == "0":
+                acct_dict[rtpc_acct]['total_qty'] = acct_dict[rtpc_acct]['total_qty'] + int(qty)
+                acct_dict[rtpc_acct]['ord_cnt']   = acct_dict[rtpc_acct]['ord_cnt'] + 1
 
-			if exec_type == "1" or exec_type == "2" :
-				acct_dict[rtpc_acct]['total_fill_qty'] = acct_dict[rtpc_acct]['total_fill_qty'] + int(qty)
-				acct_dict[rtpc_acct]['fill_cnt']       = acct_dict[rtpc_acct]['fill_cnt'] + 1
+            if exec_type == "1" or exec_type == "2" :
+                acct_dict[rtpc_acct]['total_fill_qty'] = acct_dict[rtpc_acct]['total_fill_qty'] + int(qty)
+                acct_dict[rtpc_acct]['fill_cnt']       = acct_dict[rtpc_acct]['fill_cnt'] + 1
 
     print('acct,ord_cnt,total_qty,fill_cnt,fill_qty,fill_ratio')
     for acct in sorted(acct_dict.keys()):
