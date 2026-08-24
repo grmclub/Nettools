@@ -45,18 +45,19 @@ def process_file(data_file):
             #print(t11111,t35,t39,t11,t41,t49,t56,t9245,t52,t54,t59,t12124,t38,t44,t376,t151,t14)
             if t35 == "D":
                 id_dict[t376] = {
-                                    "11111"      = t11111
-                                    "sess"       = t49
-                                    "cl_acr"     = t9245
-                                    "clordid"    = t11
-                                    "oclordid"   = t41
-                                    "tif"        = t59
-                                    "side"       = t54
-                                    "ord_time"   = t52
-                                    "ord_qty"    = t38
-                                    "sym"        = t12124
-                                    "cxl_time"   = ""
-                                    "cxl_qty"    = 0
+                                    "11111"      : t11111,
+                                    "sess"       : t49,
+                                    "cl_acr"     : t9245,
+                                    "clordid"    : t11,
+                                    "oclordid"   : t41,
+                                    "tif"        : t59,
+                                    "side"       : t54,
+                                    "ord_status" : t39,
+                                    "ord_time"   : t52,
+                                    "ord_qty"    : t38,
+                                    "sym"        : t12124,
+                                    "cxl_time"   : "",
+                                    "cxl_qty"    : 0
                                 }
                 #print(id_dict[t376])
             elif t35 == "F":
