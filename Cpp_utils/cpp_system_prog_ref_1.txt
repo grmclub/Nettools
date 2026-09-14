@@ -1,4 +1,9 @@
 
+
+https://cppcheatsheet.com/index.html
+https://github.com/mortennobel/cpp-cheatsheet
+https://github.com/crazyguitar/cppcheatsheet
+
 -------------------------------------------------
 This compact, single-page C++ System Programming Cheatsheet strips away boilerplate to provide high-density, production-ready code patterns for Linux/POSIX systems.
 
