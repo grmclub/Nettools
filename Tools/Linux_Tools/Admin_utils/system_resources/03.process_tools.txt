@@ -37,13 +37,57 @@ ps aux --sort=-%mem | grep -i '[p]ython'
 ps aux --sort=-%cpu | grep -i '[p]ython'
 pgrep -af '[p]ython'
 
+##List cpu,mem and I/O
+pidstat -p ALL -rud -h 
+
+--Display Statistics of Dependent Process in Tree Format using -t
+# pidstat -t -C "mysql"
+
+--Display Command Name and its Arguments using option -l
+$ pidstat -C java -l
+
+--Display Paging Activity for a Specific Process using -r
+# pidstat -p 23493 -r 1
+
+--Display I/O Statistics for a Specific Process using -d
+# pidstat -p 23493 -d 1
+
+--Display Performance Statistics based on Process Name using -C
+# pidstat -C "mysql"
+
+--Display Statistics for ALL Running Process (or a Specific Process)
+# pidstat -p ALL | wc -l
+
+===================
+https://www.thegeekstuff.com/2011/12/linux-performance-monitoring-tools/
+https://www.thegeekstuff.com/2011/03/sar-examples/
+https://www.thegeekstuff.com/2011/07/iostat-vmstat-mpstat-examples/
+https://www.thegeekstuff.com/2014/11/pidstat-examples/
+https://www.thegeekstuff.com/archives-2/
+https://www.thegeekstuff.com/linux-101-hacks-ebook/
+===================
+https://github.com/chiranjibKonwar/Documentation
+
+
+
 -------------------------------------------------------------
 --cpu
 ps -aux --sort -pcpu|pr -TW 256|head
 
+To see the top 10 CPU-consuming processes:
+ps -eo pid,user,%cpu,command --sort=-%cpu | head -n 11
+
+
 --mem
 ps -aux --sort -rss|pr -TW 256|head 
 ps -eo pid,ppid,%mem,%cpu,cmd,comm --sort=-%mem|head 
+ps -eo pid,user,%mem,rss,cmd --sort=-rss | grep [j]ava
+ps -eo pid,comm,rss --sort=-rss | head -20
+
+This will give the top 5 processes by memory usage.
+$ ps -eo pmem,pcpu,vsize,pid,cmd | sort -k 1 -nr | head -5
+
+
 top -o %MEM
 top -o %CPU| head 
 
@@ -56,6 +100,74 @@ watch -n 1 'ps -eo psr,pid,ppid,cmd,%mem,%cpu --sort=-%mem | head'
             ps -eo psr,pid,ppid,cmd,%cpu,%mem --sort=-%cpu
 watch "ps aux | sort -nrk 3,3 | head -n 5"			
 			
+==============================
+https://unix.stackexchange.com/questions/4999/how-to-find-which-processes-are-taking-all-the-memory
+-------------------------------
+
+1. Quick One-Liner for All Running Java Processes
+
+for pid in $(pgrep -d ' ' java); do 
+    echo "--- PID $pid ---"; 
+    grep -E 'Name|VmRSS|VmSize|VmSwap' /proc/$pid/status; 
+done
+
+What the key /proc metrics mean:
+• VmRSS: The actual physical RAM currently consumed by the Java process. This is the most accurate indicator of real memory footprint.
+• VmSize: The virtual memory size. This is just reserved address space and does not reflect actual RAM usage.
+• VmSwap: The amount of memory the process has swapped out to disk.
+
+
+2. Neatly Formatted Table View
+
+If you want a clean overview that aggregates all Java processes, calculates their memory from /proc in Megabytes (MB), and lists them in a clean table, use this script:
+bash
+echo -e "PID\tProcess\t\tActual RAM (RSS)"
+echo -e "----------------------------------------"
+for pid in $(pgrep java); do
+    if [ -d "/proc/$pid" ]; then
+        name=$(grep "Name:" /proc/$pid/status | awk '{print $2}')
+        # Extract VmRSS in KB and convert to MB
+        rss_kb=$(grep "VmRSS:" /proc/$pid/status | awk '{print $2}')
+        if [ ! -z "$rss_kb" ]; then
+            rss_mb=$(echo "scale=2; $rss_kb / 1024" | bc)
+            echo -e "$pid\t$name\t\t${rss_mb} MB"
+        fi
+    fi
+done
+
+
+3. Digging Deeper (Why is Java using so much?)
+
+Keep in mind that the operating system's RSS reading includes both the Java Heap and Native Memory (metaspace, thread stacks, GC overhead, and loaded libraries).
+If you notice a specific Java process ID (PID) using a massive amount of RSS, you can see how that memory is distributed using Java's built-in diagnostic tool:
+bash
+jcmd <PID> VM.native_memory baseline
+
+==============================
+
+$ cat /proc/611040/status
+Name:	sleep
+Umask:	0022
+State:	S (sleeping)
+Tgid:	611040
+...
+VmPeak:	    5544 kB
+VmSize:	    5544 kB
+VmLck:	       0 kB
+VmPin:	       0 kB
+VmHWM:	    2076 kB
+VmRSS:	    2076 kB
+RssAnon:	       0 kB
+RssFile:	    2068 kB
+RssShmem:	       0 kB
+VmData:	     204 kB
+VmStk:	     132 kB
+VmExe:	      16 kB
+VmLib:	    1648 kB
+VmPTE:	      48 kB
+VmSwap:	       0 kB
+
+==============================
 -------------------------------------------------------------
 ##Display the top ten running processes - sorted by memory usage
 ps aux | sort -nk +4 | tail
