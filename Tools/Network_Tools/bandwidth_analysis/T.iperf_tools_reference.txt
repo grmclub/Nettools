@@ -172,8 +172,52 @@ iperf -s -i 5 -e -w 512K -p <port>
 iperf -c <server_ip> -t60 -b 100M -i5 -e -r -w 512K -p <port>
 
 
-
 -------------------------------------------------
+## iperf, which provides basic information on throughput, packet loss, and jitter to help you troubleshoot UDP and TCP issues.
+
+In general, if the application requires error free in-order delivery of packets, then TCP is best.
+If the application can tolerate some packet loss, then UDP will probably fit the requirements.
+
+Install it on a server and a client, then
+- run iperf -s on the server and
+- iperf -c <IP address of server> on the client.
+
+- The -i option defines the interval in seconds that iperf reports the metrics.
+  The default time that the iperf client will run is 10 seconds, but this can be changed using the -t option.
+
+- By default, the iperf server listens on port 5001, but this can be changed if required.
+
+------------------------
+## Example of testing a single TCP connection between two nodes
+iperf -s -i 1
+iperf -c <server IP address> -i 1 -t 60
+
+# ./iperf -s -p 45678
+# ./iperf -c 10.12.240.32 -p 45678 -t 30
+
+---------
+## testing 8 parallel TCP connections between two nodes
+
+# ./iperf -s -p 45678
+# ./iperf -c 10.12.240.32 -p 45678 -t 30 -P 8
+
+--------
+
+
+## Testing UDP.
+iperf -su -i 1
+iperf -c <server IP address> -b 36M -i 1 -t 20
+
+Note that the -b option will automatically cause iperf to use UDP. If -b is not specified, then you need to use -u to indicate UDP is the transport protocol.  In this case, we are specifying that the transmission rate should be 36MBits/second.
+
+-----------------------
+# ./iperf -s -u -p 12345
+
+On the client node, run Iperf in client mode:
+# ./iperf -c 10.12.240.32 -u -p 12345 -t 30 -b 250M
+-----------------------
+
+
 -------------------------------------------------
 ------------------------------------------------- 
 
