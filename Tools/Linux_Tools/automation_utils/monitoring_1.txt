@@ -1,0 +1,109 @@
+
+-------------------------------------------------
+#!/bin/bash
+
+# --- CONFIGURATION ---
+THRESHOLD=90
+EMAIL="your_email@example.com"
+HOSTNAME=$(hostname)
+ALERT_FILE="/tmp/disk_alert.txt"
+
+# Clear any leftover alert file from a previous run
+> "$ALERT_FILE"
+
+# --- MAIN LOGIC ---
+# 1. df -H lists file systems with human-readable numbers.
+# 2. awk 'NR>1 ...' skips the header line.
+# 3. The loop filters out system-managed virtual filesystems (like tmpfs).
+df -H | awk 'NR>1 && !/tmpfs|devtmpfs|udev/ {print $5 " " $6}' | while read -r output; do
+    # Extract the percentage number (removes the '%' sign)
+    usage=$(echo "$output" | awk '{print $1}' | sed 's/%//')
+    partition=$(echo "$output" | awk '{print $2}')
+
+    # Check if usage is greater than or equal to the threshold
+    if [ "$usage" -ge "$THRESHOLD" ]; then
+        echo "WARNING: Partition '$partition' is at ${usage}% capacity." >> "$ALERT_FILE"
+    fi
+done
+
+# If the alert file has content, send ONE consolidated email
+if [ -s "$ALERT_FILE" ]; then
+    mail -s "CRITICAL: Disk Space Alert on $HOSTNAME" "$EMAIL" << EOF
+The following partitions on $HOSTNAME have exceeded the $THRESHOLD% usage threshold:
+
+$(cat "$ALERT_FILE")
+
+Please log in and free up space immediately.
+EOF
+fi
+
+# Clean up
+rm -f "$ALERT_FILE"
+
+-------------------------------------------------
+Shell Script to Check Server Memory
+
+
+#!/bin/bash 
+#######################################################################################
+#Script Name    :alertmemory.sh
+#Description    :send alert mail when server memory is running low
+#Args           :       
+#Author         :Aaron Kili Kisinga
+#Email          :aaronkilik@gmail.com
+#License       : GNU GPL-3	
+#######################################################################################
+## declare mail variables
+##email subject 
+subject="Server Memory Status Alert"
+##sending mail as
+from="server.monitor@example.com"
+## sending mail to
+to="admin1@example.com"
+## send carbon copy to
+also_to="admin2@example.com"
+
+## get total free memory size in megabytes(MB) 
+free=$(free -mt | grep Total | awk '{print $4}')
+
+## check if free memory is less or equals to  100MB
+if [[ "$free" -le 100  ]]; then
+        ## get top processes consuming system memory and save to temporary file 
+        ps -eo pid,ppid,cmd,%mem,%cpu --sort=-%mem | head >/tmp/top_proccesses_consuming_memory.txt
+
+        file=/tmp/top_proccesses_consuming_memory.txt
+        ## send email if system memory is running low
+        echo -e "Warning, server memory is running low!\n\nFree memory: $free MB" | mailx -a "$file" -s "$subject" -r "$from" -c "$to" "$also_to"
+fi
+
+exit 0
+
+
+
+-------------------------------------------------
+https://www.linuxjournal.com/content/tech-tip-send-email-alert-when-your-disk-space-gets-low
+https://www.linuxjournal.com/content/stay-ahead-game-essential-tools-and-techniques-linux-server-monitoring
+
+https://www.linuxjournal.com/content/linux-performance-monitoring-using-tools-top-vmstat-and-iostat
+https://www.linuxjournal.com/content/system-performance-monitoring-and-tuning-guide
+https://www.linuxjournal.com/content/bare-bones-monitoring-monit-and-rrdtool
+
+===============================
+
+
+
+#!/bin/bash
+CURRENT=$(df / | grep / | awk '{ print $5}' | sed 's/%//g')
+THRESHOLD=90
+
+if [ "$CURRENT" -gt "$THRESHOLD" ] ; then
+    mail -s 'Disk Space Alert' mailid@domainname.com << EOF
+Your root partition remaining free space is critically low. Used: $CURRENT%
+EOF
+fi
+
+-------------------------------------------------
+-------------------------------------------------
+-------------------------------------------------
+-------------------------------------------------
+
