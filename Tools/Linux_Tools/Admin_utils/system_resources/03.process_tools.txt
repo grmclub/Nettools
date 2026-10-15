@@ -67,7 +67,7 @@ https://www.thegeekstuff.com/archives-2/
 https://www.thegeekstuff.com/linux-101-hacks-ebook/
 ===================
 https://github.com/chiranjibKonwar/Documentation
-
+https://github.com/orgs/readersclub/repositories?type=all
 
 
 -------------------------------------------------------------
@@ -76,6 +76,8 @@ ps -aux --sort -pcpu|pr -TW 256|head
 
 To see the top 10 CPU-consuming processes:
 ps -eo pid,user,%cpu,command --sort=-%cpu | head -n 11
+ps -eo pcpu,pid,user,args | sort -k 1 -r | head -10
+ps -eo pcpu,pid,user,args | sort -r -k1 | less 
 
 
 --mem
