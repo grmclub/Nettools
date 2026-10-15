@@ -1,0 +1,88 @@
+
+https://www.redhat.com/en/blog/network-testing-iperf3
+https://iperf3serverlist.net/iperf3
+https://software.es.net/iperf/
+https://www.mankier.com/1/iperf3
+
+-------------------------------------------------
+1. Start the Server
+On the machine acting as the receiver or test server, run:
+iperf3 -s
+iperf3 -s -p 5002
+
+2. Run the Client
+On the machine testing the connection, run:
+iperf3 -c <server_ip_or_hostname>
+iperf3 -c iperf3.example.com -p 5002
+iperf3 -c 10.10.10.1 -p 7575 -bidir
+iperf3 -c 10.10.10.1 -p 7575 -t60 -b 100M
+
+
+##Common iPerf3 Usage Examples
+
+--Test with Parallel Streams (-P)
+To open multiple simultaneous connections and stress-test high-speed links:
+iperf3 -c 192.168.1.50 -P 4
+Use code with caution.
+
+--Reverse Test Direction (-R)
+To measure traffic flowing from the server to the client (downlink instead of uplink):
+iperf3 -c 192.168.1.50 -R
+
+--Run a UDP Test (-u)
+Testing UDP Bandwidth (-u)
+iperf3 -c [server-ip] -u -b 100M
+
+To test packet loss and jitter using UDP instead of TCP:
+iperf3 -c 192.168.1.50 -u -b 10M
+Use code with caution.
+• -u enables UDP.
+• -b 10M sets the target bandwidth to 10 Mbps (UDP defaults to 1 Mbps if unspecified).
+
+--Custom Port (-p)
+If your server listens on a non-default port (e.g., port 5202):
+• Server: iperf3 -s -p 5202
+• Client: iperf3 -c 192.168.1.50 -p 5202
+
+--Custom Test Duration (-t)
+To change the test length from the default 10 seconds to 30 seconds:
+iperf3 -c 192.168.1.50 -t 30
+Use code with caution.
+
+--Output in JSON Format (-J)
+To parse or log results programmatically:
+iperf3 -c 192.168.1.50 -J
+
+
+-------------------------------------------------
+##Quick Reference Table
+Command	Description	Example
+-s	Run in server mode	        iperf3 -s
+-c	Run in client mode	        iperf3 -c 192.168.1.100
+-p	Specify port	            iperf3 -c 192.168.1.100 -p 9000
+-t	Set test duration	        iperf3 -c 192.168.1.100 -t 30
+-i	Set interval reporting	    iperf3 -c 192.168.1.100 -i 2
+-R	Reverse direction	        iperf3 -c 192.168.1.100 -R
+-u	Use UDP instead of TCP	    iperf3 -c 192.168.1.100 -u
+-b	Set bandwidth target (UDP)	iperf3 -c 192.168.1.100 -u -b 50M
+-P	Parallel streams	        iperf3 -c 192.168.1.100 -P 4
+-J	JSON output format	        iperf3 -c 192.168.1.100 -J
+
+## iPerf features
+
+    TCP and SCTP
+        Measure bandwidth
+        Report MSS/MTU size and observed read sizes.
+        Support for TCP window size via socket buffers.
+    UDP
+        Client can create UDP streams of specified bandwidth.
+        Measure packet loss
+        Measure delay jitter
+        Multicast capable
+
+-------------------------------------------------
+-------------------------------------------------
+-------------------------------------------------
+-------------------------------------------------
+-------------------------------------------------
+-------------------------------------------------
