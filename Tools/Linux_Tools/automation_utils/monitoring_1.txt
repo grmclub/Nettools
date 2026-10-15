@@ -81,13 +81,23 @@ exit 0
 
 
 -------------------------------------------------
+===============================
 https://www.linuxjournal.com/content/tech-tip-send-email-alert-when-your-disk-space-gets-low
 https://www.linuxjournal.com/content/stay-ahead-game-essential-tools-and-techniques-linux-server-monitoring
+https://www.linuxjournal.com/content/linux-system-performance-tuning-optimizing-cpu-memory-and-disk
+https://www.linuxjournal.com/content/boost-your-linux-system-exploring-art-and-science-performance-optimization
 
 https://www.linuxjournal.com/content/linux-performance-monitoring-using-tools-top-vmstat-and-iostat
 https://www.linuxjournal.com/content/system-performance-monitoring-and-tuning-guide
 https://www.linuxjournal.com/content/bare-bones-monitoring-monit-and-rrdtool
+https://www.linuxjournal.com/content/explore-exciting-linux-diy-projects-automate-your-world-raspberry-pi-and-arduino
 
+https://www.linuxjournal.com/content/beyond-basics-unlocking-power-advanced-bash-scripting
+https://www.linuxjournal.com/content/how-build-custom-distributions-scratch
+https://www.linuxjournal.com/content/linux-boot-process-best-geeks-know-it
+https://www.linuxjournal.com/content/linux-memory-management-understanding-page-tables-swapping-and-memory-allocation
+https://www.linuxjournal.com/content/ubuntu-home-automation-building-smart-living-space-open-source-tools
+https://www.linuxjournal.com/content/efficient-text-processing-linux-awk-cut-paste
 ===============================
 
 
