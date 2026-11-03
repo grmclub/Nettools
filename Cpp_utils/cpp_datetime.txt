@@ -1,6 +1,7 @@
 
 
 https://en.cppreference.com/cpp/chrono/c/strftime
+https://note.com/hokosaki_inc/n/n03abd3620bbc?hl=en
 -------------------------------------------------
 1. Classic std::strftime Format Strings
 
