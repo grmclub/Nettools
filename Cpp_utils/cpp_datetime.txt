@@ -1,0 +1,44 @@
+
+
+https://en.cppreference.com/cpp/chrono/c/strftime
+-------------------------------------------------
+1. Classic std::strftime Format Strings
+
+Defined in <ctime>, std::strftime converts a std::tm structure into a character string using % specifiers
+
+#include <ctime>
+#include <iostream>
+
+int main() {
+    std::time_t t = std::time(nullptr);
+    std::tm* now = std::localtime(&t);
+    
+    char buffer[100];
+    std::strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", now);
+    
+    std::cout << buffer << '\n';
+}
+
+
+2. Modern C++20 std::format & {fmt}
+
+C++20 introduced std::format and std::chrono/std::tm integration (via <format> or the external fmt/chrono.h header), which uses strftime-compatible tokens inside curly braces {}:
+
+#include <format>
+#include <iostream>
+#include <ctime>
+
+int main() {
+    std::time_t t = std::time(nullptr);
+    std::tm now = *std::localtime(&t);
+    
+    // Direct formatting using strftime-style tokens
+    std::string s = std::format("{:%Y-%m-%d %H:%M:%S}", now);
+    std::cout << s << '\n';
+}
+
+-------------------------------------------------
+-------------------------------------------------
+-------------------------------------------------
+-------------------------------------------------
+
