@@ -5,12 +5,22 @@
 - network io
 - STL - vector,map,deque
 - utilities - config_parser, file_logger, tag_extractor
-- protocol extractors - fix_injector
+- protocol extractors, fix_injector
+
 -------------------------------------------------------------
 https://www.learncpp.com/
 https://www.studyplan.dev/cpp
 https://hackingcpp.com/
 
+--------------------
+https://hackingcpp.com/cpp/std/containers
+https://hackingcpp.com/cpp/std/algorithms/overview
+https://hackingcpp.com/index
+https://hackingcpp.com/cpp/language_references
+https://hackingcpp.com/cpp/blogs
+https://hackingcpp.com/cpp/podcasts
+
+--------------------
 https://www.cppreference.com/
 https://en.cppreference.com/w/cpp/header.html
 https://en.cppreference.com/w/
