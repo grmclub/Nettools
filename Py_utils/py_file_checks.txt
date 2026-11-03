@@ -1,0 +1,80 @@
+
+-------------------------------------------------
+## python+check+if+file+size+is+empty
+
+## using the traditional os module, use os.path.getsize().
+
+import os
+
+file_path = "example.txt"
+
+# Check if the file exists and its size is 0
+if os.path.isfile(file_path) and os.path.getsize(file_path) == 0:
+    print("File exists and is empty.")
+else:
+    print("File is either missing or not empty.")
+
+
+-------------------------------------------------
+## bash+check+file+size
+
+size=$(stat -c %s "filename.txt")
+
+Cross-Platform Alternative: Use wc -c with an input redirect so it doesn't print the filename.
+size=$(wc -c < "filename.txt")
+
+--bash
+#!/bin/bash
+FILE="video.mp4"
+
+if [ -f "$FILE" ]; then
+    # Get size in bytes
+    BYTES=$(wc -c < "$FILE")
+    echo "The file is $BYTES bytes."
+else
+    echo "File does not exist."
+fi
+
+##Getting file size using the find command
+find "/etc/passwd" -printf "%s"
+find "/etc/passwd" -printf "%s\n"
+fileName="/etc/hosts"
+mysize=$(find "$fileName" -printf "%s")
+printf "File %s size = %d\n" $fileName $mysize
+echo "${fileName} size is ${mysize} bytes."
+
+##Get the size of a file in a bash script using the stat command
+myfilesize=$(stat --format=%s "/etc/passwd")
+echo "$myfilesize"
+## or ##
+myFileSizeCheck=$(stat -c %s "/etc/resolv.conf")
+printf "My file size == %d\n" $myFileSizeCheck
+
+##check file size in unix using wc command
+
+myfilesize=$(wc -c "/etc/passwd" | awk '{print $1}')
+printf "%d\n" $myfilesize
+echo "$myfilesize"
+
+OR
+
+myfilesize=$(wc -c "/etc/passwd" | cut -d' ' -f1)
+printf "%d\n" $myfilesize
+printf "The file size is %d bytes\n" "$myfilesize"
+
+##misc
+
+What's the best way to get the file size in bytes for a bash script?
+
+
+stat -c%s would be our go-to. It's fast, performant, and returns a clean integer. Just remember to check that the file exists first to avoid stat errors:
+
+if [[ -f yourfile ]]; then
+    size=$(stat -c%s yourfile)
+fi
+
+du -b /path/to/yourfile
+-------------------------------------------------
+-------------------------------------------------
+-------------------------------------------------
+-------------------------------------------------
