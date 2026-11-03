@@ -1,0 +1,202 @@
+
+
+-------------------------------------------------
+Day 55 | Lambdas and Higher-Order Functions (Use map/filter in moderation)
+
+Introduction
+In Python, you can assign functions to variables or pass them as arguments to other functions.
+
+Today we will learn about "lambda expressions" and "higher-order functions (map and filter)."
+
+However, it's important to be careful about when and how you use it, so let's learn about it.
+
+
+
+1. Lambda expression
+A lambda expression is a small function that doesn't have a name.
+
+# 通常の関数
+def double(x):
+    return x * 2
+
+# ラムダ式で同じことを書く
+double = lambda x: x * 2
+
+print(double(5))  # 10
+
+Syntax: lambda Arguments: expression
+
+Lambda expressions can only contain one expression, making them unsuitable for complex processing. They are primarily used to pass short operations to functions like sorted() and map().
+
+
+
+2. Use lambda as the key for sorted.
+The most common use is as the `key` argument in the `sorted()` function.
+
+users = [
+    {"name": "Alice", "age": 30},
+    {"name": "Bob", "age": 25},
+    {"name": "Charlie", "age": 35},
+]
+
+# ageで昇順ソート
+sorted_users = sorted(users, key=lambda u: u["age"])
+for u in sorted_users:
+    print(u["name"], u["age"])
+# Bob 25
+# Alice 30
+# Charlie 35
+
+
+
+3. map() and filter()
+`map()` applies a function to each element of an iterable. `filter()` extracts only the elements that satisfy a given condition.
+
+numbers = [1, 2, 3, 4, 5]
+
+# map: 各要素を2倍にする
+doubled = list(map(lambda x: x * 2, numbers))
+print(doubled)  # [2, 4, 6, 8, 10]
+
+# filter: 偶数だけ取り出す
+evens = list(filter(lambda x: x % 2 == 0, numbers))
+print(evens)  # [2, 4]
+
+However, the same functionality can be expressed using list comprehensions for functions like map() and filter().
+
+doubled = [x * 2 for x in numbers]
+evens = [x for x in numbers if x % 2 == 0]
+
+
+
+4. Reasons for prioritizing list comprehensions over map/filter
+PEP8 (Python coding conventions) and the official Python tutorial both state that list comprehensions are generally more readable in many situations.
+
+# map + lambda（読みにくい）
+result = list(map(lambda x: x ** 2, filter(lambda x: x % 2 == 0, range(10))))
+
+# リスト内包表記（読みやすい）
+result = [x ** 2 for x in range(10) if x % 2 == 0]
+
+The map() method is effective when passing an existing function.
+
+words = ["hello", "world", "python"]
+
+# 既存の関数を渡す場合はmapがシンプル
+upper_words = list(map(str.upper, words))
+# リスト内包表記でも書ける
+upper_words = [w.upper() for w in words]
+
+
+
+5. What are higher-order functions?
+Functions that take other functions as arguments or that return other functions are called higher-order functions. The `key` argument of `sorted()` is a typical example.
+
+def apply_twice(func, value):
+    """関数を2回適用して結果を返す。"""
+    return func(func(value))
+
+print(apply_twice(lambda x: x * 2, 3))  # 12（3→6→12）
+print(apply_twice(str.upper, "hello"))  # エラー（strに適用不可の例）
+
+
+
+exercises
+First, write the following two processes using map/filter, and then rewrite them using list comprehensions.
+
+words = ["apple", "Banana", "cherry", "Date"]
+
+# 1. すべて小文字にする
+# 2. 文字数が5以上の単語だけ取り出す
+
+
+
+summary
+A lambda expression is a small, unnamed function. It's often used when passing it as a key to `sorted()`.
+
+List comprehensions are often easier to read than map() or filter().
+
+When passing an existing function to map(), it can be written simply.
+
+Prioritize a writing style that is easily understood by many people.
+
+
+
+model example
+words = ["apple", "Banana", "cherry", "Date"]
+
+1. Make everything lowercase.
+
+When using map()
+
+lower_words = list(map(lambda word: word.lower(), words))
+
+print(lower_words)
+# ['apple', 'banana', 'cherry', 'date']
+
+Passing the existing str.lower directly makes it even more concise.
+
+lower_words = list(map(str.lower, words))
+
+print(lower_words)
+# ['apple', 'banana', 'cherry', 'date']
+
+When using list comprehensions
+
+lower_words = [word.lower() for word in words]
+
+print(lower_words)
+# ['apple', 'banana', 'cherry', 'date']
+
+2. Extract only words with 5 or more characters.
+
+When using the parentheses
+
+long_words = list(filter(lambda word: len(word) >= 5, words))
+
+print(long_words)
+# ['apple', 'Banana', 'cherry']
+
+When using list comprehensions
+
+long_words = [word for word in words if len(word) >= 5]
+
+print(long_words)
+# ['apple', 'Banana', 'cherry']
+
+When performing two processes consecutively
+
+Convert all words to lowercase, then extract words with 5 or more letters.
+
+When using map() and filter()
+
+result = list(
+    filter(
+        lambda word: len(word) >= 5,
+        map(str.lower, words)
+    )
+)
+
+print(result)
+# ['apple', 'banana', 'cherry']
+
+When using list comprehensions
+
+result = [
+    word.lower()
+    for word in words
+    if len(word) >= 5
+]
+
+print(result)
+# ['apple', 'banana', 'cherry']
+
+For processing like this, list comprehensions are easier to understand and are recommended for Python beginners.
+
+-------------------------------------------------
+-------------------------------------------------
+-------------------------------------------------
+-------------------------------------------------
+-------------------------------------------------
+-------------------------------------------------
+-------------------------------------------------
