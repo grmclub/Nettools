@@ -15,8 +15,8 @@ def printHelp():
          -l compare log_ts and transact_ts
          -h  Display this help message.
 
-    Extract tags : 52,60,11
-    #./calc_internal_delay.py -f <extracted file> |sort -t',' -nrk4 | head -15
+    Extract tags : 52,60,11,56
+    #./calc_internal_delay.py -f <extracted file> |sort -t',' -nrk5 | head -15
 
     """ % os.path.basename(__file__))
 
@@ -38,13 +38,14 @@ def process_tags(data_file):
                 sending_t  = row[0]
                 transact_t = row[1]
                 clordid    = row[2]
+                compid     = row[3]
 
                 if sending_t != '' and transact_t != '':
                     st = datetime.datetime.strptime(sending_t, "%Y%m%d-%H:%M:%S.%f").strftime("%s.%f")
                     tt = datetime.datetime.strptime(transact_t, "%Y%m%d-%H:%M:%S.%f").strftime("%s.%f")
                     delay = abs(float(tt) - float(st))
                     if transact_t !=0:
-                        print("%s,%s,%s,%f" % (sending_t,transact_t,clordid,delay))
+                        print("%s,%s,%s,%s,%f" % (sending_t,transact_t,clordid,compid,delay))
 
 def process_logtime(data_file):
     with open(data_file, "r") as ifile:
