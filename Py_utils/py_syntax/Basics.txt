@@ -4,6 +4,8 @@
 - datetime
 - strings 
 
+https://github.com/pycollege/python-by-example/blob/main/lessons/time-formatting.md
+
 -------------------------------------------------------------
 ➡️ Conditionals (if, elif, else)
 
