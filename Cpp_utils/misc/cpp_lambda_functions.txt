@@ -1,0 +1,74 @@
+
+
+-------------------------------------------------
+C++ lambda expressions
+
+Lambda expressions (anonymous functions) , introduced in C++11 and later , are a convenient feature for when you want to write a small, on-the-fly process.
+You can create something that resembles a function instantly without having to define a function explicitly.
+
+Basic syntax
+[キャプチャ](引数) -> 戻り値型 {
+    処理内容;
+};
+
+Usage example
+auto add = [](int a, int b) {
+    return a + b;
+};
+
+int result = add(3, 5); // 8
+
+The contents within square brackets [] are called captures , and they are a mechanism for using variables from outside the brackets within the lambda expression.
+
+When to use screen capture
+int x = 10;
+
+auto print = [x]() { // 値キャプチャ
+    std::cout << x << std::endl;
+};
+
+auto printRef = [&x]() { // 参照キャプチャ
+    std::cout << x << std::endl;
+};
+
+[x]: Use a copy of variable x
+
+[&x]: Uses a reference to the variable x (reflects changes in external values)
+
+Uses in game development
+1. Register temporary action for collision events.
+player.OnCollide([]() {
+    PlaySoundMem(hitSE, DX_PLAYTYPE_BACK);
+    std::cout << "敵に当たった！" << std::endl;
+});
+
+You don't need to create a special function;
+you can write "what you want to do when you hit the target" on the spot.
+
+ 2. Schedule processing for a certain period of time later.
+Timer::After(1.0f, []() {
+    std::cout << "1秒後に爆発！" << std::endl;
+    SpawnExplosion();
+});
+
+By passing a lambda function to a timer, you can easily implement delayed events
+. This is useful for things like "fading out to the next scene" in games.
+
+ 3. Improvised actions within a state machine
+stateMachine.AddState("Jump",
+    []() { PlayAnimation("jump"); },    // Enter
+    []() { UpdateJump(); },             // Update
+    []() { PlayAnimation("idle"); }     // Exit
+);
+
+Using lambdas, you can register processes within a state without creating function pointers or separate classes .
+
+summary
+Using lambda expressions allows you to write shorter, more readable code, much like writing a function on the fly
+. They are particularly powerful for small-scale operations and when combined with STL functions.
+-------------------------------------------------
+-------------------------------------------------
+-------------------------------------------------
+-------------------------------------------------
+-------------------------------------------------
+

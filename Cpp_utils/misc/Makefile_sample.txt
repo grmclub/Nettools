@@ -1,0 +1,14 @@
+CPP :=g++
+CXXFLAGS = -std=c++11 -Wall -pedantic-errors -g 
+LDFLAGS :=
+
+SRCS = $(wildcard *.cpp)
+PROGS = $(patsubst %.cpp,%,$(SRCS))
+
+all:  $(PROGS)
+
+%:  %.cpp
+	$(CPP)  $(LDFLAGS)  $(CXXFLAGS) -o $@ $<
+
+clean:
+	rm -f $(PROGS)
