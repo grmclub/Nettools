@@ -1,0 +1,135 @@
+
+
+-------------------------------------------------
+
+https://note.com/hokosaki_inc/n/n03abd3620bbc
+
+##The "gradual onset of pain" with printf and ostringstream
+To be honest, the problem with both printf and ostringstream is that "it's hard to notice the problem while they're running."
+Type issues aren't visible until runtime, and readability issues gradually accumulate.
+First, let's confirm this pain with some concrete code.
+
+// printf: 型指定子のミスマッチ
+double price = 1234.56;
+printf("Price: %d\n", price);  // %d（整数用）に double を渡している
+
+This code will generate a warning if you pass -Wall to gcc/clang, but it will compile successfully.
+The output value will be unintended. The fundamental design of printf is that
+humans must constantly manage the task of matching the format specifier with the argument types.
+
+The more arguments you add, the higher the risk.
+You'll understand this if you've ever written code that passes 6 to 8 arguments to printf when you want to include error codes, thread IDs, file paths, and line numbers in the log output.
+Some people have probably experienced their production logs becoming corrupted because they made a single specifier mistake.
+
+##ostringstream is type-safe in that respect, but then redundancy becomes an issue.
+
+// ostringstream: 書くのが面倒
+std::ostringstream oss;
+oss << "Error [" << error_code << "]: "
+    << message << " (file: " << filename << ", line: " << line << ")";
+std::string result = oss.str();
+
+## Local variable declarations, operator chaining, and the final str() call—
+these might be tolerable if they're only in one place, but they accumulate in business code where string formatting is frequent, such as in logs, error messages, and report formatting.
+Furthermore, ostringstream creates a copy when retrieving std::string, so it's hard to praise it from a performance standpoint.
+The judgment that "it works, so there's no problem" quietly increases the amount of hard-to-read code.
+That's the tricky part of this problem.
+
+fmt's basic syntax and type safety mechanism
+The basic usage of fmt is similar to that of printf.
+However, instead of format specifiers, you write placeholders using curly braces {} , and the type is inferred automatically.
+
+##Rewriting the printf code from earlier using fmt results in this:
+
+#include <fmt/core.h>
+
+double price = 1234.56;
+// 型を自動推論。指定子のミスマッチはそもそも起きない
+std::string s = fmt::format("Price: {}\n", price);
+fmt::print("Price: {}\n", price);  // 直接出力するなら fmt::print
+
+Format specifiers are written in curly braces, separated by colons.
+Here's a summary of the zero-padding, decimal point count, and hexadecimal formatting commonly used in business.
+
+int id = 42;
+double ratio = 0.9876;
+int hex_code = 255;
+
+// ゼロ埋め（幅5桁）
+fmt::print("ID: {:05d}\n", id);        // → "ID: 00042"
+
+// 小数点以下2桁
+fmt::print("Ratio: {:.2f}\n", ratio);  // → "Ratio: 0.99"
+
+// 16進数（大文字）
+fmt::print("Code: {:X}\n", hex_code);  // → "Code: FF"
+
+The format specifiers and structure are similar to printf, but you can read it if you think of the colon as replacing the % symbol.
+If you're familiar with printf, you should be able to interpret most of the specifiers without a lookup table.
+
+
+
+-------------------------------------------------
+## Use fmt in three business code scenarios
+Let's look at three common work scenarios to see how fmt can be useful.
+
+##Log output
+
+Logs often list the thread ID, filename, line number, and message.
+What was written using ostringstream looks like this when using fmt.
+
+// Before: ostringstream
+std::ostringstream oss;
+oss << "[WARN] thread=" << thread_id
+    << " file=" << filename << ":" << line
+    << " msg=" << message;
+logger.write(oss.str());
+
+// After: fmt
+logger.write(fmt::format(
+    "[WARN] thread={} file={}:{} msg={}",
+    thread_id, filename, line, message
+));
+
+The correspondence between the order of arguments and placeholders is immediately clear.
+Major logging libraries such as spdlog use fmt as their backend, so learning how to write fmt allows you to directly read spdlog format strings.
+The fact that "learning fmt directly translates to reading and writing related libraries" is a subtly significant advantage.
+
+## Error message generation
+
+Readability is especially important when generating strings for exception messages and API responses.
+
+// Before: snprintf + char バッファ
+char buf[256];
+snprintf(buf, sizeof(buf), "Device 0x%04X not found in zone %d", device_id, zone);
+throw std::runtime_error(buf);
+
+// After: fmt
+throw std::runtime_error(
+    fmt::format("Device {:#06X} not found in zone {}", device_id, zone)
+);
+
+This eliminates the need for buffer size management in snprintf.
+{:#06X} means a hexadecimal number with a 0x prefix, uppercase, and 6 zeros padded.
+The specifier syntax requires some getting used to, but if you are familiar with printf's %04X, the formal difference is small.
+
+## Formatting of numerical and date data in reports
+
+In reports and CSV output, there are many situations where you want to standardize the number of digits, alignment, and decimal points.
+
+// 金額: 小数点以下2桁・右揃え10文字
+fmt::print("{:>10.2f}\n", 12345.6);   // → "  12345.60"
+
+// 日付（tm 構造体をそのまま渡せる。fmt/chrono.h が必要）
+std::tm t = get_current_time();
+fmt::print("{:%Y-%m-%d %H:%M:%S}\n", t);  // → "2025-07-14 10:30:00"
+
+By including fmt/chrono.h, you can directly pass std::tm or std::chrono types for date formats.
+The process of preparing buffers with strftime can be reduced to a single line.
+The time format tokens are the same as strftime, so the migration cost is low.
+
+
+-------------------------------------------------
+-------------------------------------------------
+-------------------------------------------------
+
