@@ -1,0 +1,98 @@
+
+-------------------------------------------------
+
+
+1. The "First 60 Seconds" Command Line Toolkit
+When an issue occurs, use these lightweight tools first to isolate the bottleneck.
+uptime            # Check system load averages (1, 5, and 15-minute trends)
+dmesg -T | tail   # View recent kernel errors, OOM kills, or hardware issues
+vmstat 1          # Monitor virtual memory, process states (r/b), and CPU breakdowns
+mpstat -P ALL 1   # Check balance across individual CPU cores
+pidstat 1         # Pinpoint which specific PIDs are consuming CPU/memory
+
+2. Subsystem Breakdown
+🧠 CPU & Process Schedulers
+top / htop: Real-time process monitoring. htop offers a cleaner UI, filtering, and easy tree-views for parent/child tracking.
+perf: The ultimate tool for C developers. It profiles execution by sampling instruction pointers.
+bash
+perf record -F 99 -p <PID> -g -- sleep 10  # Sample stack traces at 99Hz for 10s
+perf report                                # Analyze the data in an interactive UI
+
+
+Use code with caution.
+
+
+💾 Memory & Virtual Space
+free -m: Quick overview of available, used, and cached RAM (in MB).
+vmstat: Focus on si (swap in) and so (swap out). If these are high, your system is actively hitting the disk due to low RAM.
+pmap -x <PID>: Shows the exact memory map layout of a process (heap, stack, shared libraries, mmap blocks). Excellent for tracking memory leaks.
+💽 Disk Storage & File Systems
+iostat -xz 1: Provides detailed breakdown of disk utilization (%util) and wait times (await).
+iotop: Acts like top, but sorts processes by who is actively reading or writing the most bytes to disk.
+🌐 Network I/O
+ss -tump: Modern replacement for netstat. Lists all active TCP connections, their buffers, and the owning PID.
+tcpdump -i eth0: Low-level packet analyzer. Essential for capturing raw network traffic data.
+nicstat 1: Monitors network interface throughput and utilization percentages.
+
+3. Direct C Application Observability
+If you need to trace your system calls, use these tracing tools directly on your binary.
+Tool
+Focus
+Command Example
+strace
+System Calls
+strace -c ./my_program (Summarizes all kernel calls made by your code)
+ltrace
+Library Calls
+ltrace ./my_program (Intercepts dynamic library calls like malloc or strlen)
+gdb
+Active Debugging
+gdb -p <PID> (Attach to a hanging system process to inspect the current stack frame)
+
+
+4. Advanced: BPF Compiler Collection (BCC)
+For modern Linux systems (Kernel 4.1+), eBPF-based tools provide microsecond-level tracing with virtually zero performance overhead.
+execsnoop: Traces all new process creations (execve system calls) system-wide in real-time.
+biolatency: Generates a histogram showing exactly how long disk I/O requests are taking.
+ext4slower / zfslower: Identifies filesystem reads/writes that take longer than a specified threshold (e.g., 10ms).
+
+
+-------------------------------------------------
+1. Real-Time Monitoring (Interactive)
+
+##The top Command
+Most Linux systems come with top pre-installed. It provides a live, updating view of system resources. 
+Run the command:
+bash
+top
+
+##Sort by CPU usage: Press Shift + P (or just P on some versions).
+Sort by Memory usage: Press Shift + M (or just M on some versions).
+Exit: Press q. [1, 2]
+The htop Command (Recommended)
+If available, htop is a much more user-friendly, color-coded interactive viewer.
+Run the command:
+bash
+htop
+
+##Navigate: Use your mouse or arrow keys to scroll through the list.
+Sort: Press F6 to choose whether you want to sort by %CPU or %MEM.
+Exit: Press F10 or q.
+(If not installed, get it via sudo apt install htop on Debian/Ubuntu or sudo dnf install htop on RHEL/CentOS).
+
+2. Static Snapshots (Best for Scripts or Quick Copy/Paste)
+If you don't want an interactive screen and just want a printout of the biggest resource hogs, use the ps command combined with sort.
+
+-Top 10 Processes by Memory Usage
+ps -eo pid,ppid,cmd,%mem,%cpu --sort=-%mem | head -11
+
+-Top 10 Processes by CPU Usage [1, 2]
+ps -eo pid,ppid,cmd,%mem,%cpu --sort=-%cpu | head -11
+
+
+-------------------------------------------------
+-------------------------------------------------
+-------------------------------------------------
+-------------------------------------------------
+
+
